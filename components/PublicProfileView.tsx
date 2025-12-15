@@ -6,19 +6,29 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Film, PlayCircle, Eye } from "lucide-react";
+import { Film, PlayCircle, Eye, Globe2, Users, Calendar } from "lucide-react";
 
 export type PublicProfileValues = {
   avatar_url?: string | null;
   username?: string | null;
   full_name?: string | null;
   bio?: string | null;
+  primary_email?: string | null;
+  primary_phone?: string | null;
+  booking_link?: string | null;
   instagram_handle?: string | null;
   instagram_followers?: number | null;
   tiktok_handle?: string | null;
   tiktok_followers?: number | null;
   youtube_handle?: string | null;
   youtube_subscribers?: number | null;
+  facebook_handle?: string | null;
+  facebook_followers?: number | null;
+  audience_demographics?: {
+    geo?: { location?: string | null; percentage?: string | null }[];
+    age?: string | null;
+    gender?: string | null;
+  } | null;
   video_urls?: { url: string; views?: string | null }[] | string[] | null;
   brand_logos?: { url: string }[] | string[] | null;
   services_packages?: {
@@ -72,6 +82,12 @@ export function PublicProfileView({
   const igFollowers = formatNumber(values.instagram_followers);
   const ttFollowers = formatNumber(values.tiktok_followers);
   const ytFollowers = formatNumber(values.youtube_subscribers);
+  const fbFollowers = formatNumber(values.facebook_followers);
+  const demographics = values.audience_demographics;
+  const topGeo =
+    demographics?.geo
+      ?.filter((g) => (g.location || "").trim().length > 0)
+      .slice(0, 3) ?? [];
   const videos =
     values.video_urls
       ?.map((v) =>
@@ -99,6 +115,12 @@ export function PublicProfileView({
       : values.youtube_handle
         ? `https://youtube.com/@${values.youtube_handle.replace("@", "")}`
         : "#";
+  const fbHref =
+    values.facebook_handle && values.facebook_handle.startsWith("http")
+      ? values.facebook_handle
+      : values.facebook_handle
+        ? `https://facebook.com/${values.facebook_handle.replace("@", "")}`
+        : "#";
 
   const brandLogos =
     values.brand_logos
@@ -108,6 +130,35 @@ export function PublicProfileView({
     (values.collaboration_headline && values.collaboration_headline.trim()) || "Who I've Created For";
 
   const services = values.services_packages ?? [];
+
+  const getCtaHrefAndLabel = () => {
+    const booking = values.booking_link?.trim();
+    const email = values.primary_email?.trim();
+
+    if (booking) {
+      const href = booking;
+      return { href, label: "Book Now" };
+    }
+
+    if (email) {
+      return { href: `mailto:${email}`, label: "Contact Me" };
+    }
+
+    return { href: "#", label: "Book this creator" };
+  };
+
+  const { href: ctaHref, label: ctaLabel } = getCtaHrefAndLabel();
+
+  const getPhoneHref = () => {
+    const raw = values.primary_phone?.trim();
+    if (!raw) return null;
+    if (raw.startsWith("http")) return raw;
+    if (raw.includes("wa.me") || raw.toLowerCase().includes("whatsapp")) return raw;
+    const digits = raw.replace(/[^+\d]/g, "");
+    return digits ? `tel:${digits}` : null;
+  };
+
+  const phoneHref = getPhoneHref();
 
   const getVideoBadgeIcon = (url: string) => {
     const lower = url.toLowerCase();
@@ -239,53 +290,77 @@ export function PublicProfileView({
           </div>
         </div>
 
-        <Link
-          href={igHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="rounded-[2rem] bg-white p-4 shadow-sm transition hover:shadow-md"
-        >
-          <div className="flex items-center justify-center rounded-full p-2 text-pink-500">
-            <Image src={"/img/instagram.webp"} alt="Instagram" width={24} height={24} />
-          </div>
-          <p className="mt-2 text-sm font-medium text-zinc-900 text-center">Instagram</p>
-          <p className="text-xs text-zinc-500 text-center">
-            {values.instagram_handle || "@instagram"}
-          </p>
-          <p className="text-center text-2xl font-bold text-zinc-900">{igFollowers}</p>
-        </Link>
+        {values.instagram_handle && (
+          <Link
+            href={igHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-[2rem] bg-white p-4 shadow-sm transition hover:shadow-md"
+          >
+            <div className="flex items-center justify-center rounded-full p-2 text-pink-500">
+              <Image src={"/img/instagram.webp"} alt="Instagram" width={24} height={24} />
+            </div>
+            <p className="mt-2 text-sm font-medium text-zinc-900 text-center">Instagram</p>
+            <p className="text-xs text-zinc-500 text-center">
+              {values.instagram_handle || "@instagram"}
+            </p>
+            <p className="text-center text-2xl font-bold text-zinc-900">{igFollowers}</p>
+          </Link>
+        )}
 
-        <Link
-          href={ttHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="rounded-[2rem] bg-white p-4 shadow-sm transition hover:shadow-md"
-        >
-          <div className="flex items-center justify-center rounded-full">
-            <Image src={"/img/tiktok.webp"} alt="TikTok" width={24} height={24} />
-          </div>
-          <p className="mt-2 text-center text-sm font-medium text-zinc-900">TikTok</p>
-          <p className="text-center text-xs text-zinc-500">
-            {values.tiktok_handle || "@tiktok"}
-          </p>
-          <p className="text-center text-2xl font-bold text-zinc-900">{ttFollowers}</p>
-        </Link>
+        {values.tiktok_handle && (
+          <Link
+            href={ttHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-[2rem] bg-white p-4 shadow-sm transition hover:shadow-md"
+          >
+            <div className="flex items-center justify-center rounded-full">
+              <Image src={"/img/tiktok.webp"} alt="TikTok" width={24} height={24} />
+            </div>
+            <p className="mt-2 text-center text-sm font-medium text-zinc-900">TikTok</p>
+            <p className="text-center text-xs text-zinc-500">
+              {values.tiktok_handle || "@tiktok"}
+            </p>
+            <p className="text-center text-2xl font-bold text-zinc-900">{ttFollowers}</p>
+          </Link>
+        )}
 
-        <Link
-          href={ytHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="col-span-2 rounded-[2rem] bg-white p-4 shadow-sm transition hover:shadow-md"
-        >
-          <div className="flex items-center justify-center rounded-full  p-2 text-red-500">
-            <Image src={"/img/youtube.webp"} alt="YouTube" width={24} height={24} />
-          </div>
-          <p className="mt-2 text-center text-sm font-medium text-zinc-900">YouTube</p>
-          <p className="text-center text-xs text-zinc-500">
-            {values.youtube_handle || "@youtube"}
-          </p>
-          <p className="text-center text-2xl font-bold text-zinc-900">{ytFollowers}</p>
-        </Link>
+        {values.youtube_handle && (
+          <Link
+            href={ytHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-[2rem] bg-white p-4 shadow-sm transition hover:shadow-md"
+          >
+            <div className="flex items-center justify-center rounded-full  p-2 text-red-500">
+              <Image src={"/img/youtube.webp"} alt="YouTube" width={24} height={24} />
+            </div>
+            <p className="mt-2 text-center text-sm font-medium text-zinc-900">YouTube</p>
+            <p className="text-center text-xs text-zinc-500">
+              {values.youtube_handle || "@youtube"}
+            </p>
+            <p className="text-center text-2xl font-bold text-zinc-900">{ytFollowers}</p>
+          </Link>
+        )}
+
+        {values.facebook_handle && (
+          <Link
+            href={fbHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-[2rem] bg-white p-4 shadow-sm transition hover:shadow-md"
+          >
+            <div className="flex items-center justify-center rounded-full p-2 text-blue-600">
+              <span className="text-lg font-bold">f</span>
+            </div>
+            <p className="mt-2 text-center text-sm font-medium text-zinc-900">Facebook</p>
+            <p className="text-center text-xs text-zinc-500">
+              {values.facebook_handle || "@facebook"}
+            </p>
+            <p className="text-center text-2xl font-bold text-zinc-900">{fbFollowers}</p>
+          </Link>
+        )}
 
         <div className="col-span-2 rounded-[2rem] bg-transparent p-1">
           <p className="mb-2 text-sm font-semibold text-zinc-800">Featured Work</p>
@@ -392,7 +467,7 @@ export function PublicProfileView({
             <p className="mt-1 text-center text-sm text-zinc-400">
               Partnerships based on authentic storytelling.
             </p>
-+            <div className="mt-4 flex flex-wrap items-center justify-center gap-6">
+           <div className="mt-4 flex flex-wrap items-center justify-center gap-6">
               {brandLogos.map((logo, idx) => (
                 <img
                   key={`${logo.url}-${idx}`}
@@ -405,9 +480,103 @@ export function PublicProfileView({
           </div>
         )}
 
-        <div className="col-span-2 pointer-events-none bottom-4 left-0 right-0 px-2 mt-4">
-          <div className="pointer-events-auto rounded-full bg-zinc-900 text-white px-4 py-3 text-sm font-semibold shadow-lg shadow-black/20 backdrop-blur-md w-full text-center">
-            Book this creator
+        {demographics && (topGeo.length > 0 || demographics.gender || demographics.age) && (
+          <div className="col-span-2 rounded-[2rem] bg-white p-4 shadow-sm space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-zinc-900">Who is Following?</p>
+            </div>
+            <div className="space-y-3 text-sm">
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 text-zinc-500">
+                  <Globe2 className="h-4 w-4" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
+                    Top Geos
+                  </p>
+                  <p className="mt-1 text-sm text-zinc-900">
+                    {topGeo.length > 0
+                      ? topGeo
+                          .map((g) =>
+                            g.percentage ? `${g.location} (${g.percentage})` : g.location
+                          )
+                          .join(", ")
+                      : "Creator has not added geo data yet."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 text-zinc-500">
+                  <Users className="h-4 w-4" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
+                    Gender
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-zinc-900">
+                    {demographics.gender || "Not specified"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 text-zinc-500">
+                  <Calendar className="h-4 w-4" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
+                    Age
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-zinc-900">
+                    {demographics.age || "Not specified"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="col-span-2 mt-4 space-y-2">
+          {(values.primary_email || values.primary_phone) && (
+            <div className="rounded-2xl border border-zinc-200 bg-white/70 px-4 py-3 text-xs text-zinc-600 flex flex-col gap-1">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                Contact Information
+              </p>
+              {values.primary_email && (
+                <p className="text-xs">
+                  Email:{" "}
+                  <a
+                    href={`mailto:${values.primary_email}`}
+                    className="font-medium text-zinc-900 underline underline-offset-2"
+                  >
+                    {values.primary_email}
+                  </a>
+                </p>
+              )}
+              {values.primary_phone && phoneHref && (
+                <p className="text-xs">
+                  Phone / WhatsApp:{" "}
+                  <a
+                    href={phoneHref}
+                    className="font-medium text-zinc-900 underline underline-offset-2"
+                  >
+                    {values.primary_phone}
+                  </a>
+                </p>
+              )}
+            </div>
+          )}
+
+          <div className="pointer-events-none bottom-4 left-0 right-0 px-2">
+            <a
+              href={ctaHref}
+              target={ctaHref.startsWith("http") ? "_blank" : undefined}
+              rel={ctaHref.startsWith("http") ? "noopener noreferrer" : undefined}
+              className="pointer-events-auto inline-flex w-full items-center justify-center rounded-full bg-zinc-900 text-white px-4 py-3 text-sm font-semibold shadow-lg shadow-black/20 backdrop-blur-md hover:bg-zinc-800 transition"
+            >
+              {ctaLabel}
+            </a>
           </div>
         </div>
       </div>

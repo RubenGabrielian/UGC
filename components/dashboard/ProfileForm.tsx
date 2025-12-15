@@ -27,6 +27,7 @@ import {
   Share2,
   Briefcase,
   Package,
+  Facebook,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PhonePreview } from "./PhonePreview";
@@ -37,6 +38,9 @@ const formSchema = z.object({
   full_name: z.string().optional().nullable(),
   bio: z.string().max(300, "Bio must be under 300 characters").optional().nullable(),
   collaboration_headline: z.string().optional().nullable(),
+  primary_email: z.string().email("Must be a valid email address").optional().nullable(),
+  primary_phone: z.string().optional().nullable(),
+  booking_link: z.string().optional().nullable(),
   // Socials
   instagram_handle: z.string().optional().nullable(),
   instagram_followers: z.number().nonnegative("Followers cannot be negative").optional().nullable(),
@@ -44,6 +48,23 @@ const formSchema = z.object({
   tiktok_followers: z.number().nonnegative("Followers cannot be negative").optional().nullable(),
   youtube_handle: z.string().optional().nullable(),
   youtube_subscribers: z.number().nonnegative("Subscribers cannot be negative").optional().nullable(),
+  facebook_handle: z.string().optional().nullable(),
+  facebook_followers: z.number().nonnegative("Followers cannot be negative").optional().nullable(),
+  audience_demographics: z
+    .object({
+      geo: z
+        .array(
+          z.object({
+            location: z.string().optional().nullable(),
+            percentage: z.string().optional().nullable(),
+          })
+        )
+        .optional(),
+      age: z.string().optional().nullable(),
+      gender: z.string().optional().nullable(),
+    })
+    .optional()
+    .nullable(),
   video_urls: z
     .array(
       z.object({
@@ -81,12 +102,22 @@ type PreviewValues = {
   username?: string | null;
   full_name?: string | null;
   bio?: string | null;
+  primary_email?: string | null;
+  primary_phone?: string | null;
+  booking_link?: string | null;
   instagram_handle?: string | null;
   instagram_followers?: number | null;
   tiktok_handle?: string | null;
   tiktok_followers?: number | null;
   youtube_handle?: string | null;
   youtube_subscribers?: number | null;
+  facebook_handle?: string | null;
+  facebook_followers?: number | null;
+  audience_demographics?: {
+    geo?: { location?: string | null; percentage?: string | null }[];
+    age?: string | null;
+    gender?: string | null;
+  } | null;
   video_urls?: { url: string; views?: string | null }[];
   brand_logos?: { url: string }[];
   services_packages?: {
@@ -130,6 +161,9 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
       full_name: initialData?.full_name ?? "",
       bio: initialData?.bio ?? "",
       collaboration_headline: (initialData as { collaboration_headline?: string | null })?.collaboration_headline ?? "",
+      primary_email: (initialData as { primary_email?: string | null })?.primary_email ?? "",
+      primary_phone: (initialData as { primary_phone?: string | null })?.primary_phone ?? "",
+      booking_link: (initialData as { booking_link?: string | null })?.booking_link ?? "",
       instagram_handle: initialData?.instagram_handle ?? "",
       instagram_followers: toNumberOrUndefined(
         initialData?.instagram_followers ?? initialData?.followers_count
@@ -140,6 +174,22 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
       youtube_subscribers: toNumberOrUndefined(
         (initialData as { youtube_subscribers?: number })?.youtube_subscribers
       ),
+      facebook_handle: (initialData as { facebook_handle?: string })?.facebook_handle ?? "",
+      facebook_followers: toNumberOrUndefined(
+        (initialData as { facebook_followers?: number })?.facebook_followers
+      ),
+      audience_demographics: {
+        geo:
+          ((initialData as {
+            audience_demographics?: { geo?: { location?: string; percentage?: string }[] };
+          })?.audience_demographics?.geo as { location?: string; percentage?: string }[]) ?? [],
+        age:
+          (initialData as { audience_demographics?: { age?: string | null } })
+            ?.audience_demographics?.age ?? "",
+        gender:
+          (initialData as { audience_demographics?: { gender?: string | null } })
+            ?.audience_demographics?.gender ?? "",
+      },
       video_urls:
         (initialData as { video_urls?: { url: string; views?: string | null }[] | string[] })
           ?.video_urls?.map((v) =>
@@ -196,6 +246,15 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
     name: "services_packages",
   });
 
+  const {
+    fields: geoFields,
+    append: appendGeo,
+    remove: removeGeo,
+  } = useFieldArray({
+    control: form.control,
+    name: "audience_demographics.geo",
+  });
+
   const watchedValues = useWatch({ control: form.control });
   const previewValues = useMemo<PreviewValues>(() => {
     const normalizedVideos =
@@ -248,17 +307,23 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
       full_name: values.full_name,
       bio: values.bio || null,
       collaboration_headline: values.collaboration_headline || null,
+      primary_email: values.primary_email || null,
+      primary_phone: values.primary_phone || null,
+      booking_link: values.booking_link || null,
       instagram_handle: values.instagram_handle || null,
       instagram_followers: values.instagram_followers ?? null,
       tiktok_handle: values.tiktok_handle || null,
       tiktok_followers: values.tiktok_followers ?? null,
       youtube_handle: values.youtube_handle || null,
       youtube_subscribers: values.youtube_subscribers ?? null,
+      facebook_handle: values.facebook_handle || null,
+      facebook_followers: values.facebook_followers ?? null,
       video_urls: values.video_urls ?? [],
       brand_logos: values.brand_logos ?? [],
       services_packages: values.services_packages ?? [],
       followers_count: values.followers_count ?? null,
       engagement_rate: values.engagement_rate ?? null,
+      audience_demographics: values.audience_demographics ?? null,
     };
 
     let error: { message?: string } | null = null;
@@ -654,6 +719,47 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
                           </div>
                         </AccordionContent>
                       </AccordionItem>
+
+                      <AccordionItem value="facebook">
+                        <AccordionTrigger className="flex items-center gap-2">
+                          <Facebook className="h-4 w-4 text-blue-600" />
+                          Facebook
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-2">
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Facebook Page Handle (@...)</label>
+                            <Input
+                              placeholder="@yourpage"
+                              {...form.register("facebook_handle")}
+                              disabled={isSaving}
+                              className="focus-visible:ring-offset-0 transition-colors"
+                            />
+                            {form.formState.errors.facebook_handle && (
+                              <p className="text-sm text-destructive">
+                                {form.formState.errors.facebook_handle.message}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Followers (e.g., 15K)</label>
+                            <Input
+                              type="number"
+                              placeholder="15000"
+                              {...form.register("facebook_followers", {
+                                setValueAs: (v) =>
+                                  v === "" || v === null ? undefined : Number(v),
+                              })}
+                              disabled={isSaving}
+                              className="focus-visible:ring-offset-0 transition-colors"
+                            />
+                            {form.formState.errors.facebook_followers && (
+                              <p className="text-sm text-destructive">
+                                {form.formState.errors.facebook_followers.message}
+                              </p>
+                            )}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
                     </Accordion>
                   </CardContent>
                 </Card>
@@ -708,6 +814,113 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
                       <Plus className="h-4 w-4" />
                       Add Video
                     </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/80 shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="text-xl">Audience Demographics</CardTitle>
+                    <CardDescription>
+                      Share who is following you so brands can understand your core audience.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Top Geographies (up to 3)</label>
+                      <p className="text-xs text-muted-foreground">
+                        Add your top countries or cities and their share of your audience (e.g., Armenia — 60%).
+                      </p>
+                      <div className="space-y-2">
+                        {geoFields.map((field, index) => (
+                          <div key={field.id} className="flex gap-2 items-center">
+                            <Input
+                              placeholder="Country or City"
+                              {...form.register(
+                                `audience_demographics.geo.${index}.location` as const
+                              )}
+                              disabled={isSaving}
+                              className="flex-1 focus-visible:ring-offset-0 transition-colors"
+                            />
+                            <select
+                              className="w-28 rounded-md border border-input bg-background px-2 py-1 text-sm"
+                              {...form.register(
+                                `audience_demographics.geo.${index}.percentage` as const
+                              )}
+                              disabled={isSaving}
+                            >
+                              <option value="">%</option>
+                              <option value="10%">10%</option>
+                              <option value="20%">20%</option>
+                              <option value="30%">30%</option>
+                              <option value="40%">40%</option>
+                              <option value="50%">50%</option>
+                              <option value="60%">60%</option>
+                              <option value="70%">70%</option>
+                              <option value="80%">80%</option>
+                              <option value="90%">90%</option>
+                            </select>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => removeGeo(index)}
+                              disabled={isSaving}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                        {geoFields.length === 0 && (
+                          <p className="text-xs text-muted-foreground">
+                            Add at least one location so brands can see where your audience is based.
+                          </p>
+                        )}
+                        {geoFields.length < 3 && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="mt-1 flex items-center gap-2"
+                            onClick={() => appendGeo({ location: "", percentage: "" })}
+                            disabled={isSaving}
+                          >
+                            <Plus className="h-4 w-4" />
+                            Add Location
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Primary Age Group</label>
+                      <select
+                        className="w-full rounded-md border border-input bg-background px-2 py-2 text-sm"
+                        {...form.register("audience_demographics.age" as const)}
+                        disabled={isSaving}
+                      >
+                        <option value="">Select age range</option>
+                        <option value="13–17 years">13–17 years</option>
+                        <option value="18–24 years">18–24 years</option>
+                        <option value="25–34 years">25–34 years</option>
+                        <option value="35–44 years">35–44 years</option>
+                        <option value="45+ years">45+ years</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Gender Split</label>
+                      <select
+                        className="w-full rounded-md border border-input bg-background px-2 py-2 text-sm"
+                        {...form.register("audience_demographics.gender" as const)}
+                        disabled={isSaving}
+                      >
+                        <option value="">Select gender split</option>
+                        <option value="Mostly Female">Mostly Female</option>
+                        <option value="Balanced">Balanced</option>
+                        <option value="Mostly Male">Mostly Male</option>
+                      </select>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -973,6 +1186,56 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
                     </Button>
                   </CardContent>
                 </Card>
+
+                <Card className="border-border/80 shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="text-xl">Booking &amp; Contact Information</CardTitle>
+                    <CardDescription>
+                      Make it easy for brands to reach you and book you for campaigns.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Primary Email</label>
+                      <Input
+                        type="email"
+                        placeholder="brand-contact@you.com"
+                        {...form.register("primary_email")}
+                        disabled={isSaving}
+                        className="focus-visible:ring-offset-0 transition-colors"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        This email will be shown to brands and used as a fallback for the main button.
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Primary Phone / WhatsApp</label>
+                      <Input
+                        placeholder="+1 555 000 0000 or WhatsApp number"
+                        {...form.register("primary_phone")}
+                        disabled={isSaving}
+                        className="focus-visible:ring-offset-0 transition-colors"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Optional. We&apos;ll turn this into a tap-to-call or WhatsApp link where possible.
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Main CTA Link</label>
+                      <Input
+                        placeholder="https://calendly.com/yourbooking or mailto:you@email"
+                        {...form.register("booking_link")}
+                        disabled={isSaving}
+                        className="focus-visible:ring-offset-0 transition-colors"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        This powers the main &quot;Book&quot; button on your public profile.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
               </TabsContent>
                 </div>
               </div>
@@ -991,7 +1254,7 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
             </div>
           </form>
           <div className="flex-1 relative  dark:bg-zinc-900/80 ">
-            <div className="absolute top-8 left-0 right-0 flex justify-center z-30">
+            {/* <div className="absolute top-8 left-0 right-0 flex justify-center z-30">
               <Tabs
                 value={previewMode}
                 onValueChange={(v) => setPreviewMode(v as "mobile" | "desktop")}
@@ -1008,7 +1271,7 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
-            </div>
+            </div> */}
             <div className="flex h-full w-full items-start justify-center px-6 pb-10 pt-16 overflow-auto">
               <div className="relative mx-auto flex min-h-[720px] w-full items-start justify-center overflow-hidden rounded-2xl  dark:bg-[radial-gradient(circle_at_1px_1px,#3f3f46_1px,transparent_0)] bg-[length:24px_24px] p-6">
                 <PhonePreview

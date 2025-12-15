@@ -16,18 +16,24 @@ export default async function ProfilePage({ params }: { params: { username: stri
       username,
       full_name,
       bio,
+      primary_email,
+      primary_phone,
+      booking_link,
       instagram_handle,
       instagram_followers,
       tiktok_handle,
       tiktok_followers,
       youtube_handle,
       youtube_subscribers,
+      facebook_handle,
+      facebook_followers,
       followers_count,
       engagement_rate,
       collaboration_headline,
       brand_logos,
       video_urls,
-      services_packages
+      services_packages,
+      audience_demographics
     `)
     .eq("username", username.toLowerCase())
     .maybeSingle();
@@ -41,18 +47,24 @@ export default async function ProfilePage({ params }: { params: { username: stri
     username: profile.username,
     full_name: profile.full_name,
     bio: profile.bio,
+    primary_email: profile.primary_email,
+    primary_phone: profile.primary_phone,
+    booking_link: profile.booking_link,
     instagram_handle: profile.instagram_handle,
     instagram_followers: profile.instagram_followers,
     tiktok_handle: profile.tiktok_handle,
     tiktok_followers: profile.tiktok_followers,
     youtube_handle: profile.youtube_handle,
     youtube_subscribers: profile.youtube_subscribers,
+      facebook_handle: profile.facebook_handle,
+      facebook_followers: profile.facebook_followers,
     followers_count: profile.followers_count,
     engagement_rate: profile.engagement_rate,
     collaboration_headline: profile.collaboration_headline,
     brand_logos: profile.brand_logos ?? [],
     video_urls: profile.video_urls ?? [],
     services_packages: profile.services_packages ?? [],
+    audience_demographics: profile.audience_demographics ?? null,
   };
 
   return (
