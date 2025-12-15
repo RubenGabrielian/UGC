@@ -17,13 +17,13 @@ export default function Home() {
           </div>
           <div className="hidden items-center gap-8 md:flex">
             <a href="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-              Features
+              Հնարավորություններ
             </a>
             <a href="#pricing" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-              Pricing
+              Գնացուցակ
             </a>
             <a href="#faq" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-              FAQ
+              ՀՏՀ
             </a>
           </div>
           <div className="hidden md:block">
@@ -39,15 +39,16 @@ export default function Home() {
       <section className="container mx-auto px-4 py-20 sm:px-6 lg:px-8 lg:py-32">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            Stop sending ugly PDF Media Kits to brands.
+            Դադարեք բրենդերին տգեղ PDF մեդիա փաթեթներ ուղարկել։
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
-            Build a professional, live digital portfolio that showcases your best TikToks & Reels, stats, and rates. Close more deals, faster.
+            Ստեղծեք պրոֆեսիոնալ, կենդանի թվային պորտֆոլիո, որը ցույց է տալիս ձեր լավագույն TikTok-ներն ու Reels-երը,
+            վիճակագրությունը և սակագները։ Փակեք ավելի շատ գործարքներ, ավելի արագ։
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <AuthButton size="lg" variant="default" className="w-full sm:w-auto" />
             <Button size="lg" variant="outline" className="w-full sm:w-auto">
-              View Example Kit
+              Դիտել օրինակ քիթ
             </Button>
           </div>
           <div className="mt-16">
@@ -64,13 +65,13 @@ export default function Home() {
       <section className="border-y bg-muted/30 py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-center text-sm font-medium text-muted-foreground">
-            Trusted by creators who work with top brands.
+            Վստահելի է ստեղծողների կողմից, որոնք աշխատում են առաջատար բրենդերի հետ։
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-8 opacity-40">
-            <div className="text-sm font-semibold">Brand Logo 1</div>
-            <div className="text-sm font-semibold">Brand Logo 2</div>
-            <div className="text-sm font-semibold">Brand Logo 3</div>
-            <div className="text-sm font-semibold">Brand Logo 4</div>
+            <div className="text-sm font-semibold">Բրենդ 1</div>
+            <div className="text-sm font-semibold">Բրենդ 2</div>
+            <div className="text-sm font-semibold">Բրենդ 3</div>
+            <div className="text-sm font-semibold">Բրենդ 4</div>
           </div>
         </div>
       </section>
@@ -79,7 +80,7 @@ export default function Home() {
       <section id="features" className="container mx-auto px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Why standard link-in-bio tools aren&apos;t enough for pitching.
+            Ինչու են սովորական «link-in-bio» գործիքները քիչ pitched անելու համար։
           </h2>
         </div>
         <div className="mx-auto mt-16 grid max-w-5xl gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -87,27 +88,27 @@ export default function Home() {
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
               <Briefcase className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="text-xl font-semibold">Look Like a Pro</h3>
+            <h3 className="text-xl font-semibold">Թվացեք ինչպես պրոֆեսիոնալ</h3>
             <p className="text-muted-foreground">
-              Ditch the Google Drive links. Send a custom URL that impresses brand managers instantly.
+              Մոռացեք Google Drive հղումների մասին։ Ուղարկեք անհատական հասցե, որը անմիջապես տպավորում է բրենդ մենեջերներին։
             </p>
           </div>
           <div className="flex flex-col gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
               <PlayCircle className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="text-xl font-semibold">Embed Your Best Videos</h3>
+            <h3 className="text-xl font-semibold">Տեղադրեք ձեր լավագույն տեսանյութերը</h3>
             <p className="text-muted-foreground">
-              Don&apos;t just link to your profile. Showcase your highest-performing Reels and TikToks directly on the page.
+              Պարզապես պրոֆիլի հղում ավելացնելու փոխարեն ցուցադրեք ձեր ամենաարդյունավետ Reels-երն ու TikTok-ները հենց էջում։
             </p>
           </div>
           <div className="flex flex-col gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
               <DollarSign className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="text-xl font-semibold">Transparent Pricing</h3>
+            <h3 className="text-xl font-semibold">Թափանցիկ սակագներ</h3>
             <p className="text-muted-foreground">
-              Display your service packages clearly so brands know exactly what they&apos;re buying.
+              Ցույց տվեք ձեր ծառայությունների փաթեթները, որպեսզի բրենդերը հստակ իմանան, թե ինչի համար են վճարում։
             </p>
           </div>
         </div>
@@ -117,7 +118,7 @@ export default function Home() {
       <section className="container mx-auto px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
-            How It Works
+            Ինչպես է աշխատում
           </h2>
           <div className="mt-16 space-y-12">
             <div className="flex gap-6">
@@ -127,9 +128,10 @@ export default function Home() {
                 </Badge>
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-semibold">Connect your socials & import stats</h3>
+                <h3 className="text-xl font-semibold">Կապեք ձեր սոցիալական էջերը և ներմուծեք վիճակագրությունը</h3>
                 <p className="mt-2 text-muted-foreground">
-                  Link your TikTok and Instagram accounts. We automatically pull your latest follower counts, engagement rates, and top-performing content.
+                  Կապեք ձեր TikTok և Instagram հաշիվները։ Մենք ավտոմատ վերցնում ենք ձեր հետևորդների քանակը, ներգրավվածության
+                  ցուցանիշները և լավագույն բովանդակությունը։
                 </p>
               </div>
             </div>
@@ -140,9 +142,10 @@ export default function Home() {
                 </Badge>
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-semibold">Select your best video examples</h3>
+                <h3 className="text-xl font-semibold">Ընտրեք ձեր լավագույն տեսանյութերի օրինակները</h3>
                 <p className="mt-2 text-muted-foreground">
-                  Choose which TikToks and Reels to showcase. Drag and drop to reorder, add captions, and highlight your best work.
+                  Ընտրեք, թե որ TikTok-ներն ու Reels-երը ցույց տալ։ Փոխեք հերթականությունը, ավելացրեք նկարագրություններ
+                  և առանձնացրեք լավագույն աշխատանքները։
                 </p>
               </div>
             </div>
@@ -153,9 +156,10 @@ export default function Home() {
                 </Badge>
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-semibold">Share your custom &quot;CreatorKit&quot; link with brands</h3>
+                <h3 className="text-xl font-semibold">Կիսվեք ձեր անհատական CreatorKit հղումով</h3>
                 <p className="mt-2 text-muted-foreground">
-                  Get your unique URL (e.g., creatorkit.com/yourname) and start sharing it in your pitch emails. Watch your conversion rate soar.
+                  Ստացեք ձեր եզակի հասցեն (օր․ creatorkit.com/yourname) և սկսեք այն օգտագործել ձեր pitched նամակներում։ Դիտեք, թե
+                  ինչպես է բարձրանում դիմումների պատասխանների տոկոսը։
                 </p>
               </div>
             </div>
@@ -167,13 +171,13 @@ export default function Home() {
       <section id="pricing" className="container mx-auto px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Simple pricing that pays for itself with one deal.
+            Պարզ սակագներ, որոնք մեկ գործարքով արդարացնում են ինքն իրենց։
           </h2>
         </div>
         <div className="mx-auto mt-16 grid max-w-5xl gap-8 sm:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>Starter</CardTitle>
+              <CardTitle>Սկզբնական</CardTitle>
               <CardDescription>
                 <span className="text-3xl font-bold text-foreground">$0</span>
                 <span className="text-muted-foreground">/mo</span>
@@ -182,29 +186,29 @@ export default function Home() {
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
                 <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm">1 Media Kit</span>
+                <span className="text-sm">1 մեդիա քիթ</span>
               </div>
               <div className="flex items-start gap-3">
                 <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm">Basic Stats</span>
+                <span className="text-sm">Հիմնական վիճակագրություն</span>
               </div>
               <div className="flex items-start gap-3">
                 <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm">&quot;Powered by CreatorKit&quot; branding</span>
+                <span className="text-sm">&quot;Powered by CreatorKit&quot; նշում</span>
               </div>
             </CardContent>
             <CardFooter>
               <Button variant="outline" className="w-full">
-                Start Free
+                Սկսել անվճար
               </Button>
             </CardFooter>
           </Card>
           <Card className="border-primary/50 ring-2 ring-primary/20">
             <CardHeader>
               <div className="mb-2">
-                <Badge variant="default" className="mb-2">Most Popular</Badge>
+                <Badge variant="default" className="mb-2">Ամենահանրաճանաչ</Badge>
               </div>
-              <CardTitle>Pro Creator</CardTitle>
+              <CardTitle>Պրո ստեղծող</CardTitle>
               <CardDescription>
                 <span className="text-3xl font-bold text-foreground">$12</span>
                 <span className="text-muted-foreground">/mo</span>
@@ -213,24 +217,24 @@ export default function Home() {
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
                 <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm">Unlimited Videos</span>
+                <span className="text-sm">Անսահմանափակ տեսանյութեր</span>
               </div>
               <div className="flex items-start gap-3">
                 <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm">Remove Branding</span>
+                <span className="text-sm">Առանց CreatorKit նշման</span>
               </div>
               <div className="flex items-start gap-3">
                 <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm">Custom Domain support</span>
+                <span className="text-sm">Անհատական դոմեյնի աջակցություն</span>
               </div>
               <div className="flex items-start gap-3">
                 <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm">Analytics</span>
+                <span className="text-sm">Վիճակագրություն</span>
               </div>
             </CardContent>
             <CardFooter>
               <Button className="w-full">
-                Go Pro
+                Դառնալ Պրո
               </Button>
             </CardFooter>
           </Card>
@@ -241,32 +245,38 @@ export default function Home() {
       <section id="faq" className="container mx-auto px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
-            Frequently Asked Questions
+            Հաճախ տրվող հարցեր
           </h2>
           <div className="mt-16">
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-1">
-                <AccordionTrigger>Do I need coding skills?</AccordionTrigger>
+                <AccordionTrigger>Պե՞տք են ծրագրավորման հմտություններ</AccordionTrigger>
                 <AccordionContent>
-                  Not at all! CreatorKit is designed for creators, not developers. Our drag-and-drop interface makes it easy to build your media kit in minutes. Just connect your social accounts, select your videos, and you&apos;re ready to go.
+                  Իհարկե ոչ։ CreatorKit-ը ստեղծված է ստեղծողների, ոչ թե ծրագրավորողների համար։ Մեր պարզ ինտերֆեյսը թույլ է տալիս
+                  մի քանի րոպեում կառուցել մեդիա քիթ․ պարզապես կապեք սոցիալական հաշիվները, ընտրեք տեսանյութերը, և պատրաստ է։
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-2">
-                <AccordionTrigger>Can I connect TikTok?</AccordionTrigger>
+                <AccordionTrigger>Կարո՞ղ եմ TikTok-ը միացնել</AccordionTrigger>
                 <AccordionContent>
-                  Yes! CreatorKit supports both TikTok and Instagram. Simply connect your accounts through our secure OAuth integration, and we&apos;ll automatically import your stats and top-performing content.
+                  Այո։ CreatorKit-ը աջակցում է թե՛ TikTok, թե՛ Instagram։ Պարզապես միացրեք ձեր հաշիվները՝
+                  և մենք ավտոմատ կ ներմուծենք վիճակագրությունը և լավագույն բովանդակությունը։
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-3">
-                <AccordionTrigger>Is there a free trial?</AccordionTrigger>
+                <AccordionTrigger>Կա՞ անվճար տարբերակ</AccordionTrigger>
                 <AccordionContent>
-                  Our Starter plan is completely free forever. You can build one media kit with basic features at no cost. If you want to remove branding, add unlimited videos, or use a custom domain, you can upgrade to Pro Creator anytime.
+                  Մեր Starter փաթեթը լիովին անվճար է միշտ։ Կարող եք ստեղծել մեկ մեդիա քիթ հիմնական հնարավորություններով
+                  առանց որևէ վճարի։ Եթե ցանկանում եք հանել բրենդավորումը, ավելացնել անսահմանափակ տեսանյութեր կամ օգտագործել
+                  անհատական դոմեյն, ցանկացած պահին կարող եք անցնել Pro Creator փաթեթի։
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-4">
-                <AccordionTrigger>How do brands access my media kit?</AccordionTrigger>
+                <AccordionTrigger>Ինչպե՞ս են բրենդերը տեսնում իմ մեդիա քիթը</AccordionTrigger>
                 <AccordionContent>
-                  You&apos;ll get a unique URL (like creatorkit.com/yourname) that you can share in emails, DMs, or anywhere you pitch brands. The link works on all devices and looks professional on mobile, which is how most brand managers will view it.
+                  Դուք կստանաք եզակի հղում (օրինակ՝ creatorkit.com/yourname), որը կարող եք ուղարկել էլ․ նամակներով,
+                  սոցիալական ցանցերով կամ ցանկացած այլ եղանակով։ Այն գեղեցիկ է երևում ինչպես համակարգչում, այնպես էլ
+                  հեռախոսում, որտեղ էլ հիմնականում դիտում են բրենդ մենեջերները։
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
@@ -278,10 +288,10 @@ export default function Home() {
       <footer className="border-t bg-muted/30 py-24">
         <div className="container mx-auto px-4 text-center sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Ready to level up your pitches?
+            Պատրա՞ստ եք բարձրացնել ձեր pitched-երի մակարդակը։
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-            Join thousands of creators who are closing more deals with professional media kits.
+            Միացեք հազարավոր ստեղծողների, ովքեր պրոֆեսիոնալ մեդիա քիթերի շնորհիվ ավելացնում են իրենց գործարքները։
           </p>
           <div className="mt-8">
             <AuthButton size="lg" variant="default" className="w-full sm:w-auto" />

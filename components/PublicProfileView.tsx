@@ -73,11 +73,11 @@ export function PublicProfileView({
   mode?: PublicProfileMode;
   username?: string;
 }) {
-  const name = values.full_name || values.username || "Creator Name";
-  const handle = values.instagram_handle || values.tiktok_handle || "@handle";
+  const name = values.full_name || values.username || "Ստեղծողի անունը";
+  const handle = values.instagram_handle || values.tiktok_handle || "@օգտանուն";
   const bio =
     values.bio ||
-    "Short intro for brand managers. Showcase your niche, audience, and performance.";
+    "Կարճ ներկայացում բրենդ մենեջերների համար․ պատմեք ձեր նիշայի, լսարանի և արդյունքների մասին։";
 
   const igFollowers = formatNumber(values.instagram_followers);
   const ttFollowers = formatNumber(values.tiktok_followers);
@@ -127,7 +127,7 @@ export function PublicProfileView({
       ?.map((l) => (typeof l === "string" ? { url: l } : l))
       .filter((l) => l && l.url && l.url.trim().length > 0) ?? [];
   const collabHeadline =
-    (values.collaboration_headline && values.collaboration_headline.trim()) || "Who I've Created For";
+    (values.collaboration_headline && values.collaboration_headline.trim()) || "Ո՞վերի հետ եմ համագործակցել";
 
   const services = values.services_packages ?? [];
 
@@ -137,14 +137,14 @@ export function PublicProfileView({
 
     if (booking) {
       const href = booking;
-      return { href, label: "Book Now" };
+      return { href, label: "Ամրագրել հիմա" };
     }
 
     if (email) {
-      return { href: `mailto:${email}`, label: "Contact Me" };
+      return { href: `mailto:${email}`, label: "Կապվել ստեղծողի հետ" };
     }
 
-    return { href: "#", label: "Book this creator" };
+    return { href: "#", label: "Ամրագրել այս ստեղծողին" };
   };
 
   const { href: ctaHref, label: ctaLabel } = getCtaHrefAndLabel();
@@ -363,7 +363,7 @@ export function PublicProfileView({
         )}
 
         <div className="col-span-2 rounded-[2rem] bg-transparent p-1">
-          <p className="mb-2 text-sm font-semibold text-zinc-800">Featured Work</p>
+          <p className="mb-2 text-sm font-semibold text-zinc-800">Ընտրված աշխատանքներ</p>
           <div className="grid grid-cols-2 gap-2">
             {videos.length > 0
               ? videos.map((video, idx) => (
@@ -385,7 +385,7 @@ export function PublicProfileView({
         {services && services.length > 0 && (
           <div className="col-span-2 rounded-[2rem] bg-white p-4 shadow-sm space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-sm font-semibold text-zinc-900">My Services &amp; Packages</p>
+              <p className="text-sm font-semibold text-zinc-900">Իմ ծառայություններն ու փաթեթները</p>
             </div>
             <div className="space-y-3">
               {services.map((service, idx) => {
@@ -438,7 +438,7 @@ export function PublicProfileView({
                           type="button"
                           className="rounded-full bg-zinc-900 px-3 py-1 text-xs font-semibold text-white shadow-sm"
                         >
-                          Contact for Quote
+                          Կապ գնի համար
                         </button>
                       ) : (
                         <>
@@ -465,7 +465,7 @@ export function PublicProfileView({
               {collabHeadline.toUpperCase()}
             </p>
             <p className="mt-1 text-center text-sm text-zinc-400">
-              Partnerships based on authentic storytelling.
+              Համագործակցություններ՝ հիմնված անկեղծ պատմությունների վրա։
             </p>
            <div className="mt-4 flex flex-wrap items-center justify-center gap-6">
               {brandLogos.map((logo, idx) => (
@@ -483,7 +483,7 @@ export function PublicProfileView({
         {demographics && (topGeo.length > 0 || demographics.gender || demographics.age) && (
           <div className="col-span-2 rounded-[2rem] bg-white p-4 shadow-sm space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-sm font-semibold text-zinc-900">Who is Following?</p>
+              <p className="text-sm font-semibold text-zinc-900">Ո՞վ է հետևում ինձ</p>
             </div>
             <div className="space-y-3 text-sm">
               <div className="flex items-start gap-2">
@@ -492,7 +492,7 @@ export function PublicProfileView({
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
-                    Top Geos
+                    Գլխավոր աշխարհագրական դիրքերը
                   </p>
                   <p className="mt-1 text-sm text-zinc-900">
                     {topGeo.length > 0
@@ -501,7 +501,7 @@ export function PublicProfileView({
                             g.percentage ? `${g.location} (${g.percentage})` : g.location
                           )
                           .join(", ")
-                      : "Creator has not added geo data yet."}
+                      : "Ստեղծողը դեռ չի ավելացրել աշխարհագրական տվյալներ։"}
                   </p>
                 </div>
               </div>
@@ -512,10 +512,10 @@ export function PublicProfileView({
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
-                    Gender
+                    Սեռ
                   </p>
                   <p className="mt-1 text-sm font-semibold text-zinc-900">
-                    {demographics.gender || "Not specified"}
+                    {demographics.gender || "Չի նշված"}
                   </p>
                 </div>
               </div>
@@ -526,10 +526,10 @@ export function PublicProfileView({
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
-                    Age
+                    Տարիքային խումբ
                   </p>
                   <p className="mt-1 text-sm font-semibold text-zinc-900">
-                    {demographics.age || "Not specified"}
+                    {demographics.age || "Չի նշված"}
                   </p>
                 </div>
               </div>
@@ -541,11 +541,11 @@ export function PublicProfileView({
           {(values.primary_email || values.primary_phone) && (
             <div className="rounded-2xl border border-zinc-200 bg-white/70 px-4 py-3 text-xs text-zinc-600 flex flex-col gap-1">
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
-                Contact Information
+                Կոնտակտային տվյալներ
               </p>
               {values.primary_email && (
                 <p className="text-xs">
-                  Email:{" "}
+                  Էլ․ հասցե՝{" "}
                   <a
                     href={`mailto:${values.primary_email}`}
                     className="font-medium text-zinc-900 underline underline-offset-2"
@@ -556,7 +556,7 @@ export function PublicProfileView({
               )}
               {values.primary_phone && phoneHref && (
                 <p className="text-xs">
-                  Phone / WhatsApp:{" "}
+                  Հեռախոս / WhatsApp՝{" "}
                   <a
                     href={phoneHref}
                     className="font-medium text-zinc-900 underline underline-offset-2"

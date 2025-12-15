@@ -68,10 +68,10 @@ export default async function ProfilePage({ params }: { params: { username: stri
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 py-10 px-4 dark:bg-zinc-950">
+    <div className="min-h-screen bg-zinc-50 py-5 px-4 dark:bg-zinc-950">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-8">
         <div className="w-full max-w-2xl">
-          <Card className="mb-4 border-none bg-transparent shadow-none">
+          {/* <Card className="mb-4 border-none bg-transparent shadow-none">
             <div className="text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-zinc-400">
                 creatorkit
@@ -83,7 +83,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
                 Live media kit powered by CreatorKit.
               </p>
             </div>
-          </Card>
+          </Card> */}
 
           <div className="flex justify-center">
             <PublicProfileView values={values} mode="desktop" username={profile.username || undefined} />

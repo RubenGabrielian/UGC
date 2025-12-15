@@ -29,17 +29,17 @@ export default async function DashboardPage() {
         <div className="flex max-w-5xl items-center justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.08em] text-primary">
-              Creator Studio
+              Ստեղծողի ստուդիա
             </p>
             <h1 className="mt-1 text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Edit your public kit, connect socials, and preview how brands will experience your
-              page.
+              Խմբագրեք ձեր հանրային քիթը, միացրեք սոցիալական հարթակները և տեսեք, թե ինչպես են բրենդերը
+              տեսնելու ձեր էջը։
             </p>
           </div>
           <Button asChild variant="outline" size="sm" className="shrink-0">
             <Link href={publicPath}>
-              View Public Page
+              Դիտել հանրային էջը
               <ExternalLink className="ml-1 h-3 w-3" />
             </Link>
           </Button>

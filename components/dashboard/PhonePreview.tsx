@@ -77,10 +77,10 @@ export function PhonePreview({
   username?: string;
 }) {
   const name = values.full_name || values.username || "Creator Name";
-  const handle = values.instagram_handle || values.tiktok_handle || "@handle";
+  const handle = values.instagram_handle || values.tiktok_handle || "@օգտանուն";
   const bio =
     values.bio ||
-    "Short intro for brand managers. Showcase your niche, audience, and performance.";
+    "Կարճ ներկայացում բրենդ մենեջերների համար․ պատմեք ձեր նիշայի, լսարանի և արդյունքների մասին։";
 
   const igFollowers = formatNumber(values.instagram_followers);
   const ttFollowers = formatNumber(values.tiktok_followers);
@@ -137,14 +137,14 @@ export function PhonePreview({
     const email = values.primary_email?.trim();
 
     if (booking) {
-      return { href: booking, label: "Book Now" };
+      return { href: booking, label: "Ամրագրել հիմա" };
     }
 
     if (email) {
-      return { href: `mailto:${email}`, label: "Contact Me" };
+      return { href: `mailto:${email}`, label: "Կապվել ինձ հետ" };
     }
 
-    return { href: "#", label: "Book this creator" };
+    return { href: "#", label: "Ամրագրել այս ստեղծողին" };
   };
 
   const { href: ctaHref, label: ctaLabel } = getCtaHrefAndLabel();
@@ -376,7 +376,7 @@ export function PhonePreview({
           )}
 
           <div className="col-span-2 rounded-[2rem] bg-transparent p-1">
-            <p className="text-sm font-semibold text-zinc-800 mb-2">Featured Work</p>
+            <p className="text-sm font-semibold text-zinc-800 mb-2">Ընտրված աշխատանքներ</p>
             <div className="grid grid-cols-2 gap-2">
               {videos.length > 0
                 ? videos.map((video, idx) => (
@@ -398,7 +398,7 @@ export function PhonePreview({
           {services && services.length > 0 && (
             <div className="col-span-2 rounded-[2rem] bg-white p-4 shadow-sm space-y-3">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-zinc-900">My Services &amp; Packages</p>
+                <p className="text-sm font-semibold text-zinc-900">Իմ ծառայություններն ու փաթեթները</p>
               </div>
               <div className="space-y-3">
                 {services.map((service, idx) => {
@@ -451,7 +451,7 @@ export function PhonePreview({
                             type="button"
                             className="rounded-full bg-zinc-900 px-3 py-1 text-xs font-semibold text-white shadow-sm"
                           >
-                            Contact for Quote
+                          Կապ գնի համար
                           </button>
                         ) : (
                           <>
@@ -460,7 +460,7 @@ export function PhonePreview({
                               type="button"
                               className="rounded-full border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-800 bg-white"
                             >
-                              Book Now
+                              Ամրագրել հիմա
                             </button>
                           </>
                         )}
@@ -478,7 +478,7 @@ export function PhonePreview({
                 {collabHeadline.toUpperCase()}
               </p>
               <p className="mt-1 text-center text-sm text-zinc-400">
-                Partnerships based on authentic storytelling.
+                Համագործակցություններ՝ հիմնված անկեղծ պատմությունների վրա։
               </p>
               <div className="mt-4 flex flex-wrap items-center justify-center gap-6">
                 {brandLogos.map((logo, idx) => (
@@ -496,7 +496,7 @@ export function PhonePreview({
           {demographics && (topGeo.length > 0 || demographics.gender || demographics.age) && (
             <div className="col-span-2 rounded-[2rem] bg-white p-4 shadow-sm space-y-3">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-zinc-900">Who is Following?</p>
+                <p className="text-sm font-semibold text-zinc-900">Ո՞վ է հետևում ինձ</p>
               </div>
               <div className="space-y-3 text-sm">
                 <div className="flex items-start gap-2">
@@ -505,7 +505,7 @@ export function PhonePreview({
                   </div>
                   <div className="flex-1">
                     <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
-                      Top Geos
+                      Գլխավոր աշխարհագրական դիրքերը
                     </p>
                     <p className="mt-1 text-sm text-zinc-900">
                       {topGeo.length > 0
@@ -514,7 +514,7 @@ export function PhonePreview({
                               g.percentage ? `${g.location} (${g.percentage})` : g.location
                             )
                             .join(", ")
-                        : "Add your top countries in the dashboard."}
+                        : "Ավելացրեք ձեր գլխավոր երկրների բաժինը վահանակից։"}
                     </p>
                   </div>
                 </div>
@@ -525,10 +525,10 @@ export function PhonePreview({
                   </div>
                   <div className="flex-1">
                     <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
-                      Gender
+                      Սեռ
                     </p>
                     <p className="mt-1 text-sm font-semibold text-zinc-900">
-                      {demographics.gender || "Add gender split"}
+                      {demographics.gender || "Ավելացրեք սեռային բաժինը"}
                     </p>
                   </div>
                 </div>
@@ -539,10 +539,10 @@ export function PhonePreview({
                   </div>
                   <div className="flex-1">
                     <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
-                      Age
+                      Տարիքային խումբ
                     </p>
                     <p className="mt-1 text-sm font-semibold text-zinc-900">
-                      {demographics.age || "Add primary age group"}
+                      {demographics.age || "Ավելացրեք հիմնական տարիքային խումբը"}
                     </p>
                   </div>
                 </div>
@@ -554,13 +554,13 @@ export function PhonePreview({
             {(values.primary_email || values.primary_phone) && (
               <div className="rounded-2xl border border-zinc-200 bg-white/70 px-4 py-3 text-xs text-zinc-600 flex flex-col gap-1">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
-                  Contact Information
+                  Կոնտակտային տվյալներ
                 </p>
                 {values.primary_email && (
-                  <p className="text-xs">Email: {values.primary_email}</p>
+                  <p className="text-xs">Էլ․ հասցե՝ {values.primary_email}</p>
                 )}
                 {values.primary_phone && (
-                  <p className="text-xs">Phone / WhatsApp: {values.primary_phone}</p>
+                  <p className="text-xs">Հեռախոս / WhatsApp՝ {values.primary_phone}</p>
                 )}
               </div>
             )}
