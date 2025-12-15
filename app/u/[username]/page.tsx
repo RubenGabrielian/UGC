@@ -1,0 +1,83 @@
+import { notFound } from "next/navigation";
+import { createClient } from "@/utils/supabase/server";
+import { Card } from "@/components/ui/card";
+import { PublicProfileView, PublicProfileValues } from "@/components/PublicProfileView";
+
+export default async function ProfilePage({ params }: { params: { username: string } }) {
+    const { username } = await params; // ✅ unwrap params
+
+
+  const supabase = await createClient();
+
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select(`
+      avatar_url,
+      username,
+      full_name,
+      bio,
+      instagram_handle,
+      instagram_followers,
+      tiktok_handle,
+      tiktok_followers,
+      youtube_handle,
+      youtube_subscribers,
+      followers_count,
+      engagement_rate,
+      collaboration_headline,
+      brand_logos,
+      video_urls,
+      services_packages
+    `)
+    .eq("username", username.toLowerCase())
+    .maybeSingle();
+
+  if (error || !profile) {
+    notFound();
+  }
+
+  const values: PublicProfileValues = {
+    avatar_url: profile.avatar_url,
+    username: profile.username,
+    full_name: profile.full_name,
+    bio: profile.bio,
+    instagram_handle: profile.instagram_handle,
+    instagram_followers: profile.instagram_followers,
+    tiktok_handle: profile.tiktok_handle,
+    tiktok_followers: profile.tiktok_followers,
+    youtube_handle: profile.youtube_handle,
+    youtube_subscribers: profile.youtube_subscribers,
+    followers_count: profile.followers_count,
+    engagement_rate: profile.engagement_rate,
+    collaboration_headline: profile.collaboration_headline,
+    brand_logos: profile.brand_logos ?? [],
+    video_urls: profile.video_urls ?? [],
+    services_packages: profile.services_packages ?? [],
+  };
+
+  return (
+    <div className="min-h-screen bg-zinc-50 py-10 px-4 dark:bg-zinc-950">
+      <div className="mx-auto flex max-w-5xl flex-col items-center gap-8">
+        <div className="w-full max-w-2xl">
+          <Card className="mb-4 border-none bg-transparent shadow-none">
+            <div className="text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-zinc-400">
+                creatorkit
+              </p>
+              <h1 className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+                {profile.full_name || profile.username}
+              </h1>
+              <p className="mt-1 text-sm text-zinc-500">
+                Live media kit powered by CreatorKit.
+              </p>
+            </div>
+          </Card>
+
+          <div className="flex justify-center">
+            <PublicProfileView values={values} mode="desktop" username={profile.username || undefined} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

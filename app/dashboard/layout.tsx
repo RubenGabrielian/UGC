@@ -27,7 +27,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         username={profile?.username || user.email?.split("@")[0]}
         email={user.email}
       />
-      <main className="container mx-auto px-4 pb-12 pt-24 sm:px-6 lg:px-8">{children}</main>
+      <main className="container mx-auto px-4 pb-12 pt-14 sm:px-6 lg:px-8">{children}</main>
     </div>
   )
 }
