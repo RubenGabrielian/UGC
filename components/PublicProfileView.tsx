@@ -1,12 +1,13 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Film, PlayCircle, Eye, Globe2, Users, Calendar } from "lucide-react";
+import { ContactModal, type ServicePackage } from "@/components/ContactModal";
 
 export type PublicProfileValues = {
   avatar_url?: string | null;
@@ -67,12 +68,16 @@ function formatViewsLabel(raw?: string | null) {
 export function PublicProfileView({
   values,
   mode = "mobile",
-  username,
+  creatorId,
+  servicesPackages,
 }: {
   values: PublicProfileValues;
   mode?: PublicProfileMode;
   username?: string;
+  creatorId: string;
+  servicesPackages: ServicePackage[];
 }) {
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const name = values.full_name || values.username || "Ստեղծողի անունը";
   const handle = values.instagram_handle || values.tiktok_handle || "@օգտանուն";
   const bio =
@@ -141,13 +146,13 @@ export function PublicProfileView({
     }
 
     if (email) {
-      return { href: `mailto:${email}`, label: "Կապվել ստեղծողի հետ" };
+      return { href: `mailto:${email}`, label: "Կապնվել ինձ հետ" };
     }
 
     return { href: "#", label: "Ամրագրել այս ստեղծողին" };
   };
 
-  const { href: ctaHref, label: ctaLabel } = getCtaHrefAndLabel();
+  const { label: ctaLabel } = getCtaHrefAndLabel();
 
   const getPhoneHref = () => {
     const raw = values.primary_phone?.trim();
@@ -569,17 +574,23 @@ export function PublicProfileView({
           )}
 
           <div className="pointer-events-none bottom-4 left-0 right-0 px-2">
-            <a
-              href={ctaHref}
-              target={ctaHref.startsWith("http") ? "_blank" : undefined}
-              rel={ctaHref.startsWith("http") ? "noopener noreferrer" : undefined}
+            <button
+              type="button"
+              onClick={() => setIsContactModalOpen(true)}
               className="pointer-events-auto inline-flex w-full items-center justify-center rounded-full bg-zinc-900 text-white px-4 py-3 text-sm font-semibold shadow-lg shadow-black/20 backdrop-blur-md hover:bg-zinc-800 transition"
             >
               {ctaLabel}
-            </a>
+            </button>
           </div>
         </div>
       </div>
+
+      <ContactModal
+        open={isContactModalOpen}
+        onOpenChange={setIsContactModalOpen}
+        creatorId={creatorId}
+        servicesPackages={servicesPackages}
+      />
     </div>
   );
 }

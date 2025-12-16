@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import { Card } from "@/components/ui/card";
 import { PublicProfileView, PublicProfileValues } from "@/components/PublicProfileView";
 
 export default async function ProfilePage({ params }: { params: { username: string } }) {
@@ -12,6 +11,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
   const { data: profile, error } = await supabase
     .from("profiles")
     .select(`
+      id,
       avatar_url,
       username,
       full_name,
@@ -86,7 +86,13 @@ export default async function ProfilePage({ params }: { params: { username: stri
           </Card> */}
 
           <div className="flex justify-center">
-            <PublicProfileView values={values} mode="desktop" username={profile.username || undefined} />
+            <PublicProfileView
+              values={values}
+              mode="desktop"
+              username={profile.username || undefined}
+              creatorId={profile.id}
+              servicesPackages={profile.services_packages ?? []}
+            />
           </div>
         </div>
       </div>
