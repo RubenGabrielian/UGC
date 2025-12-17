@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { loginWithGoogle } from "@/app/auth/actions";
-import { Chrome } from "lucide-react";
+import Image from "next/image";
 import { useTransition } from "react";
 
 interface LoginButtonProps {
@@ -42,7 +42,13 @@ export function LoginButton({
       onClick={handleLogin}
       disabled={isPending}
     >
-      <Chrome className="mr-2 h-4 w-4" />
+      <Image
+        src="/img/google.webp"
+        alt="Google"
+        width={16}
+        height={16}
+        className="mr-2 h-4 w-4"
+      />
       {children || (isPending ? "Loading..." : "Get Started with Google")}
     </Button>
   );

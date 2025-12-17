@@ -76,7 +76,10 @@ export default function Home() {
       <section className="container mx-auto px-4 py-20 sm:px-6 lg:px-8 lg:py-32">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            Help brands understand who you are and how to work with you.
+            Help brands understand who you are and how to work{" "}
+            <span className="inline-block border-b-4 border-primary pb-1">
+              with you.
+            </span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
             One professional page where brands can see your social profiles, audience insights, services, pricing, and contact information. Make it easy for them to decide.
@@ -84,7 +87,7 @@ export default function Home() {
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <AuthButton size="lg" variant="default" className="w-full sm:w-auto" />
           </div>
-        </div>
+        </div>  
       </section>
 
       {/* Problem Section */}

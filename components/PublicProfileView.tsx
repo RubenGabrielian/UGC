@@ -28,6 +28,8 @@ export type PublicProfileValues = {
   facebook_handle?: string | null;
   facebook_followers?: number | null;
   followers_count?: number | null;
+  engagement_rate?: number | null;
+  collaboration_headline?: string | null;
   brand_logos?: { url: string }[] | string[] | null;
   video_urls?: ({ url?: string | null } | string)[] | null;
   services_packages?: {
@@ -47,11 +49,17 @@ export function PublicProfileView({
   values,
   creatorId,
   servicesPackages,
+  mode: _mode,
+  username: _username,
 }: {
   values: PublicProfileValues;
   creatorId: string;
   servicesPackages: ServicePackage[];
+  mode?: "mobile" | "desktop";
+  username?: string;
 }) {
+  void _mode;
+  void _username;
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const name = values.full_name || values.username || "Creator Name";
