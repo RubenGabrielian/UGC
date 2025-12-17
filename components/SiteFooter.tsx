@@ -20,8 +20,11 @@ export function SiteFooter() {
           <Link href="/#who" className="transition-colors hover:text-foreground">
             Who it&apos;s for
           </Link>
+          <Link href="/login" className="transition-colors hover:text-foreground">
+            Login
+          </Link>
           <Link href="/dashboard" className="transition-colors hover:text-foreground">
-            Dashboardg
+            Dashboard
           </Link>
           <Link href="/privacy-policy" className="transition-colors hover:text-foreground">
             Privacy Policy
