@@ -28,9 +28,9 @@ import {
 } from "@/components/ui/form"
 
 const contactFormSchema = z.object({
-  brand_name: z.string().min(1, "Բրենդի անունը պարտադիր է"),
-  email: z.string().email("Խնդրում ենք մուտքագրել վավեր էլ. հասցե"),
-  service_id: z.string().min(1, "Խնդրում ենք ընտրել ծառայություն"),
+  brand_name: z.string().min(1, "Brand name is required"),
+  email: z.string().email("Please enter a valid email"),
+  service_id: z.string().min(1, "Please select a service"),
   message: z.string().optional(),
 })
 
@@ -71,7 +71,7 @@ export function ContactModal({
   // Generate service options for the select dropdown
   const serviceOptions = React.useMemo(() => {
     return servicesPackages.map((service, index) => {
-      const title = service.title || "Անանուն ծառայություն"
+      const title = service.title || "Untitled service"
       const platform =
         service.platform === "instagram"
           ? "Instagram"
@@ -79,9 +79,9 @@ export function ContactModal({
           ? "TikTok"
           : service.platform === "youtube"
           ? "YouTube"
-          : "Այլ"
-      const price = service.price || "Պայմանավորված"
-      const displayText = `${title} - ${platform}${price !== "Պայմանավորված" ? ` - ${price}` : ""}`
+          : "Other"
+      const price = service.price || "Custom"
+      const displayText = `${title} • ${platform}${price !== "Custom" ? ` • ${price}` : ""}`
       return {
         value: index.toString(),
         label: displayText,
@@ -97,31 +97,31 @@ export function ContactModal({
 
       // Get the selected service details
       const selectedService = serviceOptions[parseInt(data.service_id)]?.service
-      const serviceTitle = selectedService?.title || "Անհայտ ծառայություն"
+      const serviceTitle = selectedService?.title || "Unknown service"
       const servicePlatform = selectedService?.platform || "other"
-      const servicePrice = selectedService?.price || "Պայմանավորված"
+      const servicePrice = selectedService?.price || "Custom"
 
       // Insert lead into database
       const { error } = await supabase.from("leads").insert({
         creator_id: creatorId,
         brand_name: data.brand_name,
         email: data.email,
-        service: `${serviceTitle} - ${servicePlatform}${servicePrice !== "Պայմանավորված" ? ` - $${servicePrice}` : ""}`,
+        service: `${serviceTitle} - ${servicePlatform}${servicePrice !== "Custom" ? ` - $${servicePrice}` : ""}`,
         message: data.message || null,
       })
 
       if (error) {
         console.error("Error submitting lead:", error)
-        toast.error("Ձեր հարցումը ուղարկել չհաջողվեց: Խնդրում ենք կրկին փորձել:")
+        toast.error("We couldn't send your request. Please try again.")
         return
       }
 
-      toast.success("Շնորհակալություն! Ստեղծողը կապ կհաստատի ձեզ հետ:")
+      toast.success("Thanks! The creator will reach out to you soon.")
       form.reset()
       onOpenChange(false)
     } catch (error) {
       console.error("Error submitting lead:", error)
-      toast.error("Տեղի ունեցավ անսպասելի սխալ: Խնդրում ենք կրկին փորձել:")
+      toast.error("Something went wrong. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
@@ -132,9 +132,9 @@ export function ContactModal({
       <DialogContent>
         <DialogClose onClick={() => onOpenChange(false)} />
         <DialogHeader>
-          <DialogTitle>Համագործակցության համար կապ</DialogTitle>
+          <DialogTitle>Contact for Collaboration</DialogTitle>
           <DialogDescription>
-            Լրացրեք ստորև նշված ձևը, և մենք շուտով կապ կհաստատենք ձեզ հետ:
+            Fill out the form below and we’ll get back to you shortly.
           </DialogDescription>
         </DialogHeader>
 
@@ -145,10 +145,10 @@ export function ContactModal({
               name="brand_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Բրենդի անուն *</FormLabel>
+                  <FormLabel>Brand / Company *</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Մուտքագրեք ձեր բրենդի անունը"
+                      placeholder="Enter your brand or company name"
                       {...field}
                     />
                   </FormControl>
@@ -162,11 +162,11 @@ export function ContactModal({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ձեր էլ. հասցեն *</FormLabel>
+                  <FormLabel>Your email *</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder="ձեր.էլ.հասցե@օրինակ.com"
+                      placeholder="name@company.com"
                       {...field}
                     />
                   </FormControl>
@@ -180,10 +180,10 @@ export function ContactModal({
               name="service_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Պահանջվող ծառայություն *</FormLabel>
+                  <FormLabel>Requested service *</FormLabel>
                   <FormControl>
                     <Select {...field}>
-                      <option value="">Ընտրեք ծառայություն...</option>
+                      <option value="">Select a service...</option>
                       {serviceOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
@@ -201,10 +201,10 @@ export function ContactModal({
               name="message"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Հաղորդագրություն / Մանրամասներ</FormLabel>
+                  <FormLabel>Message / Details</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Պատմեք մեզ ձեր համագործակցության գաղափարի մասին..."
+                      placeholder="Tell us about your collaboration idea..."
                       rows={4}
                       {...field}
                     />
@@ -221,10 +221,10 @@ export function ContactModal({
                 onClick={() => onOpenChange(false)}
                 disabled={isSubmitting}
               >
-                Չեղարկել
+                Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Ուղարկվում է..." : "Ուղարկել"}
+                {isSubmitting ? "Sending..." : "Send"}
               </Button>
             </div>
           </form>

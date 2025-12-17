@@ -5,13 +5,17 @@ import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { Film, Lock, PlayCircle, Eye, Facebook, Globe2, Users, Calendar } from "lucide-react";
+import { Film, Lock, Eye } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { countryByCode } from "@/lib/countries";
+import { calculateTotalFollowers } from "@/lib/followers";
 
 type PreviewValues = {
   avatar_url?: string | null;
   username?: string | null;
+  country?: string | null;
+  categories?: string[] | null;
   full_name?: string | null;
   bio?: string | null;
   primary_email?: string | null;
@@ -43,11 +47,11 @@ type PreviewValues = {
   collaboration_headline?: string | null;
 };
 
-function formatNumber(value?: number | null) {
+function formatCount(value?: number | null) {
   if (value == null || Number.isNaN(value)) return "—";
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
   if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
-  return value.toString();
+  return value.toLocaleString();
 }
 
 function formatViewsLabel(raw?: string | null) {
@@ -78,14 +82,20 @@ export function PhonePreview({
 }) {
   const name = values.full_name || values.username || "Creator Name";
   const handle = values.instagram_handle || values.tiktok_handle || "@username";
+  const countryInfo = countryByCode(values.country || undefined);
+  const countryName = countryInfo?.name || values.country || "";
+  const countryFlag = countryName ? countryInfo?.emoji || "📍" : "";
+  const categories = (values.categories ?? []).filter((c) => c && c.trim().length > 0);
+  const { formatted: totalFollowers } = calculateTotalFollowers({
+    instagram_followers: values.instagram_followers,
+    tiktok_followers: values.tiktok_followers,
+    youtube_subscribers: values.youtube_subscribers,
+    facebook_followers: values.facebook_followers,
+  });
   const bio =
     values.bio ||
     "Short introduction for brand managers: tell them about your niche, audience, and results.";
 
-  const igFollowers = formatNumber(values.instagram_followers);
-  const ttFollowers = formatNumber(values.tiktok_followers);
-  const ytFollowers = formatNumber(values.youtube_subscribers);
-  const fbFollowers = formatNumber(values.facebook_followers);
   const demographics = values.audience_demographics;
   const topGeo =
     demographics?.geo
@@ -129,8 +139,6 @@ export function PhonePreview({
     values.brand_logos
       ?.map((l) => (typeof l === "string" ? { url: l } : l))
       .filter((l) => l && l.url && l.url.trim().length > 0) ?? [];
-  const collabHeadline =
-    (values.collaboration_headline && values.collaboration_headline.trim()) || "Who I've Created For";
 
   const getCtaHrefAndLabel = () => {
     const booking = values.booking_link?.trim();
@@ -147,7 +155,7 @@ export function PhonePreview({
     return { href: "#", label: "Book this creator" };
   };
 
-  const { href: ctaHref, label: ctaLabel } = getCtaHrefAndLabel();
+  const { href: ctaHref } = getCtaHrefAndLabel();
 
   const getVideoBadgeIcon = (url: string) => {
     const lower = url.toLowerCase();
@@ -191,18 +199,26 @@ export function PhonePreview({
     () =>
       function renderVideoItem(video: { url: string; views?: string | null }) {
         const url = video.url;
-        const aspectClass = "aspect-[9/16]";
+        const aspectClass = "aspect-square";
         const thumb = getThumbnailUrl(url);
         const handleClick = () => {
           if (typeof window !== "undefined") {
             window.open(url, "_blank", "noopener,noreferrer");
           }
         };
+        const domain = (() => {
+          try {
+            const parsed = new URL(url);
+            return parsed.hostname.replace(/^www\./, "");
+          } catch {
+            return "";
+          }
+        })();
 
         return (
           <div
             className={cn(
-              "group relative w-full overflow-hidden rounded-xl bg-zinc-100",
+              "group relative w-full overflow-hidden rounded-2xl bg-zinc-100 shadow-sm transition hover:-translate-y-1 hover:shadow-md",
               aspectClass
             )}
             role="button"
@@ -215,20 +231,27 @@ export function PhonePreview({
             <img
               src={thumb}
               alt="Video thumbnail"
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/0 to-black/40" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <PlayCircle className="h-10 w-10 text-white drop-shadow-lg opacity-90 group-hover:scale-105 transition" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/25 to-transparent opacity-80 transition group-hover:opacity-95" />
+            <div className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 text-[11px] font-semibold text-zinc-800 shadow-sm">
+              {getVideoBadgeIcon(url)}
+              <span className="truncate">{domain || "Watch"}</span>
             </div>
-            <div className="absolute top-2 left-2">{getVideoBadgeIcon(url)}</div>
-            {formatViewsLabel(video.views).length > 0 && (
-              <div className="absolute bottom-2 right-2 rounded-full bg-black/70 px-2 py-0.5 text-[11px] text-white flex items-center gap-1">
-                <span><Eye strokeWidth={2.25} size={15} /></span>
-                <span>{formatViewsLabel(video.views)}</span>
-              </div>
-            )}
+            <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[11px] font-semibold text-white">
+              {formatViewsLabel(video.views).length > 0 ? (
+                <span className="flex items-center gap-1 rounded-full bg-black/60 px-2 py-0.5">
+                  <Eye strokeWidth={2.25} size={14} />
+                  {formatViewsLabel(video.views)}
+                </span>
+              ) : (
+                <span />
+              )}
+              <span className="rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-zinc-800 shadow-sm">
+                View
+              </span>
+            </div>
           </div>
         );
       },
@@ -280,13 +303,13 @@ export function PhonePreview({
         )}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-zinc-50 to-zinc-100" />
-        <div className="relative grid grid-cols-2 gap-3">
-          <div className="col-span-2 rounded-[2rem] bg-white p-6 shadow-sm">
-            <div className="flex flex-col items-center text-center gap-3">
+        <div className="relative space-y-6">
+          <div className="rounded-[28px] border border-white/60 bg-white/90 p-6 shadow-xl shadow-black/10 backdrop-blur space-y-6">
+            <div className="flex flex-col items-center text-center gap-4">
               <Avatar
                 className={cn(
-                  "border border-zinc-200 shadow-sm overflow-hidden",
-                  isMobile ? "h-20 w-20" : "h-22 w-22"
+                  "border border-white shadow-md ring-4 ring-white/70 overflow-hidden",
+                  isMobile ? "h-24 w-24" : "h-28 w-28"
                 )}
               >
                 <AvatarImage alt={name} src={values.avatar_url || undefined} />
@@ -294,117 +317,176 @@ export function PhonePreview({
                   {initials}
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <p className="text-lg font-semibold leading-tight text-zinc-900">{name}</p>
+              <div className="flex flex-col items-center gap-1">
+                <div className="flex items-center gap-2 text-xl font-semibold text-zinc-900">
+                  <span>{name}</span>
+                </div>
                 <p className="text-sm text-zinc-500">{handle}</p>
+                {countryName && (
+                  <p className="text-sm text-zinc-600 flex items-center justify-center gap-2">
+                    <span className="leading-none text-lg">{countryFlag}</span>
+                    <span>{countryName}</span>
+                  </p>
+                )}
               </div>
-              <p className="text-sm text-zinc-600">{bio}</p>
+
+              <div className="flex items-center justify-center gap-3">
+                {values.instagram_handle && (
+                  <Link
+                    href={igHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col items-center gap-1"
+                  >
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 shadow-sm hover:bg-zinc-200 transition">
+                      <Image src={"/img/instagram.webp"} alt="Instagram" width={22} height={22} />
+                    </span>
+                    <span className="text-[11px] font-semibold text-zinc-700">{formatCount(values.instagram_followers)}</span>
+                  </Link>
+                )}
+                {values.tiktok_handle && (
+                  <Link
+                    href={ttHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col items-center gap-1"
+                  >
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 shadow-sm hover:bg-zinc-200 transition">
+                      <Image src={"/img/tiktok.webp"} alt="TikTok" width={22} height={22} />
+                    </span>
+                    <span className="text-[11px] font-semibold text-zinc-700">{formatCount(values.tiktok_followers)}</span>
+                  </Link>
+                )}
+                {values.youtube_handle && (
+                  <Link
+                    href={ytHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col items-center gap-1"
+                  >
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 shadow-sm hover:bg-zinc-200 transition">
+                      <Image src={"/img/youtube.webp"} alt="YouTube" width={22} height={22} />
+                    </span>
+                    <span className="text-[11px] font-semibold text-zinc-700">{formatCount(values.youtube_subscribers)}</span>
+                  </Link>
+                )}
+                {values.facebook_handle && (
+                  <Link
+                    href={fbHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col items-center gap-1"
+                  >
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 text-lg font-bold text-blue-600 shadow-sm hover:bg-zinc-200 transition">
+                      f
+                    </span>
+                    <span className="text-[11px] font-semibold text-zinc-700">{formatCount(values.facebook_followers)}</span>
+                  </Link>
+                )}
+              </div>
+
+              <div className="w-full rounded-2xl border border-zinc-200 bg-zinc-50/80 px-5 py-4 text-center shadow-sm">
+                <p className="flex items-center justify-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                  <span>Total Followers</span>
+                  <Eye className="h-3.5 w-3.5 text-zinc-400" />
+                </p>
+                <p className="mt-1 text-2xl font-bold text-primary">{totalFollowers}</p>
+                <p className="text-[11px] text-zinc-500">Across all social platforms</p>
+              </div>
+
+              {categories.length > 0 && (
+                <div className="flex w-full flex-col gap-2">
+                  <p className="text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                    Categories
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {categories.map((cat) => (
+                      <span
+                        key={cat}
+                        className="inline-flex items-center rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700"
+                      >
+                        {cat}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex w-full flex-col gap-3">
+                <a
+                  href={ctaHref}
+                  target={ctaHref.startsWith("http") ? "_blank" : undefined}
+                  rel={ctaHref.startsWith("http") ? "noopener noreferrer" : undefined}
+                  className="w-full rounded-xl bg-[#FDE68A] px-5 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition hover:shadow-md text-center"
+                >
+                  Contact for collabs
+                </a>
+                {values.booking_link && (
+                  <Link
+                    href={values.booking_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full rounded-xl border border-zinc-200 px-5 py-3 text-center text-sm font-semibold text-zinc-800 hover:border-primary/60 hover:text-primary"
+                  >
+                    Book a call
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
 
-
-          {values.instagram_handle && (
-            <Link
-              href={igHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-[2rem] bg-white p-4 shadow-sm transition hover:shadow-md"
-            >
-              <div className="flex items-center justify-center rounded-full p-2 text-pink-500">
-                <Image src={"/img/instagram.webp"} alt="Instagram" width={24} height={24} />
-              </div>
-              <p className="mt-2 text-sm font-medium text-zinc-900 text-center">Instagram</p>
-              <p className="text-xs text-zinc-500 text-center">
-                {values.instagram_handle || "@instagram"}
-              </p>
-              <p className="text-center text-2xl font-bold text-zinc-900">{igFollowers}</p>
-            </Link>
-          )}
-
-          {values.tiktok_handle && (
-            <Link
-              href={ttHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-[2rem] bg-white p-4 shadow-sm transition hover:shadow-md"
-            >
-              <div className="flex items-center justify-center rounded-full">
-                <Image src={"/img/tiktok.webp"} alt="TikTok" width={24} height={24} />
-              </div>
-              <p className="mt-2 text-center text-sm font-medium text-zinc-900">TikTok</p>
-              <p className="text-center text-xs text-zinc-500">
-                {values.tiktok_handle || "@tiktok"}
-              </p>
-              <p className="text-center text-2xl font-bold text-zinc-900">{ttFollowers}</p>
-            </Link>
-          )}
-
-          {values.youtube_handle && (
-            <Link
-              href={ytHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-[2rem] bg-white p-4 shadow-sm transition hover:shadow-md"
-            >
-              <div className="flex items-center justify-center rounded-full  p-2 text-red-500">
-                <Image src={"/img/youtube.webp"} alt="YouTube" width={24} height={24} />
-              </div>
-              <p className="mt-2 text-center text-sm font-medium text-zinc-900">YouTube</p>
-              <p className="text-center text-xs text-zinc-500">
-                {values.youtube_handle || "@youtube"}
-              </p>
-              <p className="text-center text-2xl font-bold text-zinc-900">{ytFollowers}</p>
-            </Link>
-          )}
-
-          {values.facebook_handle && (
-            <Link
-              href={fbHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-[2rem] bg-white p-4 shadow-sm transition hover:shadow-md"
-            >
-              <div className="flex items-center justify-center rounded-full p-2 text-blue-600">
-              <Facebook />
-              </div>
-              <p className="mt-2 text-center text-sm font-medium text-zinc-900">Facebook</p>
-              <p className="text-center text-xs text-zinc-500">
-                {values.facebook_handle || "@facebook"}
-              </p>
-              <p className="text-center text-2xl font-bold text-zinc-900">{fbFollowers}</p>
-            </Link>
-          )}
-
-          <div className="col-span-2 rounded-[2rem] bg-transparent p-1">
-            <p className="text-sm font-semibold text-zinc-800 mb-2">Selected Work</p>
-            <div className="grid grid-cols-2 gap-2">
-              {videos.length > 0
-                ? videos.map((video, idx) => (
-                    <div key={`${video.url}-${idx}`} className="relative">
-                      {renderVideoItem(video)}
-                    </div>
-                  ))
-                : Array.from({ length: 3 }).map((_, idx) => (
-                    <div
-                      key={idx}
-                      className="aspect-[9/16] rounded-xl border border-dashed border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-300"
-                    >
-                      <Film className="h-6 w-6" />
-                    </div>
-                  ))}
+          <div className="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-xl shadow-black/5 backdrop-blur">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-zinc-900">About</p>
+              <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+                Verified Creator
+              </span>
             </div>
+            <p className="mt-3 text-sm leading-relaxed text-zinc-700">{bio}</p>
           </div>
+
+          {videos.length > 0 && (
+            <div className="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-xl shadow-black/5 backdrop-blur">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold text-zinc-900">Featured Videos</p>
+                <span className="text-xs text-zinc-500">Grid highlights</span>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                {videos.map((video, idx) => (
+                  <div key={`${video.url}-${idx}`} className="relative">
+                    {renderVideoItem(video)}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {videos.length === 0 && (
+            <div className="rounded-3xl border border-dashed border-zinc-200 bg-white/80 p-6 shadow-sm">
+              <p className="text-sm font-semibold text-zinc-800 mb-3">Featured Videos</p>
+              <div className="grid grid-cols-2 gap-2">
+                {Array.from({ length: 4 }).map((_, idx) => (
+                  <div
+                    key={idx}
+                    className="aspect-square rounded-2xl border border-dashed border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-300"
+                  >
+                    <Film className="h-6 w-6" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {services && services.length > 0 && (
-            <div className="col-span-2 rounded-[2rem] bg-white p-4 shadow-sm space-y-3">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-zinc-900">My Services & Packages</p>
+            <div className="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-xl shadow-black/5 backdrop-blur space-y-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold text-zinc-900">Services & Packages</p>
               </div>
               <div className="space-y-3">
                 {services.map((service, idx) => {
                   const platform = service.platform || "other";
                   const title = service.title || "Untitled service";
-                  const price = service.price || "Custom";
+                  const price = service.price || (service.is_contact_only ? "Contact for pricing" : "Custom");
                   const isContact = !!service.is_contact_only;
 
                   const platformLabel =
@@ -428,41 +510,28 @@ export function PhonePreview({
                   return (
                     <div
                       key={`${title}-${idx}`}
-                      className="flex items-center justify-between gap-3 rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-3"
+                      className="flex flex-col gap-3 rounded-2xl border border-zinc-200/80 bg-gradient-to-br from-white to-zinc-50/70 px-3 py-4 text-sm shadow-sm ring-1 ring-white/60"
                     >
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={cn(
-                              "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium",
-                              platformColor
-                            )}
-                          >
-                            {platformLabel}
-                          </span>
-                          <span className="truncate text-sm font-medium text-zinc-900">
-                            {title}
-                          </span>
-                        </div>
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="truncate text-[15px] font-semibold text-zinc-900">{title}</p>
+                        <span className="whitespace-nowrap rounded-full bg-zinc-900 px-3 py-1 text-[11px] font-semibold text-white shadow-sm">
+                          {price}
+                        </span>
                       </div>
-                      <div className="flex flex-col items-end gap-1">
-                        {isContact ? (
-                          <button
-                            type="button"
-                            className="rounded-full bg-zinc-900 px-3 py-1 text-xs font-semibold text-white shadow-sm"
-                          >
-                          Contact for Pricing
-                          </button>
-                        ) : (
-                          <>
-                            <span className="text-sm font-semibold text-zinc-900">{price}</span>
-                            <button
-                              type="button"
-                              className="rounded-full border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-800 bg-white"
-                            >
-                              Book Now
-                            </button>
-                          </>
+
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span
+                          className={cn(
+                            "inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold",
+                            platformColor
+                          )}
+                        >
+                          {platformLabel}
+                        </span>
+                        {isContact && (
+                          <span className="rounded-full bg-amber-50 px-3 py-1 text-[11px] font-semibold text-amber-700">
+                            Contact only
+                          </span>
                         )}
                       </div>
                     </div>
@@ -473,20 +542,15 @@ export function PhonePreview({
           )}
 
           {brandLogos.length > 0 && (
-            <div className="col-span-2 mt-4 rounded-[1.5rem] bg-white p-4 shadow-sm">
-              <p className="text-center text-xs font-bold uppercase tracking-[0.2em] text-zinc-500">
-                {collabHeadline.toUpperCase()}
-              </p>
-              <p className="mt-1 text-center text-sm text-zinc-400">
-                Collaborations based on authentic stories.
-              </p>
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-6">
+            <div className="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-xl shadow-black/5 backdrop-blur space-y-3">
+              <p className="text-sm font-semibold text-zinc-900">Collaborations</p>
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-6">
                 {brandLogos.map((logo, idx) => (
                   <img
                     key={`${logo.url}-${idx}`}
                     src={logo.url}
                     alt="Brand logo"
-                    className="h-8 w-auto object-contain opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300"
+                    className="h-8 w-auto object-contain opacity-80 transition hover:opacity-100"
                   />
                 ))}
               </div>
@@ -494,88 +558,47 @@ export function PhonePreview({
           )}
 
           {demographics && (topGeo.length > 0 || demographics.gender || demographics.age) && (
-            <div className="col-span-2 rounded-[2rem] bg-white p-4 shadow-sm space-y-3">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-zinc-900">Who Follows Me</p>
-              </div>
-              <div className="space-y-3 text-sm">
-                <div className="flex items-start gap-2">
-                  <div className="mt-0.5 text-zinc-500">
-                    <Globe2 className="h-4 w-4" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
-                      Top Geographic Locations
-                    </p>
-                    <p className="mt-1 text-sm text-zinc-900">
-                      {topGeo.length > 0
-                        ? topGeo
-                            .map((g) =>
-                              g.percentage ? `${g.location} (${g.percentage})` : g.location
-                            )
-                            .join(", ")
-                        : "Add your top countries section from the dashboard."}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-2">
-                  <div className="mt-0.5 text-zinc-500">
-                    <Users className="h-4 w-4" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
-                      Gender
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-zinc-900">
-                      {demographics.gender || "Add gender section"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-2">
-                  <div className="mt-0.5 text-zinc-500">
-                    <Calendar className="h-4 w-4" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
-                      Age Group
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-zinc-900">
-                      {demographics.age || "Add main age group"}
-                    </p>
-                  </div>
-                </div>
+            <div className="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-xl shadow-black/5 backdrop-blur space-y-3">
+              <p className="text-sm font-semibold text-zinc-900">Audience</p>
+              <div className="space-y-2 text-xs text-zinc-600">
+                {topGeo.length > 0 && (
+                  <p>
+                    Top Geo:{" "}
+                    {topGeo.map((g) => (g.percentage ? `${g.location} (${g.percentage})` : g.location)).join(", ")}
+                  </p>
+                )}
+                {demographics.gender && <p>Gender: {demographics.gender}</p>}
+                {demographics.age && <p>Age: {demographics.age}</p>}
               </div>
             </div>
           )}
 
-          <div className="col-span-2 mt-4 space-y-2">
-            {(values.primary_email || values.primary_phone) && (
-              <div className="rounded-2xl border border-zinc-200 bg-white/70 px-4 py-3 text-xs text-zinc-600 flex flex-col gap-1">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
-                  Contact Information
+          {(values.primary_email || values.primary_phone) && (
+            <div className="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-xl shadow-black/5 backdrop-blur space-y-2">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-600">Contact</p>
+              {values.primary_email && (
+                <p className="text-xs">
+                  Email:{" "}
+                  <a
+                    href={`mailto:${values.primary_email}`}
+                    className="font-medium text-zinc-900 underline underline-offset-2"
+                  >
+                    {values.primary_email}
+                  </a>
                 </p>
-                {values.primary_email && (
-                  <p className="text-xs">Email: {values.primary_email}</p>
-                )}
-                {values.primary_phone && (
-                  <p className="text-xs">Phone / WhatsApp: {values.primary_phone}</p>
-                )}
-              </div>
-            )}
-
-            <div className="pointer-events-none bottom-4 left-0 right-0 px-6">
-              <a
-                href={ctaHref}
-                target={ctaHref.startsWith("http") ? "_blank" : undefined}
-                rel={ctaHref.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="pointer-events-auto inline-flex w-full items-center justify-center rounded-full bg-zinc-900 text-white px-4 py-3 text-sm font-semibold shadow-lg shadow-black/20 backdrop-blur-md hover:bg-zinc-800 transition"
-              >
-                {ctaLabel}
-              </a>
+              )}
+              {values.primary_phone && (
+                <p className="text-xs">
+                  Phone / WhatsApp:{" "}
+                  <span className="font-medium text-zinc-900">{values.primary_phone}</span>
+                </p>
+              )}
             </div>
-          </div>
+          )}
+
+          <p className="pb-4 text-center text-[11px] text-zinc-400">
+            Powered by <span className="font-semibold text-zinc-600">YourBrand</span>
+          </p>
         </div>
       </div>
     </Card>

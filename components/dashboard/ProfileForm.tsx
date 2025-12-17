@@ -7,11 +7,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast, Toaster } from "sonner";
 import { createClient } from "@/utils/supabase/client";
+import { cn } from "@/lib/utils";
+import { countries, countryByCode } from "@/lib/countries";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import {
   Instagram,
@@ -26,13 +36,19 @@ import {
   Briefcase,
   Package,
   Facebook,
+  Check,
+  ChevronsUpDown,
+  X,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { PhonePreview } from "./PhonePreview";
 
 const formSchema = z.object({
   avatar_url: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   username: z.string().optional().nullable(),
+  country: z.string().min(1, "Please select a country"),
+  categories: z.array(z.string()).optional(),
   full_name: z.string().optional().nullable(),
   bio: z.string().max(300, "Bio must be under 300 characters").optional().nullable(),
   collaboration_headline: z.string().optional().nullable(),
@@ -101,7 +117,9 @@ type FormValues = z.infer<typeof formSchema>;
 type PreviewValues = {
   avatar_url?: string | null;
   username?: string | null;
+  country?: string | null;
   full_name?: string | null;
+  categories?: string[] | null;
   bio?: string | null;
   primary_email?: string | null;
   primary_phone?: string | null;
@@ -145,6 +163,8 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
   const [uploadingLogoIndex, setUploadingLogoIndex] = useState<number | null>(null);
   const [previewMode] = useState<"mobile" | "desktop">("mobile");
   const [activeSection, setActiveSection] = useState<SectionKey>("identity");
+  const [isCountryOpen, setIsCountryOpen] = useState(false);
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const logoInputRef = useRef<HTMLInputElement | null>(null);
   const [, setIsPersistingAvatar] = useState(false);
@@ -159,6 +179,8 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
     () => ({
       avatar_url: initialData?.avatar_url ?? "",
       username: initialData?.username ?? "",
+      country: (initialData as { country?: string | null })?.country ?? "",
+      categories: (initialData as { categories?: string[] | null })?.categories ?? [],
       full_name: initialData?.full_name ?? "",
       bio: initialData?.bio ?? "",
       collaboration_headline: (initialData as { collaboration_headline?: string | null })?.collaboration_headline ?? "",
@@ -216,8 +238,26 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
         })) ?? [],
       followers_count: toNumberOrUndefined(initialData?.followers_count),
       engagement_rate: toNumberOrUndefined(initialData?.engagement_rate),
-    }),
-    [initialData]
+  }),
+  [initialData]
+);
+
+  const categoryOptions = useMemo(
+    () => [
+      "Beauty & Cosmetics",
+      "Fashion & Style",
+      "Tech & Gadgets",
+      "Travel & Adventure",
+      "Food & Cooking",
+      "Fitness & Health",
+      "Education",
+      "Gaming",
+      "Business",
+      "Lifestyle",
+      "Entertainment",
+      "Art & Design",
+    ],
+    []
   );
 
   const form = useForm<FormValues>({
@@ -272,8 +312,10 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
       video_urls: normalizedVideos,
       brand_logos: normalizedBrands,
       services_packages: watchedValues.services_packages as PreviewValues["services_packages"],
+      categories: watchedValues.categories ?? [],
     };
   }, [watchedValues]);
+  const selectedCountry = countryByCode(watchedValues.country);
 
   useEffect(() => {
     if (initialData) {
@@ -305,6 +347,8 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
     const payload = {
       avatar_url: values.avatar_url || null,
       username: values.username,
+      country: values.country || null,
+      categories: values.categories ?? [],
       full_name: values.full_name,
       bio: values.bio || null,
       collaboration_headline: values.collaboration_headline || null,
@@ -572,6 +616,154 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
                           {form.formState.errors.username.message}
                         </p>
                       )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Country</label>
+                      <Popover open={isCountryOpen} onOpenChange={setIsCountryOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={isCountryOpen}
+                            className="w-full justify-between"
+                            disabled={isSaving}
+                          >
+                            {selectedCountry ? (
+                              <span className="flex items-center gap-2 truncate">
+                                <span className="text-lg leading-none">{selectedCountry.emoji}</span>
+                                <span className="truncate">{selectedCountry.name}</span>
+                              </span>
+                            ) : (
+                              <span className="text-muted-foreground">Select a country</span>
+                            )}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0 w-[320px]">
+                          <Command>
+                            <CommandInput placeholder="Search country..." />
+                            <CommandEmpty>No country found.</CommandEmpty>
+                            <CommandGroup className="max-h-64 overflow-auto">
+                              {countries.map((country) => (
+                                <CommandItem
+                                  key={country.code}
+                                  value={`${country.name} ${country.code}`}
+                                  onSelect={() => {
+                                    form.setValue("country", country.code, {
+                                      shouldDirty: true,
+                                      shouldTouch: true,
+                                      shouldValidate: true,
+                                    });
+                                    setIsCountryOpen(false);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      country.code === watchedValues.country ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  <span className="mr-2">{country.emoji}</span>
+                                  <span className="flex-1 truncate">{country.name}</span>
+                                  <span className="text-xs text-muted-foreground">{country.code}</span>
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      {form.formState.errors.country && (
+                        <p className="text-sm text-destructive">
+                          {form.formState.errors.country.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium">Categories</label>
+                        <p className="text-xs text-muted-foreground">Optional</p>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {(watchedValues.categories ?? []).map((cat) => (
+                          <Badge
+                            key={cat}
+                            variant="secondary"
+                            className="flex items-center gap-1"
+                          >
+                            {cat}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const next = (watchedValues.categories ?? []).filter((c) => c !== cat);
+                                form.setValue("categories", next, {
+                                  shouldDirty: true,
+                                  shouldTouch: true,
+                                  shouldValidate: true,
+                                });
+                              }}
+                              aria-label={`Remove ${cat}`}
+                              className="ml-1 rounded-full hover:text-destructive"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </Badge>
+                        ))}
+                      </div>
+                      <Popover open={isCategoriesOpen} onOpenChange={setIsCategoriesOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={isCategoriesOpen}
+                            className="w-full justify-between"
+                            disabled={isSaving}
+                          >
+                            <span className="truncate">
+                              {(watchedValues.categories ?? []).length > 0
+                                ? `${(watchedValues.categories ?? []).length} selected`
+                                : "Select categories"}
+                            </span>
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0 w-[320px]">
+                          <Command>
+                            <CommandInput placeholder="Search categories..." />
+                            <CommandEmpty>No category found.</CommandEmpty>
+                            <CommandGroup className="max-h-64 overflow-auto">
+                              {categoryOptions.map((cat) => {
+                                const selected = (watchedValues.categories ?? []).includes(cat);
+                                return (
+                                  <CommandItem
+                                    key={cat}
+                                    value={cat}
+                                    onSelect={() => {
+                                      const current = watchedValues.categories ?? [];
+                                      const next = selected
+                                        ? current.filter((c) => c !== cat)
+                                        : [...current, cat];
+                                      form.setValue("categories", next, {
+                                        shouldDirty: true,
+                                        shouldTouch: true,
+                                        shouldValidate: true,
+                                      });
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn("mr-2 h-4 w-4", selected ? "opacity-100" : "opacity-0")}
+                                    />
+                                    <span>{cat}</span>
+                                  </CommandItem>
+                                );
+                              })}
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                     </div>
 
                     <div className="space-y-2">

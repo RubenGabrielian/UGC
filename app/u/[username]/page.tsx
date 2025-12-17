@@ -15,6 +15,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
       avatar_url,
       username,
       full_name,
+      country,
       bio,
       primary_email,
       primary_phone,
@@ -33,6 +34,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
       brand_logos,
       video_urls,
       services_packages,
+      categories,
       audience_demographics
     `)
     .eq("username", username.toLowerCase())
@@ -46,6 +48,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
     avatar_url: profile.avatar_url,
     username: profile.username,
     full_name: profile.full_name,
+    country: profile.country,
     bio: profile.bio,
     primary_email: profile.primary_email,
     primary_phone: profile.primary_phone,
@@ -64,13 +67,14 @@ export default async function ProfilePage({ params }: { params: { username: stri
     brand_logos: profile.brand_logos ?? [],
     video_urls: profile.video_urls ?? [],
     services_packages: profile.services_packages ?? [],
+    categories: profile.categories ?? [],
     audience_demographics: profile.audience_demographics ?? null,
   };
 
   return (
     <div className="min-h-screen bg-zinc-50 py-5 px-4 dark:bg-zinc-950">
-      <div className="mx-auto flex max-w-5xl flex-col items-center gap-8">
-        <div className="w-full max-w-8xl">
+      <div className="mx-auto flex max-w-10xl flex-col items-center gap-8">
+        <div className="w-full max-w-10xl">
           {/* <Card className="mb-4 border-none bg-transparent shadow-none">
             <div className="text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-zinc-400">
