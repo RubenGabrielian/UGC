@@ -6,8 +6,8 @@ import {
   BarChart3,
   CheckCircle2,
   Briefcase,
-  Sparkles,
 } from "lucide-react";
+import Image from "next/image";
 import { AuthButton } from "@/components/auth/AuthButton";
 
 export default function Home() {
@@ -15,10 +15,17 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       {/* Navbar */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <nav className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+        <nav className="container mx-auto flex h-24 items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-primary" />
-            <span className="text-xl font-semibold">CreatorKit</span>
+            {/* <Sparkles className="h-6 w-6 text-primary" /> */}
+            <Image
+              src="/logo.png"
+              alt="CreatorKit"
+              width={88}
+              height={88}
+              className="h-22 w-22"
+              priority
+            />
           </div>
           <div className="hidden items-center gap-8 md:flex">
             <a
