@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { SiteFooter } from "@/components/SiteFooter";
 
@@ -32,6 +33,13 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <SiteFooter />
         </div>
+        <Script
+          defer
+          data-website-id="dfid_BYwSzwlP6rWkUj3ff6yM2"
+          data-domain="www.creatorskit.app"
+          src="https://datafa.st/js/script.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
