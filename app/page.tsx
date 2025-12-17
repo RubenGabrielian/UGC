@@ -1,8 +1,13 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Briefcase, PlayCircle, DollarSign, Check, Sparkles } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Users,
+  DollarSign,
+  MessageSquare,
+  BarChart3,
+  CheckCircle2,
+  Briefcase,
+  Sparkles,
+} from "lucide-react";
 import { AuthButton } from "@/components/auth/AuthButton";
 
 export default function Home() {
@@ -16,14 +21,23 @@ export default function Home() {
             <span className="text-xl font-semibold">CreatorKit</span>
           </div>
           <div className="hidden items-center gap-8 md:flex">
-            <a href="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-              Հնարավորություններ
+            <a
+              href="#features"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Features
             </a>
-            <a href="#pricing" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-              Գնացուցակ
+            <a
+              href="#who"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Who it&apos;s for
             </a>
-            <a href="#faq" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-              ՀՏՀ
+            <a
+              href="#pricing"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Pricing
             </a>
           </div>
           <div className="hidden md:block">
@@ -39,265 +53,376 @@ export default function Home() {
       <section className="container mx-auto px-4 py-20 sm:px-6 lg:px-8 lg:py-32">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            Դադարեք բրենդերին տգեղ PDF մեդիա փաթեթներ ուղարկել։
+            Help brands understand who you are and how to work with you.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
-            Ստեղծեք պրոֆեսիոնալ, կենդանի թվային պորտֆոլիո, որը ցույց է տալիս ձեր լավագույն TikTok-ներն ու Reels-երը,
-            վիճակագրությունը և սակագները։ Փակեք ավելի շատ գործարքներ, ավելի արագ։
+            One professional page where brands can see your social profiles, audience insights, services, pricing, and contact information. Make it easy for them to decide.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <AuthButton size="lg" variant="default" className="w-full sm:w-auto" />
-            <Button size="lg" variant="outline" className="w-full sm:w-auto">
-              Դիտել օրինակ քիթ
-            </Button>
           </div>
-          <div className="mt-16">
-            <div className="mx-auto aspect-video max-w-5xl overflow-hidden rounded-lg border bg-muted shadow-2xl">
-              <div className="flex h-full items-center justify-center bg-gradient-to-br from-muted to-muted/50">
-                <img src="https://ph-files.imgix.net/052cb503-cfee-4a5c-9c1e-f055b6e8d599.png?auto=compress&codec=mozjpeg&cs=strip&auto=format&fm=pjpg&w=1100&h=619&fit=max&frame=1&dpr=2" alt="" />
+        </div>
+      </section>
+
+      {/* Problem Section */}
+      <section className="border-y bg-muted/30 py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
+              The back-and-forth is exhausting
+            </h2>
+            <div className="mt-12 space-y-8">
+              <div className="flex gap-4">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                  <span className="text-sm font-semibold">×</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">Brands ask the same questions repeatedly</h3>
+                  <p className="mt-1 text-muted-foreground">
+                    &quot;What&apos;s your follower count?&quot; &quot;What services do you offer?&quot; &quot;What are your rates?&quot;
+                    You answer these questions in every conversation.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                  <span className="text-sm font-semibold">×</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">Screenshots, PDFs, and long DMs don&apos;t scale</h3>
+                  <p className="mt-1 text-muted-foreground">
+                    Sending screenshots of your analytics or attaching PDFs feels unprofessional. Long DMs get lost in inboxes.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                  <span className="text-sm font-semibold">×</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">Hard to build trust and look professional</h3>
+                  <p className="mt-1 text-muted-foreground">
+                    Without a dedicated page, it&apos;s difficult to present yourself as a serious creator who brands can trust with their campaigns.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Social Proof Section */}
-      <section className="border-y bg-muted/30 py-8">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-sm font-medium text-muted-foreground">
-            Վստահելի է ստեղծողների կողմից, որոնք աշխատում են առաջատար բրենդերի հետ։
+      {/* Solution Section */}
+      <section className="container mx-auto px-4 py-24 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl">
+          <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
+            One page that answers everything
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-lg text-muted-foreground">
+            Create a professional creator page that gives brands everything they need to make a decision—without the back-and-forth.
           </p>
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-8 opacity-40">
-            <div className="text-sm font-semibold">Բրենդ 1</div>
-            <div className="text-sm font-semibold">Բրենդ 2</div>
-            <div className="text-sm font-semibold">Բրենդ 3</div>
-            <div className="text-sm font-semibold">Բրենդ 4</div>
+          <div className="mt-16 space-y-8">
+            <div className="flex gap-4">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <CheckCircle2 className="h-4 w-4" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">Clear services and transparent pricing</h3>
+                <p className="mt-1 text-muted-foreground">
+                  Display your service packages and rates upfront. Brands know exactly what they&apos;re getting and how much it costs.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <CheckCircle2 className="h-4 w-4" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">Social proof and past collaborations</h3>
+                <p className="mt-1 text-muted-foreground">
+                  Showcase your follower counts, engagement rates, and brands you&apos;ve worked with. Build credibility instantly.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <CheckCircle2 className="h-4 w-4" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">Easy contact and collaboration requests</h3>
+                <p className="mt-1 text-muted-foreground">
+                  Let brands submit partnership requests directly through your page. No more email tag or DMs that get missed.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="container mx-auto px-4 py-24 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Ինչու են սովորական «link-in-bio» գործիքները քիչ pitched անելու համար։
-          </h2>
-        </div>
-        <div className="mx-auto mt-16 grid max-w-5xl gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="flex flex-col gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-              <Briefcase className="h-6 w-6 text-primary" />
-            </div>
-            <h3 className="text-xl font-semibold">Թվացեք ինչպես պրոֆեսիոնալ</h3>
-            <p className="text-muted-foreground">
-              Մոռացեք Google Drive հղումների մասին։ Ուղարկեք անհատական հասցե, որը անմիջապես տպավորում է բրենդ մենեջերներին։
+      <section id="features" className="border-y bg-muted/30 py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              Everything brands need to know
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Your creator page includes all the essential information brands look for when evaluating creators.
             </p>
           </div>
-          <div className="flex flex-col gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-              <PlayCircle className="h-6 w-6 text-primary" />
-            </div>
-            <h3 className="text-xl font-semibold">Տեղադրեք ձեր լավագույն տեսանյութերը</h3>
-            <p className="text-muted-foreground">
-              Պարզապես պրոֆիլի հղում ավելացնելու փոխարեն ցուցադրեք ձեր ամենաարդյունավետ Reels-երն ու TikTok-ները հենց էջում։
-            </p>
-          </div>
-          <div className="flex flex-col gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-              <DollarSign className="h-6 w-6 text-primary" />
-            </div>
-            <h3 className="text-xl font-semibold">Թափանցիկ սակագներ</h3>
-            <p className="text-muted-foreground">
-              Ցույց տվեք ձեր ծառայությունների փաթեթները, որպեսզի բրենդերը հստակ իմանան, թե ինչի համար են վճարում։
-            </p>
-          </div>
-        </div>
-      </section>
+          <div className="mx-auto mt-16 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <Card>
+              <CardHeader>
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                  <Users className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>Social Profiles</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Connect your Instagram, TikTok, YouTube, and other platforms. Display follower counts and engagement metrics automatically.
+                </p>
+              </CardContent>
+            </Card>
 
-      {/* How It Works Section */}
-      <section className="container mx-auto px-4 py-24 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
-            Ինչպես է աշխատում
-          </h2>
-          <div className="mt-16 space-y-12">
-            <div className="flex gap-6">
-              <div className="flex shrink-0">
-                <Badge variant="default" className="h-10 w-10 items-center justify-center rounded-full p-0 text-base font-semibold">
-                  1
-                </Badge>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold">Կապեք ձեր սոցիալական էջերը և ներմուծեք վիճակագրությունը</h3>
-                <p className="mt-2 text-muted-foreground">
-                  Կապեք ձեր TikTok և Instagram հաշիվները։ Մենք ավտոմատ վերցնում ենք ձեր հետևորդների քանակը, ներգրավվածության
-                  ցուցանիշները և լավագույն բովանդակությունը։
+            <Card>
+              <CardHeader>
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                  <Briefcase className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>Services & Pricing</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  List your service packages with clear pricing. Whether it&apos;s Instagram Stories, TikTok videos, or blog posts—make it transparent.
                 </p>
-              </div>
-            </div>
-            <div className="flex gap-6">
-              <div className="flex shrink-0">
-                <Badge variant="default" className="h-10 w-10 items-center justify-center rounded-full p-0 text-base font-semibold">
-                  2
-                </Badge>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold">Ընտրեք ձեր լավագույն տեսանյութերի օրինակները</h3>
-                <p className="mt-2 text-muted-foreground">
-                  Ընտրեք, թե որ TikTok-ներն ու Reels-երը ցույց տալ։ Փոխեք հերթականությունը, ավելացրեք նկարագրություններ
-                  և առանձնացրեք լավագույն աշխատանքները։
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                  <CheckCircle2 className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>Past Collaborations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Showcase brands you&apos;ve worked with. Display logos and highlight successful partnerships to build trust.
                 </p>
-              </div>
-            </div>
-            <div className="flex gap-6">
-              <div className="flex shrink-0">
-                <Badge variant="default" className="h-10 w-10 items-center justify-center rounded-full p-0 text-base font-semibold">
-                  3
-                </Badge>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold">Կիսվեք ձեր անհատական CreatorKit հղումով</h3>
-                <p className="mt-2 text-muted-foreground">
-                  Ստացեք ձեր եզակի հասցեն (օր․ creatorkit.com/yourname) և սկսեք այն օգտագործել ձեր pitched նամակներում։ Դիտեք, թե
-                  ինչպես է բարձրանում դիմումների պատասխանների տոկոսը։
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                  <MessageSquare className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>Contact & Requests</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Receive structured partnership requests directly on your page. Brands can submit their details and service requirements.
                 </p>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                  <BarChart3 className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>Analytics</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Track page views and see which brands are visiting your page. Understand what&apos;s working and optimize your content.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                  <DollarSign className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>Audience Insights</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Share your audience demographics, geographic distribution, and engagement rates. Help brands understand your reach.
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="container mx-auto px-4 py-24 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Պարզ սակագներ, որոնք մեկ գործարքով արդարացնում են ինքն իրենց։
-          </h2>
-        </div>
-        <div className="mx-auto mt-16 grid max-w-5xl gap-8 sm:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Սկզբնական</CardTitle>
-              <CardDescription>
-                <span className="text-3xl font-bold text-foreground">$0</span>
-                <span className="text-muted-foreground">/mo</span>
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-start gap-3">
-                <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm">1 մեդիա քիթ</span>
-              </div>
-              <div className="flex items-start gap-3">
-                <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm">Հիմնական վիճակագրություն</span>
-              </div>
-              <div className="flex items-start gap-3">
-                <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm">&quot;Powered by CreatorKit&quot; նշում</span>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button variant="outline" className="w-full">
-                Սկսել անվճար
-              </Button>
-            </CardFooter>
-          </Card>
-          <Card className="border-primary/50 ring-2 ring-primary/20">
-            <CardHeader>
-              <div className="mb-2">
-                <Badge variant="default" className="mb-2">Ամենահանրաճանաչ</Badge>
-              </div>
-              <CardTitle>Պրո ստեղծող</CardTitle>
-              <CardDescription>
-                <span className="text-3xl font-bold text-foreground">$12</span>
-                <span className="text-muted-foreground">/mo</span>
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-start gap-3">
-                <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm">Անսահմանափակ տեսանյութեր</span>
-              </div>
-              <div className="flex items-start gap-3">
-                <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm">Առանց CreatorKit նշման</span>
-              </div>
-              <div className="flex items-start gap-3">
-                <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm">Անհատական դոմեյնի աջակցություն</span>
-              </div>
-              <div className="flex items-start gap-3">
-                <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm">Վիճակագրություն</span>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button className="w-full">
-                Դառնալ Պրո
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
-      </section>
+      <section id="pricing" className="py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              Pricing that grows with you
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Start with everything you need for free. Upgrade to unlock the
+              next wave of tools as soon as they launch.
+            </p>
+          </div>
+          <div className="mx-auto mt-12 grid max-w-4xl gap-6 lg:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Free</CardTitle>
+                  <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                    Available now
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Publish a complete creator profile and start sharing it today.
+                </p>
+                <div className="text-4xl font-bold">
+                  $0 <span className="text-base font-medium text-muted-foreground">/month</span>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <ul className="space-y-3 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                    Unlimited sections, links, and social profiles
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                    Services, rates, and contact form in one page
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                    Audience highlights and past collaborations
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                    Instant link to share with brands
+                  </li>
+                </ul>
+                <AuthButton size="lg" variant="default" className="w-full" />
+              </CardContent>
+            </Card>
 
-      {/* FAQ Section */}
-      <section id="faq" className="container mx-auto px-4 py-24 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
-            Հաճախ տրվող հարցեր
-          </h2>
-          <div className="mt-16">
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="item-1">
-                <AccordionTrigger>Պե՞տք են ծրագրավորման հմտություններ</AccordionTrigger>
-                <AccordionContent>
-                  Իհարկե ոչ։ CreatorKit-ը ստեղծված է ստեղծողների, ոչ թե ծրագրավորողների համար։ Մեր պարզ ինտերֆեյսը թույլ է տալիս
-                  մի քանի րոպեում կառուցել մեդիա քիթ․ պարզապես կապեք սոցիալական հաշիվները, ընտրեք տեսանյութերը, և պատրաստ է։
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-2">
-                <AccordionTrigger>Կարո՞ղ եմ TikTok-ը միացնել</AccordionTrigger>
-                <AccordionContent>
-                  Այո։ CreatorKit-ը աջակցում է թե՛ TikTok, թե՛ Instagram։ Պարզապես միացրեք ձեր հաշիվները՝
-                  և մենք ավտոմատ կ ներմուծենք վիճակագրությունը և լավագույն բովանդակությունը։
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-3">
-                <AccordionTrigger>Կա՞ անվճար տարբերակ</AccordionTrigger>
-                <AccordionContent>
-                  Մեր Starter փաթեթը լիովին անվճար է միշտ։ Կարող եք ստեղծել մեկ մեդիա քիթ հիմնական հնարավորություններով
-                  առանց որևէ վճարի։ Եթե ցանկանում եք հանել բրենդավորումը, ավելացնել անսահմանափակ տեսանյութեր կամ օգտագործել
-                  անհատական դոմեյն, ցանկացած պահին կարող եք անցնել Pro Creator փաթեթի։
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-4">
-                <AccordionTrigger>Ինչպե՞ս են բրենդերը տեսնում իմ մեդիա քիթը</AccordionTrigger>
-                <AccordionContent>
-                  Դուք կստանաք եզակի հղում (օրինակ՝ creatorkit.com/yourname), որը կարող եք ուղարկել էլ․ նամակներով,
-                  սոցիալական ցանցերով կամ ցանկացած այլ եղանակով։ Այն գեղեցիկ է երևում ինչպես համակարգչում, այնպես էլ
-                  հեռախոսում, որտեղ էլ հիմնականում դիտում են բրենդ մենեջերները։
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+            <Card className="border-primary/40 shadow-lg shadow-primary/10">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Pro</CardTitle>
+                  <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                    Coming soon
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Unlock advanced workflows as soon as they roll out.
+                </p>
+                <div className="text-4xl font-bold">
+                  $9 <span className="text-base font-medium text-muted-foreground">/month</span>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <ul className="space-y-3 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                    Advanced analytics and brand visit insights
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                    Saved proposals and rate cards by service
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                    CRM-style pipeline for brand conversations
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                    Priority support and early feature access
+                  </li>
+                </ul>
+                <div className="rounded-lg border border-dashed border-primary/40 bg-primary/5 px-4 py-3 text-sm text-primary">
+                  Join the waitlist—your spot carries over when Pro launches.
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
 
-      {/* Footer CTA */}
-      <footer className="border-t bg-muted/30 py-24">
+      {/* Who Is It For Section */}
+      <section id="who" className="container mx-auto px-4 py-24 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl">
+          <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
+            Built for creators who work with brands
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-lg text-muted-foreground">
+            Whether you&apos;re just starting out or already working with established brands, a professional creator page helps you stand out.
+          </p>
+          <div className="mt-16 grid gap-6 sm:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>UGC Creators</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Showcase your content creation skills and make it easy for brands to understand your style, rates, and availability.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Bloggers</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Display your blog stats, audience demographics, and sponsored post packages. Help brands see the value you bring.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Micro-influencers</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Build credibility with a professional page that showcases your niche, engagement rates, and past brand partnerships.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Freelance Content Creators</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Present your services, portfolio, and pricing in one place. Make it simple for brands to evaluate and hire you.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="border-t bg-muted/30 py-24">
         <div className="container mx-auto px-4 text-center sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Պատրա՞ստ եք բարձրացնել ձեր pitched-երի մակարդակը։
+            Stop explaining yourself. Let brands decide faster.
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-            Միացեք հազարավոր ստեղծողների, ովքեր պրոֆեսիոնալ մեդիա քիթերի շնորհիվ ավելացնում են իրենց գործարքները։
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+            Create your professional creator page in minutes. Give brands everything they need to make a decision, and close more partnerships.
           </p>
-          <div className="mt-8">
+          <div className="mt-10">
             <AuthButton size="lg" variant="default" className="w-full sm:w-auto" />
           </div>
         </div>
-      </footer>
+      </section>
+
     </div>
   );
 }

@@ -26,20 +26,19 @@ export default async function DashboardPage() {
   return (
     <div>
       <div className="px-4 pt-2 pb-4 sm:px-6 lg:px-10">
-        <div className="flex max-w-5xl items-center justify-between gap-4">
+        <div className="flex max-w-9xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.08em] text-primary">
-              Ստեղծողի ստուդիա
+              Creator Studio
             </p>
             <h1 className="mt-1 text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Խմբագրեք ձեր հանրային քիթը, միացրեք սոցիալական հարթակները և տեսեք, թե ինչպես են բրենդերը
-              տեսնելու ձեր էջը։
+              Edit your public creator page, connect your social platforms, and see how brands will view your page.
             </p>
           </div>
-          <Button asChild variant="outline" size="sm" className="shrink-0">
+          <Button asChild variant="outline" size="sm" className="w-full shrink-0 justify-center sm:w-auto">
             <Link href={publicPath}>
-              Դիտել հանրային էջը
+              View public page
               <ExternalLink className="ml-1 h-3 w-3" />
             </Link>
           </Button>

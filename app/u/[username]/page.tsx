@@ -70,7 +70,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
   return (
     <div className="min-h-screen bg-zinc-50 py-5 px-4 dark:bg-zinc-950">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-8">
-        <div className="w-full max-w-2xl">
+        <div className="w-full max-w-8xl">
           {/* <Card className="mb-4 border-none bg-transparent shadow-none">
             <div className="text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-zinc-400">

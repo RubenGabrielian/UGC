@@ -67,7 +67,6 @@ function formatViewsLabel(raw?: string | null) {
 
 export function PublicProfileView({
   values,
-  mode = "mobile",
   creatorId,
   servicesPackages,
 }: {
@@ -78,11 +77,11 @@ export function PublicProfileView({
   servicesPackages: ServicePackage[];
 }) {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const name = values.full_name || values.username || "Ստեղծողի անունը";
-  const handle = values.instagram_handle || values.tiktok_handle || "@օգտանուն";
+  const name = values.full_name || values.username || "Creator Name";
+  const handle = values.instagram_handle || values.tiktok_handle || "@username";
   const bio =
     values.bio ||
-    "Կարճ ներկայացում բրենդ մենեջերների համար․ պատմեք ձեր նիշայի, լսարանի և արդյունքների մասին։";
+    "Short introduction for brand managers: tell them about your niche, audience, and results.";
 
   const igFollowers = formatNumber(values.instagram_followers);
   const ttFollowers = formatNumber(values.tiktok_followers);
@@ -132,7 +131,7 @@ export function PublicProfileView({
       ?.map((l) => (typeof l === "string" ? { url: l } : l))
       .filter((l) => l && l.url && l.url.trim().length > 0) ?? [];
   const collabHeadline =
-    (values.collaboration_headline && values.collaboration_headline.trim()) || "Ո՞վերի հետ եմ համագործակցել";
+    (values.collaboration_headline && values.collaboration_headline.trim()) || "Who I've Collaborated With";
 
   const services = values.services_packages ?? [];
 
@@ -142,14 +141,14 @@ export function PublicProfileView({
 
     if (booking) {
       const href = booking;
-      return { href, label: "Ամրագրել հիմա" };
+      return { href, label: "Book Now" };
     }
 
     if (email) {
-      return { href: `mailto:${email}`, label: "Կապնվել ինձ հետ" };
+      return { href: `mailto:${email}`, label: "Contact Me" };
     }
 
-    return { href: "#", label: "Ամրագրել այս ստեղծողին" };
+    return { href: "#", label: "Book this creator" };
   };
 
   const { label: ctaLabel } = getCtaHrefAndLabel();
@@ -161,7 +160,7 @@ export function PublicProfileView({
     if (raw.includes("wa.me") || raw.toLowerCase().includes("whatsapp")) return raw;
     const digits = raw.replace(/[^+\d]/g, "");
     return digits ? `tel:${digits}` : null;
-  };
+  };      
 
   const phoneHref = getPhoneHref();
 
@@ -263,30 +262,20 @@ export function PublicProfileView({
       .join("")
       .slice(0, 2) || "CR";
 
-  const isMobile = mode === "mobile";
-
   return (
-    <div
-      className={cn(
-        "relative flex flex-col p-4 pb-24 text-zinc-900 overflow-y-auto",
-        isMobile ? "h-full" : "min-h-[640px]"
-      )}
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-zinc-50 to-zinc-100" />
-      <div className="relative grid grid-cols-2 gap-3">
-        <div className="col-span-2 rounded-[2rem] bg-white p-6 shadow-sm">
-          <div className="flex flex-col items-center text-center gap-3">
-            <Avatar
-              className={cn(
-                "border border-zinc-200 shadow-sm overflow-hidden",
-                isMobile ? "h-20 w-20" : "h-22 w-22"
-              )}
-            >
-              <AvatarImage alt={name} src={values.avatar_url || undefined} />
-              <AvatarFallback className="bg-zinc-100 text-zinc-800 text-lg font-semibold">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
+    <>
+      {/* Mobile Layout */}
+      <div className="relative flex flex-col p-4 pb-24 text-zinc-900 overflow-y-auto md:hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-zinc-50 to-zinc-100" />
+        <div className="relative grid grid-cols-2 gap-3">
+          <div className="col-span-2 rounded-[2rem] bg-white p-6 shadow-sm">
+            <div className="flex flex-col items-center text-center gap-3">
+              <Avatar className="h-20 w-20 border border-zinc-200 shadow-sm overflow-hidden">
+                <AvatarImage alt={name} src={values.avatar_url || undefined} />
+                <AvatarFallback className="bg-zinc-100 text-zinc-800 text-lg font-semibold">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
             <div>
               <p className="text-lg font-semibold leading-tight text-zinc-900">{name}</p>
               <p className="text-sm text-zinc-500">{handle}</p>
@@ -368,7 +357,7 @@ export function PublicProfileView({
         )}
 
         <div className="col-span-2 rounded-[2rem] bg-transparent p-1">
-          <p className="mb-2 text-sm font-semibold text-zinc-800">Ընտրված աշխատանքներ</p>
+          <p className="mb-2 text-sm font-semibold text-zinc-800">Selected Work</p>
           <div className="grid grid-cols-2 gap-2">
             {videos.length > 0
               ? videos.map((video, idx) => (
@@ -390,7 +379,7 @@ export function PublicProfileView({
         {services && services.length > 0 && (
           <div className="col-span-2 rounded-[2rem] bg-white p-4 shadow-sm space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-sm font-semibold text-zinc-900">Իմ ծառայություններն ու փաթեթները</p>
+              <p className="text-sm font-semibold text-zinc-900">My Services & Packages</p>
             </div>
             <div className="space-y-3">
               {services.map((service, idx) => {
@@ -443,7 +432,7 @@ export function PublicProfileView({
                           type="button"
                           className="rounded-full bg-zinc-900 px-3 py-1 text-xs font-semibold text-white shadow-sm"
                         >
-                          Կապ գնի համար
+                          Contact for Pricing
                         </button>
                       ) : (
                         <>
@@ -470,7 +459,7 @@ export function PublicProfileView({
               {collabHeadline.toUpperCase()}
             </p>
             <p className="mt-1 text-center text-sm text-zinc-400">
-              Համագործակցություններ՝ հիմնված անկեղծ պատմությունների վրա։
+              Collaborations based on authentic stories.
             </p>
            <div className="mt-4 flex flex-wrap items-center justify-center gap-6">
               {brandLogos.map((logo, idx) => (
@@ -488,7 +477,7 @@ export function PublicProfileView({
         {demographics && (topGeo.length > 0 || demographics.gender || demographics.age) && (
           <div className="col-span-2 rounded-[2rem] bg-white p-4 shadow-sm space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-sm font-semibold text-zinc-900">Ո՞վ է հետևում ինձ</p>
+              <p className="text-sm font-semibold text-zinc-900">Who Follows Me</p>
             </div>
             <div className="space-y-3 text-sm">
               <div className="flex items-start gap-2">
@@ -497,7 +486,7 @@ export function PublicProfileView({
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
-                    Գլխավոր աշխարհագրական դիրքերը
+                    Top Geographic Locations
                   </p>
                   <p className="mt-1 text-sm text-zinc-900">
                     {topGeo.length > 0
@@ -506,7 +495,7 @@ export function PublicProfileView({
                             g.percentage ? `${g.location} (${g.percentage})` : g.location
                           )
                           .join(", ")
-                      : "Ստեղծողը դեռ չի ավելացրել աշխարհագրական տվյալներ։"}
+                      : "Creator hasn't added geographic data yet."}
                   </p>
                 </div>
               </div>
@@ -517,10 +506,10 @@ export function PublicProfileView({
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
-                    Սեռ
+                    Gender
                   </p>
                   <p className="mt-1 text-sm font-semibold text-zinc-900">
-                    {demographics.gender || "Չի նշված"}
+                    {demographics.gender || "Not specified"}
                   </p>
                 </div>
               </div>
@@ -531,10 +520,10 @@ export function PublicProfileView({
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
-                    Տարիքային խումբ
+                    Age Group
                   </p>
                   <p className="mt-1 text-sm font-semibold text-zinc-900">
-                    {demographics.age || "Չի նշված"}
+                    {demographics.age || "Not specified"}
                   </p>
                 </div>
               </div>
@@ -546,11 +535,11 @@ export function PublicProfileView({
           {(values.primary_email || values.primary_phone) && (
             <div className="rounded-2xl border border-zinc-200 bg-white/70 px-4 py-3 text-xs text-zinc-600 flex flex-col gap-1">
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
-                Կոնտակտային տվյալներ
+                Contact Information
               </p>
               {values.primary_email && (
                 <p className="text-xs">
-                  Էլ․ հասցե՝{" "}
+                  Email:{" "}
                   <a
                     href={`mailto:${values.primary_email}`}
                     className="font-medium text-zinc-900 underline underline-offset-2"
@@ -561,7 +550,7 @@ export function PublicProfileView({
               )}
               {values.primary_phone && phoneHref && (
                 <p className="text-xs">
-                  Հեռախոս / WhatsApp՝{" "}
+                  Phone / WhatsApp:{" "}
                   <a
                     href={phoneHref}
                     className="font-medium text-zinc-900 underline underline-offset-2"
@@ -584,6 +573,329 @@ export function PublicProfileView({
           </div>
         </div>
       </div>
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden md:block relative min-h-screen bg-gradient-to-br from-zinc-50 to-zinc-100">
+        <div className="container mx-auto max-w-7xl px-8 py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* Left Column - Profile Info & Socials */}
+          <div className="lg:col-span-1 space-y-8">
+            {/* Profile Card */}
+            <div className="rounded-2xl bg-white p-8 shadow-sm">
+              <div className="flex flex-col items-center text-center gap-4">
+                <Avatar className="h-24 w-24 border border-zinc-200 shadow-sm overflow-hidden">
+                  <AvatarImage alt={name} src={values.avatar_url || undefined} />
+                  <AvatarFallback className="bg-zinc-100 text-zinc-800 text-xl font-semibold">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-xl font-semibold leading-tight text-zinc-900">{name}</p>
+                  <p className="text-sm text-zinc-500 mt-1">{handle}</p>
+                </div>
+                <p className="text-sm text-zinc-600">{bio}</p>
+              </div>
+            </div>
+
+            {/* Social Platforms */}
+            <div className="grid grid-cols-2 gap-4">
+              {values.instagram_handle && (
+                <Link
+                  href={igHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-xl bg-white p-4 shadow-sm transition hover:shadow-md"
+                >
+                  <div className="flex items-center justify-center rounded-full p-2 text-pink-500">
+                    <Image src={"/img/instagram.webp"} alt="Instagram" width={24} height={24} />
+                  </div>
+                  <p className="mt-2 text-sm font-medium text-zinc-900 text-center">Instagram</p>
+                  <p className="text-xs text-zinc-500 text-center">
+                    {values.instagram_handle || "@instagram"}
+                  </p>
+                  <p className="text-center text-xl font-bold text-zinc-900">{igFollowers}</p>
+                </Link>
+              )}
+
+              {values.tiktok_handle && (
+                <Link
+                  href={ttHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-xl bg-white p-4 shadow-sm transition hover:shadow-md"
+                >
+                  <div className="flex items-center justify-center rounded-full">
+                    <Image src={"/img/tiktok.webp"} alt="TikTok" width={24} height={24} />
+                  </div>
+                  <p className="mt-2 text-center text-sm font-medium text-zinc-900">TikTok</p>
+                  <p className="text-center text-xs text-zinc-500">
+                    {values.tiktok_handle || "@tiktok"}
+                  </p>
+                  <p className="text-center text-xl font-bold text-zinc-900">{ttFollowers}</p>
+                </Link>
+              )}
+
+              {values.youtube_handle && (
+                <Link
+                  href={ytHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-xl bg-white p-4 shadow-sm transition hover:shadow-md"
+                >
+                  <div className="flex items-center justify-center rounded-full p-2 text-red-500">
+                    <Image src={"/img/youtube.webp"} alt="YouTube" width={24} height={24} />
+                  </div>
+                  <p className="mt-2 text-center text-sm font-medium text-zinc-900">YouTube</p>
+                  <p className="text-center text-xs text-zinc-500">
+                    {values.youtube_handle || "@youtube"}
+                  </p>
+                  <p className="text-center text-xl font-bold text-zinc-900">{ytFollowers}</p>
+                </Link>
+              )}
+
+              {values.facebook_handle && (
+                <Link
+                  href={fbHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-xl bg-white p-4 shadow-sm transition hover:shadow-md"
+                >
+                  <div className="flex items-center justify-center rounded-full p-2 text-blue-600">
+                    <span className="text-lg font-bold">f</span>
+                  </div>
+                  <p className="mt-2 text-center text-sm font-medium text-zinc-900">Facebook</p>
+                  <p className="text-center text-xs text-zinc-500">
+                    {values.facebook_handle || "@facebook"}
+                  </p>
+                  <p className="text-center text-xl font-bold text-zinc-900">{fbFollowers}</p>
+                </Link>
+              )}
+            </div>
+
+            {/* Contact Info - Desktop */}
+            {(values.primary_email || values.primary_phone) && (
+              <div className="rounded-xl border border-zinc-200 bg-white/70 px-4 py-3 text-xs text-zinc-600 flex flex-col gap-1">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                  Contact Information
+                </p>
+                {values.primary_email && (
+                  <p className="text-xs">
+                    Email:{" "}
+                    <a
+                      href={`mailto:${values.primary_email}`}
+                      className="font-medium text-zinc-900 underline underline-offset-2"
+                    >
+                      {values.primary_email}
+                    </a>
+                  </p>
+                )}
+                {values.primary_phone && phoneHref && (
+                  <p className="text-xs">
+                    Phone / WhatsApp:{" "}
+                    <a
+                      href={phoneHref}
+                      className="font-medium text-zinc-900 underline underline-offset-2"
+                    >
+                      {values.primary_phone}
+                    </a>
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Right Column - Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Selected Work */}
+            <div className="rounded-2xl bg-white p-8 shadow-sm">
+              <p className="mb-4 text-base font-semibold text-zinc-900">Selected Work</p>
+              <div className="grid grid-cols-3 gap-4">
+                {videos.length > 0
+                  ? videos.map((video, idx) => (
+                      <div key={`${video.url}-${idx}`} className="relative">
+                        {renderVideoItem(video)}
+                      </div>
+                    ))
+                  : Array.from({ length: 3 }).map((_, idx) => (
+                      <div
+                        key={idx}
+                        className="aspect-[9/16] rounded-xl border border-dashed border-zinc-200 bg-zinc-50 flex items-center justify-center text-zinc-300"
+                      >
+                        <Film className="h-6 w-6" />
+                      </div>
+                    ))}
+              </div>
+            </div>
+
+            {/* Services & Packages */}
+            {services && services.length > 0 && (
+              <div className="rounded-2xl bg-white p-8 shadow-sm">
+                <p className="mb-4 text-base font-semibold text-zinc-900">My Services & Packages</p>
+                <div className="space-y-3">
+                  {services.map((service, idx) => {
+                    const platform = service.platform || "other";
+                    const title = service.title || "Untitled service";
+                    const price = service.price || "Custom";
+                    const isContact = !!service.is_contact_only;
+
+                    const platformLabel =
+                      platform === "instagram"
+                        ? "Instagram"
+                        : platform === "tiktok"
+                        ? "TikTok"
+                        : platform === "youtube"
+                        ? "YouTube"
+                        : "Other";
+
+                    const platformColor =
+                      platform === "instagram"
+                        ? "bg-pink-50 text-pink-600"
+                        : platform === "tiktok"
+                        ? "bg-cyan-50 text-cyan-600"
+                        : platform === "youtube"
+                        ? "bg-red-50 text-red-600"
+                        : "bg-zinc-100 text-zinc-600";
+
+                    return (
+                      <div
+                        key={`${title}-${idx}`}
+                        className="flex items-center justify-between gap-3 rounded-xl border border-zinc-100 bg-zinc-50 px-4 py-3"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={cn(
+                                "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium",
+                                platformColor
+                              )}
+                            >
+                              {platformLabel}
+                            </span>
+                            <span className="truncate text-sm font-medium text-zinc-900">
+                              {title}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          {isContact ? (
+                            <button
+                              type="button"
+                              className="rounded-full bg-zinc-900 px-4 py-1.5 text-xs font-semibold text-white shadow-sm whitespace-nowrap"
+                            >
+                              Contact for Pricing
+                            </button>
+                          ) : (
+                            <>
+                              <span className="text-sm font-semibold text-zinc-900 whitespace-nowrap">{price}</span>
+                              <button
+                                type="button"
+                                className="rounded-full border border-zinc-300 px-4 py-1.5 text-xs font-medium text-zinc-800 bg-white whitespace-nowrap"
+                              >
+                                Book Now
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Collaborations */}
+            {brandLogos.length > 0 && (
+              <div className="rounded-2xl bg-white p-8 shadow-sm">
+                <p className="text-center text-xs font-bold uppercase tracking-[0.2em] text-zinc-500">
+                  {collabHeadline.toUpperCase()}
+                </p>
+                <p className="mt-2 text-center text-sm text-zinc-400">
+                  Collaborations based on authentic stories.
+                </p>
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-6">
+                  {brandLogos.map((logo, idx) => (
+                    <img
+                      key={`${logo.url}-${idx}`}
+                      src={logo.url}
+                      alt="Brand logo"
+                      className="h-10 w-auto object-contain opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Audience Demographics */}
+            {demographics && (topGeo.length > 0 || demographics.gender || demographics.age) && (
+              <div className="rounded-2xl bg-white p-8 shadow-sm">
+                <p className="mb-4 text-base font-semibold text-zinc-900">Who Follows Me</p>
+                <div className="space-y-4 text-sm">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 text-zinc-500">
+                      <Globe2 className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
+                        Top Geographic Locations
+                      </p>
+                      <p className="mt-1 text-sm text-zinc-900">
+                        {topGeo.length > 0
+                          ? topGeo
+                              .map((g) =>
+                                g.percentage ? `${g.location} (${g.percentage})` : g.location
+                              )
+                              .join(", ")
+                          : "Creator hasn't added geographic data yet."}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 text-zinc-500">
+                      <Users className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
+                        Gender
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-zinc-900">
+                        {demographics.gender || "Not specified"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 text-zinc-500">
+                      <Calendar className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
+                        Age Group
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-zinc-900">
+                        {demographics.age || "Not specified"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* CTA Button - Desktop */}
+            <div className="sticky bottom-6">
+              <button
+                type="button"
+                onClick={() => setIsContactModalOpen(true)}
+                className="w-full inline-flex items-center justify-center rounded-full bg-zinc-900 text-white px-6 py-4 text-base font-semibold shadow-lg shadow-black/20 hover:bg-zinc-800 transition"
+              >
+                {ctaLabel}
+              </button>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
 
       <ContactModal
         open={isContactModalOpen}
@@ -591,7 +903,7 @@ export function PublicProfileView({
         creatorId={creatorId}
         servicesPackages={servicesPackages}
       />
-    </div>
+    </>
   );
 }
 

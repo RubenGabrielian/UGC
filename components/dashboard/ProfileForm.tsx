@@ -11,14 +11,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import {
   Instagram,
   Music,
   Loader2,
-  Monitor,
-  Smartphone,
   Youtube,
   Trash2,
   Plus,
@@ -38,7 +36,11 @@ const formSchema = z.object({
   full_name: z.string().optional().nullable(),
   bio: z.string().max(300, "Bio must be under 300 characters").optional().nullable(),
   collaboration_headline: z.string().optional().nullable(),
-  primary_email: z.string().email("Must be a valid email address").optional().nullable(),
+  primary_email: z
+    .preprocess(
+      (val) => (val === "" ? undefined : val),
+      z.string().email("Must be a valid email address").optional().nullable()
+    ),
   primary_phone: z.string().optional().nullable(),
   booking_link: z.string().optional().nullable(),
   // Socials
@@ -142,7 +144,7 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [uploadingLogoIndex, setUploadingLogoIndex] = useState<number | null>(null);
-  const [previewMode, setPreviewMode] = useState<"mobile" | "desktop">("mobile");
+  const [previewMode] = useState<"mobile" | "desktop">("mobile");
   const [activeSection, setActiveSection] = useState<SectionKey>("identity");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const logoInputRef = useRef<HTMLInputElement | null>(null);
@@ -402,10 +404,10 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
     <>
       <Toaster richColors position="top-right" />
       <div className="h-full min-h-[720px] overflow-hidden rounded-2xl border border-border/60 bg-background shadow-sm">
-        <div className="flex h-full overflow-hidden">
+        <div className="flex h-full flex-col overflow-hidden lg:flex-row">
           <form
             onSubmit={onSubmit}
-            className="w-full md:w-[920px] lg:w-[920px] shrink-0 border-r border-border/70 bg-background/95 px-5 py-6 lg:px-6 overflow-y-auto space-y-6"
+            className="w-full border-b border-border/70 bg-background/95 px-5 py-6 lg:w-[920px] lg:shrink-0 lg:border-b-0 lg:border-r lg:px-6 overflow-y-auto space-y-6"
           >
             
             <Tabs
@@ -413,13 +415,13 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
               onValueChange={(v) => setActiveSection(v as SectionKey)}
               className="space-y-6"
             >
-              <div className="flex gap-4">
-                <aside className="w-40 shrink-0 border-r border-border/60 pr-2">
-                  <nav className="space-y-1">
+              <div className="flex flex-col gap-4 lg:flex-row">
+                <aside className="w-full lg:w-40 lg:shrink-0 lg:border-r lg:border-border/60 lg:pr-2">
+                  <nav className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:flex lg:flex-col lg:space-y-1 lg:gap-0">
                     <Button
                       type="button"
                       variant={activeSection === "identity" ? "secondary" : "ghost"}
-                      className="w-full justify-start gap-2 text-sm"
+                      className="w-full justify-center gap-2 text-sm lg:justify-start"
                       onClick={() => setActiveSection("identity")}
                     >
                       <User className="h-4 w-4" />
@@ -428,7 +430,7 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
                     <Button
                       type="button"
                       variant={activeSection === "socials" ? "secondary" : "ghost"}
-                      className="w-full justify-start gap-2 text-sm"
+                      className="w-full justify-center gap-2 text-sm lg:justify-start"
                       onClick={() => setActiveSection("socials")}
                     >
                       <Share2 className="h-4 w-4" />
@@ -437,7 +439,7 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
                     <Button
                       type="button"
                       variant={activeSection === "collabs" ? "secondary" : "ghost"}
-                      className="w-full justify-start gap-2 text-sm"
+                      className="w-full justify-center gap-2 text-sm lg:justify-start"
                       onClick={() => setActiveSection("collabs")}
                     >
                       <Briefcase className="h-4 w-4" />
@@ -446,7 +448,7 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
                     <Button
                       type="button"
                       variant={activeSection === "services" ? "secondary" : "ghost"}
-                      className="w-full justify-start gap-2 text-sm"
+                      className="w-full justify-center gap-2 text-sm lg:justify-start"
                       onClick={() => setActiveSection("services")}
                     >
                       <Package className="h-4 w-4" />
@@ -1242,18 +1244,18 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
             </Tabs>
 
             <div className="sticky bottom-4 z-20">
-              <div className="backdrop-blur-lg bg-background/70 border border-border/80 shadow-lg rounded-xl px-4 py-3 flex items-center justify-between gap-3">
+              <div className="backdrop-blur-lg bg-background/70 border border-border/80 shadow-lg rounded-xl px-4 py-3 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="text-sm text-muted-foreground">
                   <p className="font-medium text-foreground">Save your changes</p>
                   <p>Keep your profile up to date.</p>
                 </div>
-                <Button type="submit" disabled={isSaving} className="min-w-[140px]">
+                <Button type="submit" disabled={isSaving} className="min-w-[140px] w-full sm:w-auto">
                   {isSaving ? "Saving..." : "Save Changes"}
                 </Button>
               </div>
             </div>
           </form>
-          <div className="flex-1 relative  dark:bg-zinc-900/80 ">
+          <div className="flex-1 relative border-t border-border/70 dark:bg-zinc-900/80 lg:border-t-0 ">
             {/* <div className="absolute top-8 left-0 right-0 flex justify-center z-30">
               <Tabs
                 value={previewMode}
@@ -1272,7 +1274,7 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
                 </TabsList>
               </Tabs>
             </div> */}
-            <div className="flex h-full w-full items-start justify-center px-6 pb-10 pt-16 overflow-auto">
+            <div className="flex h-full w-full items-start justify-center px-4 pb-10 pt-10 overflow-auto sm:px-6 sm:pt-12 lg:pt-16">
               <div className="relative mx-auto flex min-h-[720px] w-full items-start justify-center overflow-hidden rounded-2xl  dark:bg-[radial-gradient(circle_at_1px_1px,#3f3f46_1px,transparent_0)] bg-[length:24px_24px] p-6">
                 <PhonePreview
                   values={previewValues}
