@@ -27,6 +27,7 @@ export type PublicProfileValues = {
   youtube_subscribers?: number | null;
   facebook_handle?: string | null;
   facebook_followers?: number | null;
+  followers_count?: number | null;
   brand_logos?: { url: string }[] | string[] | null;
   video_urls?: ({ url?: string | null } | string)[] | null;
   services_packages?: {
