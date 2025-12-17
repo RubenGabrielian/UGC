@@ -37,10 +37,9 @@ const formSchema = z.object({
   bio: z.string().max(300, "Bio must be under 300 characters").optional().nullable(),
   collaboration_headline: z.string().optional().nullable(),
   primary_email: z
-    .preprocess(
-      (val) => (val === "" ? undefined : val),
-      z.string().email("Must be a valid email address").optional().nullable()
-    ),
+    .union([z.string().email("Must be a valid email address"), z.literal("")])
+    .optional()
+    .nullable(),
   primary_phone: z.string().optional().nullable(),
   booking_link: z.string().optional().nullable(),
   // Socials

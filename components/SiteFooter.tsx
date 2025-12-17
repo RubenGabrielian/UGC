@@ -21,7 +21,7 @@ export function SiteFooter() {
             Who it&apos;s for
           </Link>
           <Link href="/dashboard" className="transition-colors hover:text-foreground">
-            Dashboard
+            Dashboardg
           </Link>
           <Link href="/privacy-policy" className="transition-colors hover:text-foreground">
             Privacy Policy
