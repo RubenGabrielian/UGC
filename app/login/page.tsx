@@ -1,10 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthButton } from "@/components/auth/AuthButton";
 import { Sparkles } from "lucide-react";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Login | CreatorKit",
   description: "Sign in securely with Google to access your CreatorKit workspace.",
+  keywords: ["creatorkit login", "creator dashboard sign in", "ugc tool login", "google auth"],
 };
 
 export default function LoginPage() {

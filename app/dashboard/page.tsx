@@ -1,9 +1,23 @@
+import type { Metadata } from "next";
 import { ProfileForm } from "@/components/dashboard/ProfileForm";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Dashboard | CreatorKit",
+  description:
+    "Manage your CreatorKit profile, update services and rates, and preview the public page brands see.",
+  keywords: [
+    "creatorkit dashboard",
+    "creator profile editor",
+    "ugc services",
+    "influencer rates",
+    "media kit builder",
+  ],
+};
 
 export default async function DashboardPage() {
   const supabase = await createClient();

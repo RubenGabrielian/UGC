@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Users,
@@ -9,6 +10,21 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { AuthButton } from "@/components/auth/AuthButton";
+
+export const metadata: Metadata = {
+  title: "CreatorKit | UGC Media Kit & Booking Page",
+  description:
+    "Build a polished UGC media kit with social stats, services, pricing, and a book-now CTA. Share one link brands can trust.",
+  keywords: [
+    "creatorkit",
+    "ugc media kit",
+    "creator portfolio",
+    "influencer rate card",
+    "booking link",
+    "creator landing page",
+    "social proof",
+  ],
+};
 
 export default function Home() {
   return (

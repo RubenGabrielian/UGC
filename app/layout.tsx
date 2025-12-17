@@ -26,6 +26,14 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
     shortcut: "/favicon.ico",
   },
+  keywords: [
+    "creatorkit",
+    "ugc media kit",
+    "creator landing page",
+    "influencer portfolio",
+    "booking link",
+    "social proof",
+  ],
 };
 
 export default function RootLayout({

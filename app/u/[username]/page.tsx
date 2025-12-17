@@ -1,9 +1,52 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { PublicProfileView, PublicProfileValues } from "@/components/PublicProfileView";
 
+export async function generateMetadata({
+  params,
+}: {
+  params: { username: string };
+}): Promise<Metadata> {
+  const { username } = params;
+  const supabase = await createClient();
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name, username, bio, collaboration_headline")
+    .eq("username", username.toLowerCase())
+    .maybeSingle();
+
+  if (!profile) {
+    return {
+      title: "Creator not found | CreatorKit",
+      description: "This creator page is unavailable.",
+      keywords: ["creator not found", "creatorkit", "ugc profile"],
+    };
+  }
+
+  const displayName = profile.full_name || profile.username || "Creator";
+  const description =
+    profile.bio ||
+    profile.collaboration_headline ||
+    `${displayName} — view services, social stats, and booking info on CreatorKit.`;
+
+  return {
+    title: `${displayName} | CreatorKit`,
+    description,
+    keywords: [
+      displayName,
+      "creatorkit profile",
+      "ugc creator",
+      "media kit",
+      "booking link",
+      "social stats",
+    ],
+  };
+}
+
 export default async function ProfilePage({ params }: { params: { username: string } }) {
-    const { username } = await params; // ✅ unwrap params
+  const { username } = params;
 
 
   const supabase = await createClient();

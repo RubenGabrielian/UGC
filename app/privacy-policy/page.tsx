@@ -73,6 +73,13 @@ const sections = [
 export const metadata: Metadata = {
   title: "Privacy Policy | CreatorKit",
   description: "Understand how CreatorKit collects, uses, and protects your data.",
+  keywords: [
+    "creatorkit privacy",
+    "data protection",
+    "ugc privacy policy",
+    "creator data usage",
+    "gdpr",
+  ],
 };
 
 export default function PrivacyPolicyPage() {

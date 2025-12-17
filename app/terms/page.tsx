@@ -73,6 +73,13 @@ const sections = [
 export const metadata: Metadata = {
   title: "Terms & Conditions | CreatorKit",
   description: "Understand the terms that govern your use of CreatorKit.",
+  keywords: [
+    "creatorkit terms",
+    "creator terms of service",
+    "ugc platform policies",
+    "media kit terms",
+    "user agreement",
+  ],
 };
 
 export default function TermsPage() {
