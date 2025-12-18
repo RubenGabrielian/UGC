@@ -26,7 +26,7 @@ export type PublicProfileValues = {
   engagement_rate?: number | null;
   collaboration_headline?: string | null;
   brand_logos?: { url: string }[] | string[] | null;
-  video_urls?: ({ url?: string | null } | string)[] | null;
+  video_urls?: ({ url?: string | null; views?: string | null } | string)[] | null;
   services_packages?: {
     title?: string | null;
     platform?: "instagram" | "tiktok" | "youtube" | "other";
