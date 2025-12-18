@@ -35,7 +35,8 @@ export default async function ProfilePage({ params }: { params: { username: stri
       video_urls,
       services_packages,
       categories,
-      audience_demographics
+      audience_demographics,
+      template_id
     `)
     .eq("username", username.toLowerCase())
     .maybeSingle();
@@ -44,6 +45,12 @@ export default async function ProfilePage({ params }: { params: { username: stri
     notFound();
   }
 
+  // Record page view (production only)
+  const { error: pageViewError } = await supabase.rpc('increment_page_view', { 
+    p_id: profile.id 
+  });
+
+  console.log('pageViewError', pageViewError);
   const values: PublicProfileValues = {
     avatar_url: profile.avatar_url,
     username: profile.username,
@@ -96,6 +103,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
               username={profile.username || undefined}
               creatorId={profile.id}
               servicesPackages={profile.services_packages ?? []}
+              templateId={profile.template_id}
             />
           </div>
         </div>

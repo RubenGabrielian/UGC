@@ -597,7 +597,7 @@ export function PhonePreview({
           )}
 
           <p className="pb-4 text-center text-[11px] text-zinc-400">
-            Powered by <span className="font-semibold text-zinc-600">YourBrand</span>
+            Powered by <span className="font-semibold text-zinc-600">CreatorsKit</span>
           </p>
         </div>
       </div>

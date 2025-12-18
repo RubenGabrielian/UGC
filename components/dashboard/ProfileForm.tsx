@@ -39,10 +39,13 @@ import {
   Check,
   ChevronsUpDown,
   X,
+  BarChart3,
+  Palette,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { PhonePreview } from "./PhonePreview";
+import { Analytics } from "./Analytics";
 
 const formSchema = z.object({
   avatar_url: z.string().url("Must be a valid URL").optional().or(z.literal("")),
@@ -110,6 +113,8 @@ const formSchema = z.object({
   // Legacy stats (optional)
   followers_count: z.number().nonnegative("Followers cannot be negative").optional().nullable(),
   engagement_rate: z.number().nonnegative("Engagement rate cannot be negative").optional().nullable(),
+  // Template
+  template_id: z.string().optional().nullable(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -150,7 +155,7 @@ type PreviewValues = {
   collaboration_headline?: string | null;
 };
 
-type SectionKey = "identity" | "socials" | "collabs" | "services";
+type SectionKey = "identity" | "socials" | "collabs" | "services" | "analytics" | "appearance";
 
 interface ProfileFormProps {
   initialData: Partial<FormValues> | null;
@@ -238,6 +243,7 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
         })) ?? [],
       followers_count: toNumberOrUndefined(initialData?.followers_count),
       engagement_rate: toNumberOrUndefined(initialData?.engagement_rate),
+      template_id: (initialData as { template_id?: string | null })?.template_id ?? "default",
   }),
   [initialData]
 );
@@ -325,6 +331,30 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
     }
   }, [initialData, normalizedInitial, form]);
 
+  const saveTemplate = async (templateId: string) => {
+    setIsSaving(true);
+    const supabase = createClient();
+    
+    const { error } = await supabase
+      .from("profiles")
+      .update({ template_id: templateId })
+      .eq("id", userId);
+    
+    setIsSaving(false);
+    
+    if (error) {
+      toast.error("Failed to save template", {
+        description: error.message,
+      });
+      return;
+    }
+    
+    form.setValue("template_id", templateId);
+    toast.success("Template updated", {
+      description: "Your page design has been updated.",
+    });
+  };
+
   const onSubmit = form.handleSubmit(async (values) => {
     setIsSaving(true);
     const supabase = createClient();
@@ -369,6 +399,7 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
       followers_count: values.followers_count ?? null,
       engagement_rate: values.engagement_rate ?? null,
       audience_demographics: values.audience_demographics ?? null,
+      template_id: values.template_id || "default",
     };
 
     let error: { message?: string } | null = null;
@@ -496,6 +527,24 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
                     >
                       <Package className="h-4 w-4" />
                       Services
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={activeSection === "analytics" ? "secondary" : "ghost"}
+                      className="w-full justify-center gap-2 text-sm lg:justify-start"
+                      onClick={() => setActiveSection("analytics")}
+                    >
+                      <BarChart3 className="h-4 w-4" />
+                      Analytics
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={activeSection === "appearance" ? "secondary" : "ghost"}
+                      className="w-full justify-center gap-2 text-sm lg:justify-start"
+                      onClick={() => setActiveSection("appearance")}
+                    >
+                      <Palette className="h-4 w-4" />
+                      Appearance
                     </Button>
                   </nav>
                 </aside>
@@ -1426,6 +1475,97 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
                       <p className="text-xs text-muted-foreground">
                         This powers the main &quot;Book&quot; button on your public profile.
                       </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="analytics" className="space-y-6">
+                <Analytics userId={userId} />
+              </TabsContent>
+
+              <TabsContent value="appearance" className="space-y-6">
+                <Card className="border-border/80 shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="text-xl">Page Template</CardTitle>
+                    <CardDescription>
+                      Choose a design template for your public profile page. Changes take effect immediately.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      {/* Default Template */}
+                      <div
+                        className={`group relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all ${
+                          form.watch("template_id") === "default" || (!form.watch("template_id") && !initialData?.template_id)
+                            ? "border-primary ring-2 ring-primary/20"
+                            : "border-border hover:border-primary/50"
+                        }`}
+                        onClick={() => saveTemplate("default")}
+                      >
+                        <div className="aspect-video bg-gradient-to-br from-zinc-50 to-white p-4">
+                          <div className="h-full rounded-lg border border-zinc-200 bg-white p-3 shadow-sm">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="h-8 w-8 rounded-full bg-zinc-200"></div>
+                              <div className="flex-1">
+                                <div className="h-2 w-16 bg-zinc-300 rounded mb-1"></div>
+                                <div className="h-1.5 w-12 bg-zinc-200 rounded"></div>
+                              </div>
+                            </div>
+                            <div className="space-y-1.5">
+                              <div className="h-1 bg-zinc-200 rounded"></div>
+                              <div className="h-1 bg-zinc-200 rounded w-3/4"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="border-t border-border bg-background p-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-semibold text-sm">Default</p>
+                              <p className="text-xs text-muted-foreground">Modern gradient design</p>
+                            </div>
+                            {(form.watch("template_id") === "default" || (!form.watch("template_id") && !initialData?.template_id)) && (
+                              <Check className="h-5 w-5 text-primary" />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Minimal Template */}
+                      <div
+                        className={`group relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all ${
+                          form.watch("template_id") === "minimal"
+                            ? "border-primary ring-2 ring-primary/20"
+                            : "border-border hover:border-primary/50"
+                        }`}
+                        onClick={() => saveTemplate("minimal")}
+                      >
+                        <div className="aspect-video bg-white p-4 dark:bg-zinc-950">
+                          <div className="h-full rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+                            <div className="flex flex-col items-center gap-2 mb-3">
+                              <div className="h-10 w-10 rounded-full bg-zinc-200 dark:bg-zinc-800"></div>
+                              <div className="h-2 w-20 bg-zinc-300 rounded dark:bg-zinc-700"></div>
+                              <div className="h-1.5 w-16 bg-zinc-200 rounded dark:bg-zinc-800"></div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="h-0.5 bg-zinc-200 rounded dark:bg-zinc-800"></div>
+                              <div className="h-0.5 bg-zinc-200 rounded w-4/5 dark:bg-zinc-800"></div>
+                              <div className="h-0.5 bg-zinc-200 rounded w-3/4 dark:bg-zinc-800"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="border-t border-border bg-background p-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-semibold text-sm">Minimal</p>
+                              <p className="text-xs text-muted-foreground">Clean, centered layout</p>
+                            </div>
+                            {form.watch("template_id") === "minimal" && (
+                              <Check className="h-5 w-5 text-primary" />
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
