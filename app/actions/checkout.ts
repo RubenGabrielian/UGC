@@ -34,6 +34,18 @@ export async function createCheckout(variantId?: string, userId?: string) {
       if (userError) {
         authError = userError;
         console.error("getUser() error:", userError);
+        return {
+          error: "Unauthenticated",
+          message: userError.message || "Authentication failed. Please log in again.",
+          debug: {
+            providedUserId: userId,
+            errorMessage: userError.message,
+            errorStatus: userError.status,
+            errorName: userError.name,
+            errorCode: (userError as any).code,
+            step: "getUser() verification",
+          },
+        };
       } else if (!authenticatedUser) {
         console.error("No authenticated user found");
         return {
@@ -42,6 +54,7 @@ export async function createCheckout(variantId?: string, userId?: string) {
           debug: {
             providedUserId: userId,
             authenticatedUserId: null,
+            step: "user verification - no user returned",
           },
         };
       } else if (authenticatedUser.id !== userId) {
@@ -55,6 +68,8 @@ export async function createCheckout(variantId?: string, userId?: string) {
           debug: {
             providedUserId: userId,
             authenticatedUserId: authenticatedUser.id,
+            idsMatch: false,
+            step: "user verification - ID mismatch",
           },
         };
       } else {
@@ -120,7 +135,10 @@ export async function createCheckout(variantId?: string, userId?: string) {
           errorMessage: authError.message,
           errorStatus: authError.status,
           errorName: authError.name,
+          errorCode: (authError as any).code,
           providedUserId: userId,
+          step: "authentication check",
+          hasRefreshTokenError: authError.message?.includes("Refresh Token") || false,
         },
       };
     }
@@ -134,6 +152,7 @@ export async function createCheckout(variantId?: string, userId?: string) {
           providedUserId: userId,
           triedSession: true,
           triedGetUser: true,
+          step: "user retrieval - no user found",
         },
       };
     }

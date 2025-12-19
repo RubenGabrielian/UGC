@@ -77,11 +77,19 @@ export function UpgradeButton({ isPro, variantId, userId }: UpgradeButtonProps) 
         console.error("Checkout error:", result);
         console.error("Error details:", result.debug);
         
+        // Build detailed error message with debug info
+        let errorDescription = result.message || result.error;
+        if (result.debug) {
+          const debugStr = JSON.stringify(result.debug, null, 2);
+          errorDescription += `\n\nDebug Info:\n${debugStr}`;
+          console.error("Full debug info:", result.debug);
+        }
+        
         // If it's an authentication error, redirect to login
         if (result.error === "Unauthenticated" || result.message?.includes("session")) {
           toast.error("Session Expired", {
-            description: result.message || "Please log in again to continue.",
-            duration: 5000,
+            description: errorDescription,
+            duration: 8000,
           });
           // Redirect to login after a short delay
           setTimeout(() => {
@@ -92,7 +100,8 @@ export function UpgradeButton({ isPro, variantId, userId }: UpgradeButtonProps) 
         }
         
         toast.error("Failed to start checkout", {
-          description: result.message || result.error,
+          description: errorDescription,
+          duration: 8000,
         });
         setIsLoading(false);
         return;
