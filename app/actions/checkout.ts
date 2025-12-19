@@ -9,55 +9,111 @@ export async function createCheckout(variantId?: string) {
 
   try {
     // Debug: Check which cookies are present
-    const cookieStore = await cookies();
-    const allCookies = cookieStore.getAll();
-    const cookieNames = allCookies.map(c => c.name);
-    console.log("Cookies present:", cookieNames);
-    console.log("Supabase-related cookies:", cookieNames.filter(name =>
-      name.includes("supabase") || name.includes("sb-")
-    ));
+    let cookieStore;
+    let allCookies: any[] = [];
+    let cookieNames: string[] = [];
 
-    const supabase = await createClient();
-    console.log("Supabase client created");
-
-    // Simple auth check - just get the user
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    console.log("getUser() result:", {
-      hasUser: !!user,
-      userId: user?.id,
-      error: authError?.message,
-      errorStatus: authError?.status,
-      errorName: authError?.name,
-    });
-
-    if (authError) {
-      console.error("Auth error:", authError);
+    try {
+      cookieStore = await cookies();
+      allCookies = cookieStore.getAll();
+      cookieNames = allCookies.map(c => c.name);
+      console.log("Cookies present:", cookieNames);
+      console.log("Supabase-related cookies:", cookieNames.filter(name =>
+        name.includes("supabase") || name.includes("sb-")
+      ));
+    } catch (cookieError) {
+      console.error("Error reading cookies:", cookieError);
       return {
-        error: "Unauthenticated",
-        message: authError.message?.includes("Refresh Token")
-          ? "Your session has expired. Please log in again."
-          : "Authentication failed. Please log in again.",
+        error: "Configuration Error",
+        message: "Failed to read cookies.",
         debug: {
-          errorMessage: authError.message,
-          errorStatus: authError.status,
-          errorName: authError.name,
-          errorCode: (authError as any).code,
-          cookiesPresent: cookieNames,
-          supabaseCookies: cookieNames.filter(name =>
-            name.includes("supabase") || name.includes("sb-")
-          ),
-          step: "getUser()",
+          step: "cookie reading",
+          error: cookieError instanceof Error ? cookieError.message : String(cookieError),
         },
       };
     }
 
+    let supabase;
+    try {
+      supabase = await createClient();
+      console.log("Supabase client created");
+    } catch (clientError) {
+      console.error("Error creating Supabase client:", clientError);
+      return {
+        error: "Configuration Error",
+        message: "Failed to initialize authentication.",
+        debug: {
+          step: "supabase client creation",
+          error: clientError instanceof Error ? clientError.message : String(clientError),
+          cookiesPresent: cookieNames,
+        },
+      };
+    }
+
+    // Simple auth check - just get the user
+    let user;
+    let authError;
+
+    try {
+      const userResult = await supabase.auth.getUser();
+      user = userResult.data?.user || undefined;
+      authError = userResult.error || undefined;
+    } catch (getUserError) {
+      console.error("Error calling getUser():", getUserError);
+      return {
+        error: "Unauthenticated",
+        message: "Authentication check failed.",
+        debug: {
+          step: "getUser() call",
+          error: getUserError instanceof Error ? getUserError.message : String(getUserError),
+          errorType: getUserError instanceof Error ? getUserError.constructor.name : typeof getUserError,
+          cookiesPresent: cookieNames,
+          supabaseCookies: cookieNames.filter(name =>
+            name.includes("supabase") || name.includes("sb-")
+          ),
+        },
+      };
+    }
+
+    console.log("getUser() result:", {
+      hasUser: !!user,
+      userId: user?.id,
+      error: authError ? (authError.message || String(authError)) : null,
+      errorStatus: (authError as any)?.status,
+      errorName: (authError as any)?.name,
+      errorCode: (authError as any)?.code,
+      fullError: authError ? JSON.stringify(authError, Object.getOwnPropertyNames(authError)) : null,
+    });
+
+    if (authError) {
+      console.error("Auth error:", authError);
+      const errorMessage = authError.message || String(authError) || "Authentication failed";
+      const errorResponse = {
+        error: "Unauthenticated",
+        message: errorMessage.includes("Refresh Token")
+          ? "Your session has expired. Please log in again."
+          : "Authentication failed. Please log in again.",
+        debug: {
+          errorMessage: errorMessage,
+          errorStatus: (authError as any)?.status,
+          errorName: (authError as any)?.name,
+          errorCode: (authError as any)?.code,
+          cookiesPresent: cookieNames,
+          supabaseCookies: cookieNames.filter(name =>
+            name.includes("supabase") || name.includes("sb-")
+          ),
+          cookieCount: allCookies.length,
+          step: "getUser()",
+          fullErrorObject: JSON.stringify(authError, Object.getOwnPropertyNames(authError)),
+        },
+      };
+      console.error("Returning auth error response:", JSON.stringify(errorResponse, null, 2));
+      return errorResponse;
+    }
+
     if (!user) {
       console.error("No user found - cookies may be missing or expired");
-      return {
+      const errorResponse = {
         error: "Unauthenticated",
         message: "No user session found. Please log in again.",
         debug: {
@@ -67,8 +123,11 @@ export async function createCheckout(variantId?: string) {
           ),
           cookieCount: allCookies.length,
           step: "getUser() - no user returned",
+          hasAuthError: false,
         },
       };
+      console.error("Returning no user error response:", JSON.stringify(errorResponse, null, 2));
+      return errorResponse;
     }
 
     console.log("User authenticated successfully:", user.id);
@@ -217,14 +276,31 @@ export async function createCheckout(variantId?: string) {
   } catch (error) {
     console.error("=== CHECKOUT ACTION ERROR ===");
     console.error("Checkout creation error:", error);
+    console.error("Error type:", error instanceof Error ? error.constructor.name : typeof error);
+    console.error("Error message:", error instanceof Error ? error.message : String(error));
     console.error("Error stack:", error instanceof Error ? error.stack : "No stack");
-    return {
+
+    // Try to get cookies even in error case for debugging
+    let cookieNames: string[] = [];
+    try {
+      const cookieStore = await cookies();
+      cookieNames = cookieStore.getAll().map(c => c.name);
+    } catch (e) {
+      // Ignore cookie errors in catch block
+    }
+
+    const errorResponse = {
       error: "Internal server error",
       message: error instanceof Error ? error.message : "An unexpected error occurred.",
       debug: {
         errorType: error instanceof Error ? error.constructor.name : typeof error,
         errorMessage: error instanceof Error ? error.message : String(error),
+        errorStack: error instanceof Error ? error.stack : undefined,
+        cookiesPresent: cookieNames,
+        step: "catch block",
       },
     };
+    console.error("Returning catch block error response:", JSON.stringify(errorResponse, null, 2));
+    return errorResponse;
   }
 }
