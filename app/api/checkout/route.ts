@@ -39,22 +39,59 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    if (process.env.NODE_ENV === "development") {
-      const allCookies = cookieStore.getAll();
-      console.log("Checkout API - Cookie info:", {
-        hasCookies,
-        cookieHeader: cookieHeader ? "present" : "missing",
-        cookieStoreCount: allCookies.length,
-        cookieNames: allCookies.map(c => c.name),
-        supabaseCookies: allCookies.filter(c => c.name.includes("supabase") || c.name.includes("sb-")).map(c => c.name),
-      });
+    // Always log cookie info for debugging (even in production)
+    const allCookies = cookieStore.getAll();
+    console.log("Checkout API - Cookie info:", {
+      hasCookies,
+      cookieHeader: cookieHeader ? "present" : "missing",
+      cookieStoreCount: allCookies.length,
+      cookieNames: allCookies.map(c => c.name),
+      supabaseCookies: allCookies.filter(c => c.name.includes("supabase") || c.name.includes("sb-")).map(c => c.name),
+    });
+
+    // Try to get session first (more reliable in API routes)
+    let {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
+
+    // If session exists but is expired, try to refresh it
+    if (session && session.expires_at && session.expires_at * 1000 < Date.now()) {
+      console.log("Session expired, attempting refresh...");
+      const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+      if (!refreshError && refreshData?.session) {
+        // Session refreshed successfully
+        session = refreshData.session;
+        sessionError = null;
+        console.log("Session refreshed successfully");
+      } else {
+        console.error("Failed to refresh session:", refreshError?.message);
+      }
     }
 
-    // Get authenticated user
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    // If session fails, try getUser as fallback
+    let user = session?.user || undefined;
+    let authError = sessionError;
+
+    if (!user && !authError) {
+      const userResult = await supabase.auth.getUser();
+      user = userResult.data?.user || undefined;
+      authError = userResult.error;
+    }
+
+    // Log detailed auth info for debugging
+    console.error("Auth check in checkout:", {
+      hasSession: !!session,
+      hasUser: !!user,
+      sessionError: sessionError?.message,
+      authError: authError?.message,
+      hasCookies,
+      cookieHeader: cookieHeader ? "present" : "missing",
+      cookieStoreCount: cookieStore.getAll().length,
+      supabaseCookies: cookieStore.getAll().filter(c =>
+        c.name.includes("supabase") || c.name.includes("sb-")
+      ).map(c => c.name),
+    });
 
     if (authError) {
       console.error("Auth error in checkout:", {
@@ -62,15 +99,18 @@ export async function POST(request: NextRequest) {
         status: authError.status,
         name: authError.name,
         hasCookies,
+        cookieHeader: cookieHeader ? "present" : "missing",
       });
       return NextResponse.json(
         {
           error: "Unauthenticated",
-          details: process.env.NODE_ENV === "development" ? {
+          details: {
             message: authError.message,
             hasCookies,
             cookieCount: cookieHeader ? cookieHeader.split(";").length : 0,
-          } : undefined
+            cookieStoreCount: cookieStore.getAll().length,
+            supabaseCookies: allCookies.filter(c => c.name.includes("supabase") || c.name.includes("sb-")).map(c => c.name),
+          }
         },
         { status: 401 }
       );
@@ -80,14 +120,17 @@ export async function POST(request: NextRequest) {
       console.error("No user found in checkout route", {
         hasCookies,
         cookieHeader: cookieHeader ? "present" : "missing",
+        cookieStoreCount: cookieStore.getAll().length,
       });
       return NextResponse.json(
         {
           error: "Unauthenticated",
-          details: process.env.NODE_ENV === "development" ? {
+          details: {
             hasCookies,
             cookieCount: cookieHeader ? cookieHeader.split(";").length : 0,
-          } : undefined
+            cookieStoreCount: cookieStore.getAll().length,
+            message: "No user session found. Please log in again.",
+          }
         },
         { status: 401 }
       );

@@ -28,8 +28,24 @@ export function UpgradeButton({ isPro, variantId }: UpgradeButtonProps) {
 
       if (!response.ok) {
         const error = await response.json();
-        const errorMessage = error.error || "Failed to create checkout";
-        const errorDetails = error.details ? ` Details: ${JSON.stringify(error.details)}` : "";
+        const errorMessage = error.message || error.error || "Failed to create checkout";
+        
+        // If it's an authentication error with refresh token issue, redirect to login
+        if (response.status === 401 && error.details?.isRefreshTokenError) {
+          toast.error("Session Expired", {
+            description: "Please log in again to continue.",
+            duration: 5000,
+          });
+          // Redirect to login after a short delay
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 2000);
+          setIsLoading(false);
+          return;
+        }
+        
+        const errorDetails = error.details ? `\n\nDebug Info:\n${JSON.stringify(error.details, null, 2)}` : "";
+        console.error("Checkout API error:", error);
         throw new Error(`${errorMessage}${errorDetails}`);
       }
 
