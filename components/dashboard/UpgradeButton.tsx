@@ -17,14 +17,25 @@ export function UpgradeButton({ isPro, variantId, userId }: UpgradeButtonProps) 
   const [isLoading, setIsLoading] = useState(false);
 
   const handleUpgrade = async () => {
+    console.log("=== UPGRADE BUTTON CLICKED ===");
+    console.log("Props:", { isPro, variantId, userId });
     setIsLoading(true);
 
     try {
       // First, verify the user is authenticated on the client side
+      console.log("Checking client-side session...");
       const supabase = createClient();
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
+      console.log("Client session check:", {
+        hasSession: !!session,
+        sessionExpiresAt: session?.expires_at,
+        isExpired: session?.expires_at ? session.expires_at * 1000 < Date.now() : null,
+        error: sessionError?.message,
+      });
+      
       if (sessionError || !session) {
+        console.error("Client session error or missing");
         toast.error("Session Expired", {
           description: "Please log in again to continue.",
           duration: 5000,
@@ -38,9 +49,14 @@ export function UpgradeButton({ isPro, variantId, userId }: UpgradeButtonProps) 
 
       // If session is expired, try to refresh it
       if (session.expires_at && session.expires_at * 1000 < Date.now()) {
-        console.log("Session expired, refreshing...");
+        console.log("Client session expired, refreshing...");
         const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+        console.log("Refresh result:", {
+          success: !!refreshData?.session,
+          error: refreshError?.message,
+        });
         if (refreshError || !refreshData?.session) {
+          console.error("Failed to refresh client session");
           toast.error("Session Expired", {
             description: "Please log in again to continue.",
             duration: 5000,
@@ -53,9 +69,14 @@ export function UpgradeButton({ isPro, variantId, userId }: UpgradeButtonProps) 
         }
       }
 
+      console.log("Calling createCheckout with:", { variantId, userId });
       const result = await createCheckout(variantId, userId);
+      console.log("createCheckout result:", result);
 
       if (result.error) {
+        console.error("Checkout error:", result);
+        console.error("Error details:", result.debug);
+        
         // If it's an authentication error, redirect to login
         if (result.error === "Unauthenticated" || result.message?.includes("session")) {
           toast.error("Session Expired", {

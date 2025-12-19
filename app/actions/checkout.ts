@@ -4,8 +4,12 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 
 export async function createCheckout(variantId?: string, userId?: string) {
+  console.log("=== CHECKOUT ACTION START ===");
+  console.log("Input params:", { variantId, userId });
+
   try {
     const supabase = await createClient();
+    console.log("Supabase client created");
 
     // If userId is provided, verify it matches the authenticated user
     // Otherwise, try to get the user from session
@@ -13,28 +17,64 @@ export async function createCheckout(variantId?: string, userId?: string) {
     let authError;
 
     if (userId) {
+      console.log("UserId provided, verifying authentication...");
       // Verify the user exists and matches the authenticated session
       const {
         data: { user: authenticatedUser },
         error: userError,
       } = await supabase.auth.getUser();
 
+      console.log("getUser() result:", {
+        hasUser: !!authenticatedUser,
+        userId: authenticatedUser?.id,
+        expectedUserId: userId,
+        error: userError?.message,
+      });
+
       if (userError) {
         authError = userError;
-      } else if (!authenticatedUser || authenticatedUser.id !== userId) {
+        console.error("getUser() error:", userError);
+      } else if (!authenticatedUser) {
+        console.error("No authenticated user found");
+        return {
+          error: "Unauthenticated",
+          message: "No authenticated user found. Please log in again.",
+          debug: {
+            providedUserId: userId,
+            authenticatedUserId: null,
+          },
+        };
+      } else if (authenticatedUser.id !== userId) {
+        console.error("User ID mismatch:", {
+          provided: userId,
+          authenticated: authenticatedUser.id,
+        });
         return {
           error: "Unauthenticated",
           message: "User verification failed. Please log in again.",
+          debug: {
+            providedUserId: userId,
+            authenticatedUserId: authenticatedUser.id,
+          },
         };
       } else {
         user = authenticatedUser;
+        console.log("User verified successfully:", user.id);
       }
     } else {
+      console.log("No userId provided, trying to get from session...");
       // Fallback: try to get user from session
       const {
         data: { session },
         error: sessionError,
       } = await supabase.auth.getSession();
+
+      console.log("getSession() result:", {
+        hasSession: !!session,
+        sessionExpiresAt: session?.expires_at,
+        isExpired: session?.expires_at ? session.expires_at * 1000 < Date.now() : null,
+        error: sessionError?.message,
+      });
 
       let currentSession = session;
       if (session && session.expires_at && session.expires_at * 1000 < Date.now()) {
@@ -52,9 +92,15 @@ export async function createCheckout(variantId?: string, userId?: string) {
       authError = sessionError;
 
       if (!user && !authError) {
+        console.log("No user from session, trying getUser()...");
         const userResult = await supabase.auth.getUser();
         user = userResult.data?.user || undefined;
         authError = userResult.error;
+        console.log("getUser() fallback result:", {
+          hasUser: !!user,
+          userId: user?.id,
+          error: userResult.error?.message,
+        });
       }
     }
 
@@ -63,12 +109,19 @@ export async function createCheckout(variantId?: string, userId?: string) {
         message: authError.message,
         status: authError.status,
         name: authError.name,
+        code: (authError as any).code,
       });
       return {
         error: "Unauthenticated",
         message: authError.message?.includes("Refresh Token")
           ? "Your session has expired. Please log in again."
           : "Authentication failed. Please log in again.",
+        debug: {
+          errorMessage: authError.message,
+          errorStatus: authError.status,
+          errorName: authError.name,
+          providedUserId: userId,
+        },
       };
     }
 
@@ -77,25 +130,50 @@ export async function createCheckout(variantId?: string, userId?: string) {
       return {
         error: "Unauthenticated",
         message: "No user session found. Please log in again.",
+        debug: {
+          providedUserId: userId,
+          triedSession: true,
+          triedGetUser: true,
+        },
       };
     }
 
+    console.log("User authenticated successfully:", user.id);
+
+    console.log("Creating checkout for user:", user.id);
+
     const finalVariantId = variantId || process.env.LEMONSQUEEZY_VARIANT_ID;
+    console.log("Variant ID:", finalVariantId ? "provided" : "missing");
 
     if (!finalVariantId) {
+      console.error("Missing variant_id");
       return {
         error: "variant_id is required",
         message: "Checkout configuration is missing. Please contact support.",
+        debug: {
+          variantIdProvided: !!variantId,
+          envVariantId: !!process.env.LEMONSQUEEZY_VARIANT_ID,
+        },
       };
     }
 
     const apiKey = process.env.LEMONSQUEEZY_API_KEY;
     const storeId = process.env.LEMONSQUEEZY_STORE_ID;
 
+    console.log("LemonSqueezy config:", {
+      hasApiKey: !!apiKey,
+      hasStoreId: !!storeId,
+    });
+
     if (!apiKey || !storeId) {
+      console.error("Missing LemonSqueezy configuration");
       return {
         error: "LemonSqueezy configuration missing",
         message: "Payment system is not configured. Please contact support.",
+        debug: {
+          hasApiKey: !!apiKey,
+          hasStoreId: !!storeId,
+        },
       };
     }
 
@@ -195,16 +273,24 @@ export async function createCheckout(variantId?: string, userId?: string) {
     }
 
     const checkoutUrl = data.data.attributes.url;
+    console.log("Checkout URL created successfully:", checkoutUrl);
+    console.log("=== CHECKOUT ACTION SUCCESS ===");
 
     return {
       success: true,
       checkout_url: checkoutUrl,
     };
   } catch (error) {
+    console.error("=== CHECKOUT ACTION ERROR ===");
     console.error("Checkout creation error:", error);
+    console.error("Error stack:", error instanceof Error ? error.stack : "No stack");
     return {
       error: "Internal server error",
       message: error instanceof Error ? error.message : "An unexpected error occurred.",
+      debug: {
+        errorType: error instanceof Error ? error.constructor.name : typeof error,
+        errorMessage: error instanceof Error ? error.message : String(error),
+      },
     };
   }
 }
