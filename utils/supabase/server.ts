@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+// This file is server-only - do not import in client components
+
 export async function createClient() {
     const cookieStore = await cookies();
 

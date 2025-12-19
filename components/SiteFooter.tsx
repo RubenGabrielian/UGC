@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import Image from "next/image";
 
 export function SiteFooter() {
   return (
     <footer className="border-t bg-background">
       <div className="container mx-auto flex flex-col gap-4 px-4 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
+          <Image src="/logo.png" alt="CreatorKit" width={32} height={32} />
           <div>
             <p className="text-sm font-semibold">CreatorKit</p>
             <p className="text-xs text-muted-foreground">Build and share your media kit.</p>
