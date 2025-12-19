@@ -6,8 +6,24 @@ import { revalidatePath } from "next/cache";
 export async function createCheckout(variantId?: string, userId?: string) {
   console.log("=== CHECKOUT ACTION START ===");
   console.log("Input params:", { variantId, userId });
+  console.log("userId type:", typeof userId);
+  console.log("userId value:", userId);
+  console.log("userId truthy:", !!userId);
 
   try {
+    if (!userId) {
+      console.error("ERROR: userId is not provided!");
+      return {
+        error: "Configuration Error",
+        message: "User ID is required but was not provided.",
+        debug: {
+          step: "parameter validation",
+          providedUserId: userId,
+          variantIdProvided: !!variantId,
+        },
+      };
+    }
+
     const supabase = await createClient();
     console.log("Supabase client created");
 

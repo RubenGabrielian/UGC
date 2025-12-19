@@ -70,11 +70,27 @@ export function UpgradeButton({ isPro, variantId, userId }: UpgradeButtonProps) 
       }
 
       console.log("Calling createCheckout with:", { variantId, userId });
+      
+      if (!userId) {
+        const errorMsg = "ERROR: userId is missing! Cannot proceed with checkout.";
+        console.error(errorMsg);
+        alert(errorMsg + "\n\nThis is a bug - userId should be passed from the dashboard page.");
+        toast.error("Configuration Error", {
+          description: "User ID is missing. Please refresh the page and try again.",
+        });
+        setIsLoading(false);
+        return;
+      }
+      
       const result = await createCheckout(variantId, userId);
       console.log("createCheckout result:", result);
+      console.log("Result keys:", Object.keys(result));
+      console.log("Result.error:", result.error);
+      console.log("Result.debug:", result.debug);
 
       if (result.error) {
-        console.error("Checkout error:", result);
+        console.error("=== CHECKOUT ERROR ===");
+        console.error("Full result object:", JSON.stringify(result, null, 2));
         console.error("Error details:", result.debug);
         
         // Build detailed error message with debug info
@@ -83,25 +99,30 @@ export function UpgradeButton({ isPro, variantId, userId }: UpgradeButtonProps) 
           const debugStr = JSON.stringify(result.debug, null, 2);
           errorDescription += `\n\nDebug Info:\n${debugStr}`;
           console.error("Full debug info:", result.debug);
+          
+          // Also show in alert for visibility
+          alert(`Checkout Error:\n\n${result.error}\n\n${result.message}\n\nDebug:\n${debugStr}`);
+        } else {
+          alert(`Checkout Error:\n\n${result.error}\n\n${result.message}\n\n(No debug info available)`);
         }
         
         // If it's an authentication error, redirect to login
         if (result.error === "Unauthenticated" || result.message?.includes("session")) {
           toast.error("Session Expired", {
             description: errorDescription,
-            duration: 8000,
+            duration: 10000,
           });
           // Redirect to login after a short delay
           setTimeout(() => {
             window.location.href = "/login";
-          }, 2000);
+          }, 3000);
           setIsLoading(false);
           return;
         }
         
         toast.error("Failed to start checkout", {
           description: errorDescription,
-          duration: 8000,
+          duration: 10000,
         });
         setIsLoading(false);
         return;
