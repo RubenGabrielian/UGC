@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, Crown } from "lucide-react";
 import { toast } from "sonner";
 import { createCheckout } from "@/app/actions/checkout";
+import { createClient } from "@/utils/supabase/client";
 
 interface UpgradeButtonProps {
   isPro: boolean;
@@ -18,6 +19,39 @@ export function UpgradeButton({ isPro, variantId }: UpgradeButtonProps) {
     setIsLoading(true);
 
     try {
+      // First, verify the user is authenticated on the client side
+      const supabase = createClient();
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        toast.error("Session Expired", {
+          description: "Please log in again to continue.",
+          duration: 5000,
+        });
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
+        setIsLoading(false);
+        return;
+      }
+
+      // If session is expired, try to refresh it
+      if (session.expires_at && session.expires_at * 1000 < Date.now()) {
+        console.log("Session expired, refreshing...");
+        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+        if (refreshError || !refreshData?.session) {
+          toast.error("Session Expired", {
+            description: "Please log in again to continue.",
+            duration: 5000,
+          });
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 2000);
+          setIsLoading(false);
+          return;
+        }
+      }
+
       const result = await createCheckout(variantId);
 
       if (result.error) {

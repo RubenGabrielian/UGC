@@ -7,16 +7,54 @@ export async function createCheckout(variantId?: string) {
   try {
     const supabase = await createClient();
 
-    // Get authenticated user
+    // Try to get session first (more reliable)
     const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
 
-    if (authError || !user) {
+    // If we have a session but it's expired, try to refresh it
+    let currentSession = session;
+    if (session && session.expires_at && session.expires_at * 1000 < Date.now()) {
+      console.log("Session expired, attempting refresh...");
+      const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+      if (!refreshError && refreshData?.session) {
+        currentSession = refreshData.session;
+        console.log("Session refreshed successfully");
+      } else {
+        console.error("Failed to refresh session:", refreshError?.message);
+      }
+    }
+
+    // Get user from session or try getUser as fallback
+    let user = currentSession?.user;
+    let authError = sessionError;
+
+    if (!user && !authError) {
+      const userResult = await supabase.auth.getUser();
+      user = userResult.data?.user || undefined;
+      authError = userResult.error;
+    }
+
+    if (authError) {
+      console.error("Auth error in checkout action:", {
+        message: authError.message,
+        status: authError.status,
+        name: authError.name,
+      });
       return {
         error: "Unauthenticated",
-        message: "Your session has expired. Please log in again.",
+        message: authError.message?.includes("Refresh Token")
+          ? "Your session has expired. Please log in again."
+          : "Authentication failed. Please log in again.",
+      };
+    }
+
+    if (!user) {
+      console.error("No user found in checkout action");
+      return {
+        error: "Unauthenticated",
+        message: "No user session found. Please log in again.",
       };
     }
 
