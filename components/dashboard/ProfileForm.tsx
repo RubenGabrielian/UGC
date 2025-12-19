@@ -41,6 +41,8 @@ import {
   X,
   BarChart3,
   Palette,
+  Crown,
+  Lock,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -160,9 +162,10 @@ type SectionKey = "identity" | "socials" | "collabs" | "services" | "analytics" 
 interface ProfileFormProps {
   initialData: Partial<FormValues> | null;
   userId: string;
+  isPro?: boolean;
 }
 
-export function ProfileForm({ initialData, userId }: ProfileFormProps) {
+export function ProfileForm({ initialData, userId, isPro = false }: ProfileFormProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [uploadingLogoIndex, setUploadingLogoIndex] = useState<number | null>(null);
@@ -332,23 +335,32 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
   }, [initialData, normalizedInitial, form]);
 
   const saveTemplate = async (templateId: string) => {
+    // Check if template requires Pro (minimal is premium)
+    const premiumTemplates = ["minimal"];
+    if (premiumTemplates.includes(templateId) && !isPro) {
+      toast.error("Pro Plan Required", {
+        description: "This template is available for Pro users only. Please upgrade to access premium templates.",
+      });
+      return;
+    }
+
     setIsSaving(true);
     const supabase = createClient();
-    
+
     const { error } = await supabase
       .from("profiles")
       .update({ template_id: templateId })
       .eq("id", userId);
-    
+
     setIsSaving(false);
-    
+
     if (error) {
       toast.error("Failed to save template", {
         description: error.message,
       });
       return;
     }
-    
+
     form.setValue("template_id", templateId);
     toast.success("Template updated", {
       description: "Your page design has been updated.",
@@ -1533,13 +1545,21 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
 
                       {/* Minimal Template */}
                       <div
-                        className={`group relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all ${
+                        className={`group relative overflow-hidden rounded-lg border-2 transition-all ${
                           form.watch("template_id") === "minimal"
                             ? "border-primary ring-2 ring-primary/20"
                             : "border-border hover:border-primary/50"
-                        }`}
-                        onClick={() => saveTemplate("minimal")}
+                        } ${!isPro ? "opacity-60" : "cursor-pointer"}`}
+                        onClick={() => isPro && saveTemplate("minimal")}
                       >
+                        {!isPro && (
+                          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+                            <div className="text-center">
+                              <Lock className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
+                              <p className="text-xs font-semibold text-muted-foreground">Pro Only</p>
+                            </div>
+                          </div>
+                        )}
                         <div className="aspect-video bg-white p-4 dark:bg-zinc-950">
                           <div className="h-full rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
                             <div className="flex flex-col items-center gap-2 mb-3">
@@ -1557,7 +1577,12 @@ export function ProfileForm({ initialData, userId }: ProfileFormProps) {
                         <div className="border-t border-border bg-background p-3">
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="font-semibold text-sm">Minimal</p>
+                              <div className="flex items-center gap-1.5">
+                                <p className="font-semibold text-sm">Minimal</p>
+                                {!isPro && (
+                                  <Crown className="h-3 w-3 text-primary" />
+                                )}
+                              </div>
                               <p className="text-xs text-muted-foreground">Clean, centered layout</p>
                             </div>
                             {form.watch("template_id") === "minimal" && (

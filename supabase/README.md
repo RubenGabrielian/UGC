@@ -75,3 +75,43 @@ If you encounter errors:
 1. **"relation profiles does not exist"**: Make sure your `profiles` table exists first
 2. **"permission denied"**: Check that you're running the migration as a database admin
 3. **"function already exists"**: The migration uses `CREATE OR REPLACE`, so it's safe to run multiple times
+
+## Pro Subscription Fields Migration
+
+To enable Pro plan subscriptions, run the following migration:
+
+1. Go to your Supabase Dashboard: https://supabase.com/dashboard
+2. Select your project
+3. Navigate to **SQL Editor** in the left sidebar
+4. Click **New Query**
+5. Copy and paste the contents of `migrations/add_pro_subscription_fields.sql`
+6. Click **Run** to execute the migration
+
+This migration adds:
+- `is_pro`: Boolean flag indicating if user has active Pro subscription
+- `subscription_status`: Current subscription status (active, cancelled, expired, etc.)
+- `subscription_id`: LemonSqueezy subscription ID
+- `subscription_variant_id`: LemonSqueezy variant ID
+
+### Environment Variables Required
+
+Add these to your `.env.local` file:
+
+```env
+# LemonSqueezy Configuration
+LEMONSQUEEZY_API_KEY=your_api_key_here
+LEMONSQUEEZY_STORE_ID=your_store_id_here
+LEMONSQUEEZY_VARIANT_ID=your_variant_id_here
+LEMONSQUEEZY_WEBHOOK_SECRET=your_webhook_secret_here
+
+# Public (for client-side)
+NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID=your_variant_id_here
+```
+
+### Webhook Setup
+
+1. Go to your LemonSqueezy Dashboard
+2. Navigate to **Settings** > **Webhooks**
+3. Add a new webhook with URL: `https://yourdomain.com/api/webhook/lemonsqueezy`
+4. Select events: `subscription_created`, `subscription_updated`, `subscription_cancelled`, `subscription_expired`
+5. Set your webhook secret and add it to `LEMONSQUEEZY_WEBHOOK_SECRET` in your `.env.local`

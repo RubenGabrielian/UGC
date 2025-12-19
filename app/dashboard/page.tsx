@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
+import { UpgradeButton } from "@/components/dashboard/UpgradeButton";
 
 export const metadata: Metadata = {
   title: "Dashboard | CreatorKit",
@@ -31,7 +32,7 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("*")
+    .select("*, is_pro, subscription_status")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -50,17 +51,23 @@ export default async function DashboardPage() {
               Edit your public creator page, connect your social platforms, and see how brands will view your page.
             </p>
           </div>
-          <Button asChild variant="outline" size="sm" className="w-full shrink-0 justify-center sm:w-auto">
-            <Link href={publicPath}>
-              View public page
-              <ExternalLink className="ml-1 h-3 w-3" />
-            </Link>
-          </Button>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <UpgradeButton
+              isPro={profile?.is_pro ?? false}
+              variantId={process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID || undefined}
+            />
+            <Button asChild variant="outline" size="sm" className="w-full shrink-0 justify-center sm:w-auto">
+              <Link href={publicPath}>
+                View public page
+                <ExternalLink className="ml-1 h-3 w-3" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
       <div className="min-h-screen flex flex-col dark:bg-zinc-950">
         <div className="px-4 pb-8 pt-7 sm:px-6 lg:px-10 flex-1">
-          <ProfileForm initialData={profile ?? null} userId={user.id} />
+          <ProfileForm initialData={profile ?? null} userId={user.id} isPro={profile?.is_pro ?? false} />
         </div>
       </div>
     </div>
