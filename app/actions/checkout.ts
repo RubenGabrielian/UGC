@@ -3,37 +3,59 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 
-export async function createCheckout(variantId?: string) {
+export async function createCheckout(variantId?: string, userId?: string) {
   try {
     const supabase = await createClient();
 
-    // Try to get session first (more reliable)
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession();
+    // If userId is provided, verify it matches the authenticated user
+    // Otherwise, try to get the user from session
+    let user;
+    let authError;
 
-    // If we have a session but it's expired, try to refresh it
-    let currentSession = session;
-    if (session && session.expires_at && session.expires_at * 1000 < Date.now()) {
-      console.log("Session expired, attempting refresh...");
-      const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-      if (!refreshError && refreshData?.session) {
-        currentSession = refreshData.session;
-        console.log("Session refreshed successfully");
+    if (userId) {
+      // Verify the user exists and matches the authenticated session
+      const {
+        data: { user: authenticatedUser },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError) {
+        authError = userError;
+      } else if (!authenticatedUser || authenticatedUser.id !== userId) {
+        return {
+          error: "Unauthenticated",
+          message: "User verification failed. Please log in again.",
+        };
       } else {
-        console.error("Failed to refresh session:", refreshError?.message);
+        user = authenticatedUser;
       }
-    }
+    } else {
+      // Fallback: try to get user from session
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
 
-    // Get user from session or try getUser as fallback
-    let user = currentSession?.user;
-    let authError = sessionError;
+      let currentSession = session;
+      if (session && session.expires_at && session.expires_at * 1000 < Date.now()) {
+        console.log("Session expired, attempting refresh...");
+        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+        if (!refreshError && refreshData?.session) {
+          currentSession = refreshData.session;
+          console.log("Session refreshed successfully");
+        } else {
+          console.error("Failed to refresh session:", refreshError?.message);
+        }
+      }
 
-    if (!user && !authError) {
-      const userResult = await supabase.auth.getUser();
-      user = userResult.data?.user || undefined;
-      authError = userResult.error;
+      user = currentSession?.user;
+      authError = sessionError;
+
+      if (!user && !authError) {
+        const userResult = await supabase.auth.getUser();
+        user = userResult.data?.user || undefined;
+        authError = userResult.error;
+      }
     }
 
     if (authError) {

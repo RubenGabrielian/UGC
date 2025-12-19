@@ -10,9 +10,10 @@ import { createClient } from "@/utils/supabase/client";
 interface UpgradeButtonProps {
   isPro: boolean;
   variantId?: string;
+  userId?: string;
 }
 
-export function UpgradeButton({ isPro, variantId }: UpgradeButtonProps) {
+export function UpgradeButton({ isPro, variantId, userId }: UpgradeButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleUpgrade = async () => {
@@ -52,7 +53,7 @@ export function UpgradeButton({ isPro, variantId }: UpgradeButtonProps) {
         }
       }
 
-      const result = await createCheckout(variantId);
+      const result = await createCheckout(variantId, userId);
 
       if (result.error) {
         // If it's an authentication error, redirect to login
