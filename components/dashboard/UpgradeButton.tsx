@@ -10,15 +10,14 @@ import { createClient } from "@/utils/supabase/client";
 interface UpgradeButtonProps {
   isPro: boolean;
   variantId?: string;
-  userId?: string;
 }
 
-export function UpgradeButton({ isPro, variantId, userId }: UpgradeButtonProps) {
+export function UpgradeButton({ isPro, variantId }: UpgradeButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleUpgrade = async () => {
     console.log("=== UPGRADE BUTTON CLICKED ===");
-    console.log("Props:", { isPro, variantId, userId });
+    console.log("Props:", { isPro, variantId });
     setIsLoading(true);
 
     try {
@@ -69,26 +68,12 @@ export function UpgradeButton({ isPro, variantId, userId }: UpgradeButtonProps) 
         }
       }
 
-      console.log("Calling createCheckout with:", { variantId, userId });
-      console.log("userId type:", typeof userId);
-      console.log("userId value:", userId);
-      console.log("userId truthy:", !!userId);
-      
-      if (!userId) {
-        const errorMsg = "ERROR: userId is missing! Cannot proceed with checkout.";
-        console.error(errorMsg);
-        alert(errorMsg + "\n\nThis is a bug - userId should be passed from the dashboard page.");
-        toast.error("Configuration Error", {
-          description: "User ID is missing. Please refresh the page and try again.",
-        });
-        setIsLoading(false);
-        return;
-      }
+      console.log("Calling createCheckout with:", { variantId });
       
       console.log("About to call createCheckout...");
       let result;
       try {
-        result = await createCheckout(variantId, userId);
+        result = await createCheckout(variantId);
         console.log("createCheckout completed");
       } catch (error) {
         console.error("createCheckout threw an error:", error);

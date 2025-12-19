@@ -55,7 +55,6 @@ export default async function DashboardPage() {
             <UpgradeButton
               isPro={profile?.is_pro ?? false}
               variantId={process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID || undefined}
-              userId={user?.id}
             />
             <Button asChild variant="outline" size="sm" className="w-full shrink-0 justify-center sm:w-auto">
               <Link href={publicPath}>

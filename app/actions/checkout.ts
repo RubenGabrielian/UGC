@@ -1,155 +1,41 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 
-export async function createCheckout(variantId?: string, userId?: string) {
+export async function createCheckout(variantId?: string) {
   console.log("=== CHECKOUT ACTION START ===");
-  console.log("Input params:", { variantId, userId });
-  console.log("userId type:", typeof userId);
-  console.log("userId value:", userId);
-  console.log("userId truthy:", !!userId);
+  console.log("Input params:", { variantId });
 
   try {
-    if (!userId) {
-      console.error("ERROR: userId is not provided!");
-      return {
-        error: "Configuration Error",
-        message: "User ID is required but was not provided.",
-        debug: {
-          step: "parameter validation",
-          providedUserId: userId,
-          variantIdProvided: !!variantId,
-        },
-      };
-    }
+    // Debug: Check which cookies are present
+    const cookieStore = await cookies();
+    const allCookies = cookieStore.getAll();
+    const cookieNames = allCookies.map(c => c.name);
+    console.log("Cookies present:", cookieNames);
+    console.log("Supabase-related cookies:", cookieNames.filter(name =>
+      name.includes("supabase") || name.includes("sb-")
+    ));
 
     const supabase = await createClient();
     console.log("Supabase client created");
 
-    // If userId is provided, verify it matches the authenticated user
-    // Otherwise, try to get the user from session
-    let user;
-    let authError;
+    // Simple auth check - just get the user
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
-    if (userId) {
-      console.log("UserId provided, verifying authentication...");
-      // Verify the user exists and matches the authenticated session
-      const {
-        data: { user: authenticatedUser },
-        error: userError,
-      } = await supabase.auth.getUser();
-
-      console.log("getUser() result:", {
-        hasUser: !!authenticatedUser,
-        userId: authenticatedUser?.id,
-        expectedUserId: userId,
-        error: userError?.message,
-      });
-
-      if (userError) {
-        authError = userError;
-        console.error("getUser() error:", userError);
-        const errorResponse = {
-          error: "Unauthenticated",
-          message: userError.message || "Authentication failed. Please log in again.",
-          debug: {
-            providedUserId: userId,
-            errorMessage: userError.message,
-            errorStatus: userError.status,
-            errorName: userError.name,
-            errorCode: (userError as any).code,
-            step: "getUser() verification",
-            fullError: JSON.stringify(userError, Object.getOwnPropertyNames(userError)),
-          },
-        };
-        console.error("Returning error response:", errorResponse);
-        return errorResponse;
-      } else if (!authenticatedUser) {
-        console.error("No authenticated user found");
-        const errorResponse = {
-          error: "Unauthenticated",
-          message: "No authenticated user found. Please log in again.",
-          debug: {
-            providedUserId: userId,
-            authenticatedUserId: null,
-            step: "user verification - no user returned",
-            getUserResult: "user is null or undefined",
-          },
-        };
-        console.error("Returning error response:", errorResponse);
-        return errorResponse;
-      } else if (authenticatedUser.id !== userId) {
-        console.error("User ID mismatch:", {
-          provided: userId,
-          authenticated: authenticatedUser.id,
-        });
-        const errorResponse = {
-          error: "Unauthenticated",
-          message: "User verification failed. Please log in again.",
-          debug: {
-            providedUserId: userId,
-            authenticatedUserId: authenticatedUser.id,
-            idsMatch: false,
-            step: "user verification - ID mismatch",
-          },
-        };
-        console.error("Returning error response:", errorResponse);
-        return errorResponse;
-      } else {
-        user = authenticatedUser;
-        console.log("User verified successfully:", user.id);
-      }
-    } else {
-      console.log("No userId provided, trying to get from session...");
-      // Fallback: try to get user from session
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession();
-
-      console.log("getSession() result:", {
-        hasSession: !!session,
-        sessionExpiresAt: session?.expires_at,
-        isExpired: session?.expires_at ? session.expires_at * 1000 < Date.now() : null,
-        error: sessionError?.message,
-      });
-
-      let currentSession = session;
-      if (session && session.expires_at && session.expires_at * 1000 < Date.now()) {
-        console.log("Session expired, attempting refresh...");
-        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-        if (!refreshError && refreshData?.session) {
-          currentSession = refreshData.session;
-          console.log("Session refreshed successfully");
-        } else {
-          console.error("Failed to refresh session:", refreshError?.message);
-        }
-      }
-
-      user = currentSession?.user;
-      authError = sessionError;
-
-      if (!user && !authError) {
-        console.log("No user from session, trying getUser()...");
-        const userResult = await supabase.auth.getUser();
-        user = userResult.data?.user || undefined;
-        authError = userResult.error;
-        console.log("getUser() fallback result:", {
-          hasUser: !!user,
-          userId: user?.id,
-          error: userResult.error?.message,
-        });
-      }
-    }
+    console.log("getUser() result:", {
+      hasUser: !!user,
+      userId: user?.id,
+      error: authError?.message,
+      errorStatus: authError?.status,
+      errorName: authError?.name,
+    });
 
     if (authError) {
-      console.error("Auth error in checkout action:", {
-        message: authError.message,
-        status: authError.status,
-        name: authError.name,
-        code: (authError as any).code,
-      });
+      console.error("Auth error:", authError);
       return {
         error: "Unauthenticated",
         message: authError.message?.includes("Refresh Token")
@@ -160,29 +46,34 @@ export async function createCheckout(variantId?: string, userId?: string) {
           errorStatus: authError.status,
           errorName: authError.name,
           errorCode: (authError as any).code,
-          providedUserId: userId,
-          step: "authentication check",
-          hasRefreshTokenError: authError.message?.includes("Refresh Token") || false,
+          cookiesPresent: cookieNames,
+          supabaseCookies: cookieNames.filter(name =>
+            name.includes("supabase") || name.includes("sb-")
+          ),
+          step: "getUser()",
         },
       };
     }
 
     if (!user) {
-      console.error("No user found in checkout action");
+      console.error("No user found - cookies may be missing or expired");
       return {
         error: "Unauthenticated",
         message: "No user session found. Please log in again.",
         debug: {
-          providedUserId: userId,
-          triedSession: true,
-          triedGetUser: true,
-          step: "user retrieval - no user found",
+          cookiesPresent: cookieNames,
+          supabaseCookies: cookieNames.filter(name =>
+            name.includes("supabase") || name.includes("sb-")
+          ),
+          cookieCount: allCookies.length,
+          step: "getUser() - no user returned",
         },
       };
     }
 
     console.log("User authenticated successfully:", user.id);
 
+    console.log("User authenticated successfully:", user.id);
     console.log("Creating checkout for user:", user.id);
 
     const finalVariantId = variantId || process.env.LEMONSQUEEZY_VARIANT_ID;
