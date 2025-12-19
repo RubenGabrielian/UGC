@@ -29,18 +29,30 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  // Refresh session if needed - this will update cookies automatically
-  // This is critical for maintaining authentication in Server Actions
+  // CRITICAL: Refresh session if needed - this will update cookies automatically
+  // getSession() is the correct method to refresh the session in middleware
+  // This ensures the session is synced before Server Actions/Components run
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  // If session exists but might be expired, getUser() will trigger a refresh
+  // This ensures we have a valid user token for Server Actions
   const {
     data: { user },
+    error: userError,
   } = await supabase.auth.getUser();
 
   // Log for debugging (only in development)
   if (process.env.NODE_ENV === "development") {
-    console.log("Middleware - User check:", {
+    console.log("Middleware - Session refresh:", {
+      hasSession: !!session,
       hasUser: !!user,
-      userId: user?.id,
+      sessionError: sessionError?.message,
+      userError: userError?.message,
       path: request.nextUrl.pathname,
+      cookiesSet: response.cookies.getAll().length,
     });
   }
 
