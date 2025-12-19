@@ -27,7 +27,9 @@ export function UpgradeButton({ isPro, variantId }: UpgradeButtonProps) {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || "Failed to create checkout");
+        const errorMessage = error.error || "Failed to create checkout";
+        const errorDetails = error.details ? ` Details: ${JSON.stringify(error.details)}` : "";
+        throw new Error(`${errorMessage}${errorDetails}`);
       }
 
       const data = await response.json();
