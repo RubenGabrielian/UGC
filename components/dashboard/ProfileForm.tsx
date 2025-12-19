@@ -1493,7 +1493,25 @@ export function ProfileForm({ initialData, userId, isPro = false }: ProfileFormP
               </TabsContent>
 
               <TabsContent value="analytics" className="space-y-6">
-                <Analytics userId={userId} />
+                {isPro ? (
+                  <Analytics userId={userId} />
+                ) : (
+                  <Card className="border-border/80 shadow-sm">
+                    <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                      <div className="mb-4 rounded-full bg-muted p-4">
+                        <BarChart3 className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                      <h3 className="mb-2 text-lg font-semibold">Analytics - Pro Feature</h3>
+                      <p className="mb-6 max-w-md text-sm text-muted-foreground">
+                        Unlock detailed analytics and insights about your profile performance. Track page views, engagement, and more with a Pro subscription.
+                      </p>
+                      <div className="flex items-center gap-2 text-sm font-medium text-primary">
+                        <Crown className="h-4 w-4" />
+                        Upgrade to Pro to access Analytics
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </TabsContent>
 
               <TabsContent value="appearance" className="space-y-6">

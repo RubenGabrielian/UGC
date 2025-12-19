@@ -47,6 +47,7 @@ export function PublicProfileView({
   templateId,
   mode: _mode,
   username: _username,
+  isPro = false,
 }: {
   values: PublicProfileValues;
   creatorId: string;
@@ -54,6 +55,7 @@ export function PublicProfileView({
   templateId?: string | null;
   mode?: "mobile" | "desktop";
   username?: string;
+  isPro?: boolean;
 }) {
   void _mode;
   void _username;
@@ -66,6 +68,7 @@ export function PublicProfileView({
         values={values}
         creatorId={creatorId}
         servicesPackages={servicesPackages}
+        isPro={isPro}
       />
     );
   }
@@ -76,6 +79,7 @@ export function PublicProfileView({
       values={values}
       creatorId={creatorId}
       servicesPackages={servicesPackages}
+      isPro={isPro}
     />
   );
 }

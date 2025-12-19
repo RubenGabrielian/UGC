@@ -36,7 +36,8 @@ export default async function ProfilePage({ params }: { params: { username: stri
       services_packages,
       categories,
       audience_demographics,
-      template_id
+      template_id,
+      is_pro
     `)
     .eq("username", username.toLowerCase())
     .maybeSingle();
@@ -104,6 +105,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
               creatorId={profile.id}
               servicesPackages={profile.services_packages ?? []}
               templateId={profile.template_id}
+              isPro={profile.is_pro ?? false}
             />
           </div>
         </div>

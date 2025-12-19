@@ -12,6 +12,7 @@ import {
   TrendingUp,
   Eye,
   Check,
+  CheckCircle2,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
@@ -333,6 +334,22 @@ export function LandingPage({ authButton }: LandingPageProps) {
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
                     Auto-calculate total followers across Instagram, TikTok, and YouTube. Show your combined reach in one impressive number.
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div variants={fadeInUp}>
+              <Card className="h-full border-2 hover:border-primary/50 transition-colors">
+                <CardHeader>
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <CardTitle>Verified Badge</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Get a blue verified checkmark next to your name. Show brands you're a verified Pro creator and stand out from the crowd.
                   </p>
                 </CardContent>
               </Card>

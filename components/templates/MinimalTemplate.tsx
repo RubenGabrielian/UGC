@@ -14,9 +14,10 @@ interface MinimalTemplateProps {
   values: PublicProfileValues;
   creatorId: string;
   servicesPackages: ServicePackage[];
+  isPro?: boolean;
 }
 
-export function MinimalTemplate({ values, creatorId, servicesPackages }: MinimalTemplateProps) {
+export function MinimalTemplate({ values, creatorId, servicesPackages, isPro = false }: MinimalTemplateProps) {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const name = values.full_name || values.username || "Creator Name";
@@ -137,7 +138,9 @@ export function MinimalTemplate({ values, creatorId, servicesPackages }: Minimal
             <div className="mb-4">
               <div className="mb-2 flex items-center justify-center gap-2">
                 <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">{name}</h1>
-                <CheckCircle2 className="h-5 w-5 text-emerald-500" aria-label="verified" />
+                {isPro && (
+                  <CheckCircle2 className="h-5 w-5 text-blue-500" aria-label="verified" />
+                )}
               </div>
               <p className="text-zinc-600 dark:text-zinc-400">{handle}</p>
               {countryName && (

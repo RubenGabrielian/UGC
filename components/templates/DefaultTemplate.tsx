@@ -14,9 +14,10 @@ interface DefaultTemplateProps {
   values: PublicProfileValues;
   creatorId: string;
   servicesPackages: ServicePackage[];
+  isPro?: boolean;
 }
 
-export function DefaultTemplate({ values, creatorId, servicesPackages }: DefaultTemplateProps) {
+export function DefaultTemplate({ values, creatorId, servicesPackages, isPro = false }: DefaultTemplateProps) {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const name = values.full_name || values.username || "Creator Name";
@@ -144,7 +145,9 @@ export function DefaultTemplate({ values, creatorId, servicesPackages }: Default
                   <div className="flex flex-col items-center gap-1">
                     <div className="flex items-center gap-2 text-2xl font-semibold text-zinc-900">
                       <span>{name}</span>
-                      <CheckCircle2 className="h-5 w-5 text-emerald-500" aria-label="verified" />
+                      {isPro && (
+                        <CheckCircle2 className="h-5 w-5 text-blue-500" aria-label="verified" />
+                      )}
                     </div>
                     <p className="text-sm text-zinc-500">{handle}</p>
                     {countryName && (
