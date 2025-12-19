@@ -1654,6 +1654,7 @@ export function ProfileForm({ initialData, userId, isPro = false }: ProfileFormP
                   values={previewValues}
                   mode={previewMode}
                   username={watchedValues.username || undefined}
+                  isPro={isPro}
                 />
               </div>
             </div>

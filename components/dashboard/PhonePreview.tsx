@@ -75,10 +75,12 @@ export function PhonePreview({
   values,
   mode = "mobile",
   username,
+  isPro = false,
 }: {
   values: PreviewValues;
   mode?: Mode;
   username?: string;
+  isPro?: boolean;
 }) {
   const name = values.full_name || values.username || "Creator Name";
   const handle = values.instagram_handle || values.tiktok_handle || "@username";
@@ -596,9 +598,22 @@ export function PhonePreview({
             </div>
           )}
 
-          <p className="pb-4 text-center text-[11px] text-zinc-400">
-            Powered by <span className="font-semibold text-zinc-600">CreatorsKit</span>
-          </p>
+          {!isPro && (
+            <div className="pb-4 pt-4 border-t border-zinc-200">
+              <p className="text-center text-[11px] text-zinc-500 mb-2">
+                Created with{" "}
+                <Link href="https://creatorskit.app" className="font-semibold text-zinc-700 hover:text-primary underline">
+                  CreatorKit
+                </Link>
+              </p>
+              <Link
+                href="https://creatorskit.app"
+                className="block text-center text-[10px] text-zinc-400 hover:text-primary transition-colors"
+              >
+                Create your own page →
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </Card>

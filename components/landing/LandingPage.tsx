@@ -80,35 +80,23 @@ export function LandingPage({ authButton }: LandingPageProps) {
       {/* Example Profiles Section */}
       <section className="py-14">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="mx-auto max-w-2xl text-center"
-          >
+          <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
               Trusted by Creators
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
               See how creators are using CreatorKit to grow their brand partnerships.
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            className="mx-auto mt-12 max-w-5xl"
-          >
+          <div className="mx-auto mt-12 max-w-5xl">
             <div className="flex flex-wrap items-center justify-center gap-4">
               {Array.from({ length: 25 }, (_, index) => {
                 const userNumber = index + 1;
                 const userImage = `/img/user${userNumber}.jpeg`;
                 return (
-                  <motion.div
+                  <div
                     key={index}
-                    variants={fadeInUp}
                     className="flex-shrink-0"
                   >
                     <Avatar className="h-12 w-12 border-2 border-primary/20">
@@ -117,22 +105,16 @@ export function LandingPage({ authButton }: LandingPageProps) {
                         U{index + 1}
                       </AvatarFallback>
                     </Avatar>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="mt-8 text-center"
-            >
+            <div className="mt-8 text-center">
               <p className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
                 17,000+ users already created their pages
               </p>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </section>
 
