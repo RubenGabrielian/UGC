@@ -22,6 +22,7 @@ export function UpgradeButton({ isPro, variantId }: UpgradeButtonProps) {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Include cookies for authentication
         body: JSON.stringify({ variant_id: variantId || undefined }),
       });
 

@@ -11,9 +11,25 @@ export async function POST(request: NextRequest) {
       error: authError,
     } = await supabase.auth.getUser();
 
-    if (authError || !user) {
+    if (authError) {
+      console.error("Auth error in checkout:", {
+        message: authError.message,
+        status: authError.status,
+        name: authError.name,
+      });
       return NextResponse.json(
-        { error: "Unauthorized" },
+        {
+          error: "Unauthenticated",
+          details: process.env.NODE_ENV === "development" ? authError.message : undefined
+        },
+        { status: 401 }
+      );
+    }
+
+    if (!user) {
+      console.error("No user found in checkout route");
+      return NextResponse.json(
+        { error: "Unauthenticated" },
         { status: 401 }
       );
     }
