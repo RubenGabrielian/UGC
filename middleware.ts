@@ -14,15 +14,25 @@ export async function middleware(request: NextRequest) {
   if (!supabaseUrl || !supabaseAnonKey) {
     return response;
   }
-
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
         return request.cookies.getAll();
       },
       setAll(cookiesToSet) {
+        // ՍԱ ԿԱՐԵՎՈՐ Է. Մենք թարմացնում ենք և՛ request-ը, և՛ response-ը
         cookiesToSet.forEach(({ name, value, options }) => {
-          request.cookies.set(name, value);
+          request.cookies.set(name, value); // Սա թույլ է տալիս Server Action-ին տեսնել նոր քուքին
+        });
+
+        // Ստեղծում ենք response-ը միայն այստեղ, որպեսզի այն ստանա բոլոր նոր քուքիները
+        response = NextResponse.next({
+          request: {
+            headers: request.headers,
+          },
+        });
+
+        cookiesToSet.forEach(({ name, value, options }) => {
           response.cookies.set(name, value, options);
         });
       },
