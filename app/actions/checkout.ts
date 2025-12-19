@@ -52,19 +52,38 @@ export async function createCheckout(variantId?: string) {
 
     // Simple auth check - just get the user
     let user;
-    let authError;
+    let authError: any = undefined;
 
     try {
+      console.log("About to call supabase.auth.getUser()...");
       const userResult = await supabase.auth.getUser();
+      console.log("getUser() returned, checking result...");
+      console.log("userResult structure:", {
+        hasData: !!userResult.data,
+        hasUser: !!userResult.data?.user,
+        hasError: !!userResult.error,
+        errorType: typeof userResult.error,
+      });
+
       user = userResult.data?.user || undefined;
       authError = userResult.error || undefined;
+
+      if (authError) {
+        console.error("Auth error from getUser():", {
+          message: authError.message,
+          status: authError.status,
+          name: authError.name,
+          code: authError.code,
+          toString: String(authError),
+        });
+      }
     } catch (getUserError) {
-      console.error("Error calling getUser():", getUserError);
-      return {
+      console.error("Exception thrown by getUser():", getUserError);
+      const errorResponse = {
         error: "Unauthenticated",
         message: "Authentication check failed.",
         debug: {
-          step: "getUser() call",
+          step: "getUser() call - exception caught",
           error: getUserError instanceof Error ? getUserError.message : String(getUserError),
           errorType: getUserError instanceof Error ? getUserError.constructor.name : typeof getUserError,
           cookiesPresent: cookieNames,
@@ -73,6 +92,8 @@ export async function createCheckout(variantId?: string) {
           ),
         },
       };
+      console.error("Returning exception error response:", JSON.stringify(errorResponse, null, 2));
+      return errorResponse;
     }
 
     console.log("getUser() result:", {
@@ -86,34 +107,72 @@ export async function createCheckout(variantId?: string) {
     });
 
     if (authError) {
-      console.error("Auth error:", authError);
-      const errorMessage = authError.message || String(authError) || "Authentication failed";
-      const errorResponse = {
+      console.error("Auth error detected:", authError);
+      console.error("Auth error type:", typeof authError);
+      console.error("Auth error keys:", Object.keys(authError || {}));
+
+      // Extract error message safely
+      let errorMessage = "Authentication failed";
+      try {
+        if (authError && typeof authError === 'object' && 'message' in authError) {
+          errorMessage = String(authError.message) || errorMessage;
+        } else if (authError) {
+          errorMessage = String(authError) || errorMessage;
+        }
+      } catch (e) {
+        errorMessage = "Authentication failed (error parsing failed)";
+      }
+
+      // Create a plain, serializable error response
+      const errorResponse: {
+        error: string;
+        message: string;
+        debug: Record<string, any>;
+      } = {
         error: "Unauthenticated",
         message: errorMessage.includes("Refresh Token")
           ? "Your session has expired. Please log in again."
           : "Authentication failed. Please log in again.",
         debug: {
           errorMessage: errorMessage,
-          errorStatus: (authError as any)?.status,
-          errorName: (authError as any)?.name,
-          errorCode: (authError as any)?.code,
+          errorStatus: (authError as any)?.status ?? null,
+          errorName: (authError as any)?.name ?? null,
+          errorCode: (authError as any)?.code ?? null,
           cookiesPresent: cookieNames,
           supabaseCookies: cookieNames.filter(name =>
             name.includes("supabase") || name.includes("sb-")
           ),
           cookieCount: allCookies.length,
-          step: "getUser()",
-          fullErrorObject: JSON.stringify(authError, Object.getOwnPropertyNames(authError)),
+          step: "getUser() - authError present",
+          errorType: typeof authError,
+          errorString: String(authError),
         },
       };
+
+      // Verify the response is serializable
+      try {
+        const testSerialization = JSON.stringify(errorResponse);
+        console.error("Error response is serializable, length:", testSerialization.length);
+      } catch (serialError) {
+        console.error("ERROR: Response is NOT serializable!", serialError);
+      }
+
       console.error("Returning auth error response:", JSON.stringify(errorResponse, null, 2));
-      return errorResponse;
+      console.error("Error response keys:", Object.keys(errorResponse));
+      console.error("Error response.debug exists:", !!errorResponse.debug);
+      console.error("Error response.debug keys:", errorResponse.debug ? Object.keys(errorResponse.debug) : "no debug");
+
+      // Return a fresh object to ensure serialization
+      return JSON.parse(JSON.stringify(errorResponse));
     }
 
     if (!user) {
       console.error("No user found - cookies may be missing or expired");
-      const errorResponse = {
+      const errorResponse: {
+        error: string;
+        message: string;
+        debug: Record<string, any>;
+      } = {
         error: "Unauthenticated",
         message: "No user session found. Please log in again.",
         debug: {
@@ -127,7 +186,8 @@ export async function createCheckout(variantId?: string) {
         },
       };
       console.error("Returning no user error response:", JSON.stringify(errorResponse, null, 2));
-      return errorResponse;
+      // Return a fresh object to ensure serialization
+      return JSON.parse(JSON.stringify(errorResponse));
     }
 
     console.log("User authenticated successfully:", user.id);
