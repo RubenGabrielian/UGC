@@ -49,9 +49,26 @@ export async function POST(request: NextRequest) {
     }
 
     const eventName = meta.event_name;
+
+    // Try multiple ways to get user_id from custom_data
     const customData = meta.custom_data || {};
-    const userId = customData.user_id;
+    const metaCheckoutData = meta.checkout_data || {};
+    const checkoutCustomData = metaCheckoutData.custom || {};
+
+    // Try to get user_id from different locations
+    const userId = customData.user_id || checkoutCustomData.user_id || customData.userId || checkoutCustomData.userId;
     const subscription = data;
+
+    // Log webhook data for debugging
+    console.log("=== WEBHOOK RECEIVED ===");
+    console.log("Event:", eventName);
+    console.log("User ID from custom_data:", userId);
+    console.log("Subscription ID:", subscription?.id);
+    console.log("Subscription status:", subscription?.attributes?.status);
+    console.log("Full custom_data:", JSON.stringify(customData, null, 2));
+    console.log("Full meta:", JSON.stringify(meta, null, 2));
+    console.log("Subscription attributes:", JSON.stringify(subscription?.attributes, null, 2));
+    console.log("Checkout custom_data:", JSON.stringify(checkoutCustomData, null, 2));
 
     // Use admin client to bypass RLS
     const supabase = createAdminClient();
@@ -69,36 +86,45 @@ export async function POST(request: NextRequest) {
     // Handle different event types with switch statement
     switch (eventName) {
       case "subscription_created": {
+        console.log("Processing subscription_created event...");
         const resolvedUserId = userId || await findUserBySubscriptionId(subscription.id);
 
         if (!resolvedUserId) {
           console.error("No user_id in custom_data and could not find user by subscription_id");
+          console.error("Subscription ID:", subscription.id);
+          console.error("Custom data:", JSON.stringify(customData, null, 2));
           return NextResponse.json(
             { error: "Missing user_id" },
             { status: 400 }
           );
         }
 
-        const { error: updateError } = await supabase
+        console.log(`Updating profile for user ${resolvedUserId}...`);
+        const updateData = {
+          is_pro: true,
+          subscription_status: subscription.attributes?.status || "active",
+          subscription_id: subscription.id,
+          subscription_variant_id: subscription.attributes?.variant_id?.toString() || null,
+        };
+        console.log("Update data:", JSON.stringify(updateData, null, 2));
+
+        const { error: updateError, data: updatedProfile } = await supabase
           .from("profiles")
-          .update({
-            is_pro: true,
-            subscription_status: subscription.attributes.status || "active",
-            subscription_id: subscription.id,
-            subscription_variant_id: subscription.attributes.variant_id?.toString(),
-          })
-          .eq("id", resolvedUserId);
+          .update(updateData)
+          .eq("id", resolvedUserId)
+          .select();
 
         if (updateError) {
           console.error("Error updating profile for subscription_created:", updateError);
           return NextResponse.json(
-            { error: "Failed to update profile" },
+            { error: "Failed to update profile", details: updateError.message },
             { status: 500 }
           );
         }
 
-        console.log(`Subscription created for user ${resolvedUserId}`);
-        return NextResponse.json({ success: true });
+        console.log(`✅ Subscription created for user ${resolvedUserId}`);
+        console.log("Updated profile:", updatedProfile);
+        return NextResponse.json({ success: true, userId: resolvedUserId });
       }
 
       case "subscription_updated": {

@@ -27,6 +27,9 @@ export async function createCheckout(variantId?: string) {
   }
 
   // Create checkout via LemonSqueezy API
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://creatorskit.app";
+  const redirectUrl = `${siteUrl}/dashboard?checkout=success`;
+
   const requestBody = {
     data: {
       type: "checkouts",
@@ -34,7 +37,7 @@ export async function createCheckout(variantId?: string) {
         product_options: {
           name: "CreatorKit Pro",
           description: "Pro plan subscription for CreatorKit",
-          redirect_url: "https://creatorskit.app/dashboard?checkout=success",
+          redirect_url: redirectUrl,
         },
         checkout_options: {
           embed: true,
