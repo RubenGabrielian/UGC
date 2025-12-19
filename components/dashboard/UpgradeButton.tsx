@@ -70,6 +70,9 @@ export function UpgradeButton({ isPro, variantId, userId }: UpgradeButtonProps) 
       }
 
       console.log("Calling createCheckout with:", { variantId, userId });
+      console.log("userId type:", typeof userId);
+      console.log("userId value:", userId);
+      console.log("userId truthy:", !!userId);
       
       if (!userId) {
         const errorMsg = "ERROR: userId is missing! Cannot proceed with checkout.";
@@ -82,11 +85,27 @@ export function UpgradeButton({ isPro, variantId, userId }: UpgradeButtonProps) 
         return;
       }
       
-      const result = await createCheckout(variantId, userId);
+      console.log("About to call createCheckout...");
+      let result;
+      try {
+        result = await createCheckout(variantId, userId);
+        console.log("createCheckout completed");
+      } catch (error) {
+        console.error("createCheckout threw an error:", error);
+        alert(`Server Action Error:\n\n${error instanceof Error ? error.message : String(error)}\n\nThis is an unexpected error.`);
+        toast.error("Unexpected Error", {
+          description: error instanceof Error ? error.message : "An unexpected error occurred.",
+        });
+        setIsLoading(false);
+        return;
+      }
+      
       console.log("createCheckout result:", result);
-      console.log("Result keys:", Object.keys(result));
-      console.log("Result.error:", result.error);
-      console.log("Result.debug:", result.debug);
+      console.log("Result type:", typeof result);
+      console.log("Result keys:", result ? Object.keys(result) : "result is null/undefined");
+      console.log("Result.error:", result?.error);
+      console.log("Result.debug:", result?.debug);
+      console.log("Result.message:", result?.message);
 
       if (result.error) {
         console.error("=== CHECKOUT ERROR ===");
@@ -128,7 +147,7 @@ export function UpgradeButton({ isPro, variantId, userId }: UpgradeButtonProps) 
         return;
       }
 
-      if (result.success && result.checkout_url) {
+      if ('success' in result && result.success && 'checkout_url' in result && result.checkout_url) {
         window.location.href = result.checkout_url;
       } else {
         toast.error("Failed to start checkout", {

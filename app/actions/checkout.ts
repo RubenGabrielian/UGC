@@ -50,7 +50,7 @@ export async function createCheckout(variantId?: string, userId?: string) {
       if (userError) {
         authError = userError;
         console.error("getUser() error:", userError);
-        return {
+        const errorResponse = {
           error: "Unauthenticated",
           message: userError.message || "Authentication failed. Please log in again.",
           debug: {
@@ -60,25 +60,31 @@ export async function createCheckout(variantId?: string, userId?: string) {
             errorName: userError.name,
             errorCode: (userError as any).code,
             step: "getUser() verification",
+            fullError: JSON.stringify(userError, Object.getOwnPropertyNames(userError)),
           },
         };
+        console.error("Returning error response:", errorResponse);
+        return errorResponse;
       } else if (!authenticatedUser) {
         console.error("No authenticated user found");
-        return {
+        const errorResponse = {
           error: "Unauthenticated",
           message: "No authenticated user found. Please log in again.",
           debug: {
             providedUserId: userId,
             authenticatedUserId: null,
             step: "user verification - no user returned",
+            getUserResult: "user is null or undefined",
           },
         };
+        console.error("Returning error response:", errorResponse);
+        return errorResponse;
       } else if (authenticatedUser.id !== userId) {
         console.error("User ID mismatch:", {
           provided: userId,
           authenticated: authenticatedUser.id,
         });
-        return {
+        const errorResponse = {
           error: "Unauthenticated",
           message: "User verification failed. Please log in again.",
           debug: {
@@ -88,6 +94,8 @@ export async function createCheckout(variantId?: string, userId?: string) {
             step: "user verification - ID mismatch",
           },
         };
+        console.error("Returning error response:", errorResponse);
+        return errorResponse;
       } else {
         user = authenticatedUser;
         console.log("User verified successfully:", user.id);
