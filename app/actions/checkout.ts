@@ -76,6 +76,34 @@ export async function createCheckout(variantId?: string) {
           code: authError.code,
           toString: String(authError),
         });
+
+        // Immediately return with debug info to avoid any serialization issues
+        // Use plain object literals to ensure serialization
+        const errorMsg = authError.message || "Authentication failed. Please log in again.";
+        const immediateErrorResponse = {
+          error: "Unauthenticated",
+          message: errorMsg,
+          debug: {
+            step: "getUser() - immediate return",
+            errorMessage: String(authError.message || "No message"),
+            errorStatus: authError.status ?? null,
+            errorName: String(authError.name || "Unknown"),
+            errorCode: String(authError.code || "No code"),
+            cookiesPresent: [...cookieNames], // Create new array
+            supabaseCookies: cookieNames.filter(name =>
+              name.includes("supabase") || name.includes("sb-")
+            ),
+            cookieCount: allCookies.length,
+          },
+        };
+        console.error("Returning immediate error response:", JSON.stringify(immediateErrorResponse, null, 2));
+        console.error("Response keys:", Object.keys(immediateErrorResponse));
+        console.error("Debug exists:", !!immediateErrorResponse.debug);
+        console.error("Debug keys:", immediateErrorResponse.debug ? Object.keys(immediateErrorResponse.debug) : "none");
+
+        // Force serialization to ensure it works
+        const serialized = JSON.parse(JSON.stringify(immediateErrorResponse));
+        return serialized;
       }
     } catch (getUserError) {
       console.error("Exception thrown by getUser():", getUserError);

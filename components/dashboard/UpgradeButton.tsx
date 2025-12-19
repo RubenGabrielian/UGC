@@ -71,13 +71,33 @@ export function UpgradeButton({ isPro, variantId }: UpgradeButtonProps) {
       console.log("Calling createCheckout with:", { variantId });
       
       console.log("About to call createCheckout...");
-      let result;
+      let result: any;
       try {
-        result = await createCheckout(variantId);
+        // Call the Server Action
+        const actionResult = await createCheckout(variantId);
+        
+        // Log the raw result immediately
+        console.log("=== RAW SERVER ACTION RESULT ===");
+        console.log("Type:", typeof actionResult);
+        console.log("Is null:", actionResult === null);
+        console.log("Is undefined:", actionResult === undefined);
+        console.log("Stringified:", JSON.stringify(actionResult));
+        console.log("Keys:", actionResult ? Object.keys(actionResult) : "no keys");
+        
+        // Try to access debug
+        if (actionResult && typeof actionResult === 'object') {
+          console.log("Has debug property:", 'debug' in actionResult);
+          console.log("Debug value:", (actionResult as any).debug);
+          console.log("Debug type:", typeof (actionResult as any).debug);
+        }
+        
+        result = actionResult;
         console.log("createCheckout completed");
       } catch (error) {
         console.error("createCheckout threw an error:", error);
-        alert(`Server Action Error:\n\n${error instanceof Error ? error.message : String(error)}\n\nThis is an unexpected error.`);
+        console.error("Error type:", typeof error);
+        console.error("Error stringified:", JSON.stringify(error, Object.getOwnPropertyNames(error)));
+        alert(`Server Action Exception:\n\n${error instanceof Error ? error.message : String(error)}\n\nThis is an unexpected error.`);
         toast.error("Unexpected Error", {
           description: error instanceof Error ? error.message : "An unexpected error occurred.",
         });
@@ -91,6 +111,15 @@ export function UpgradeButton({ isPro, variantId }: UpgradeButtonProps) {
       console.log("Result.error:", result?.error);
       console.log("Result.debug:", result?.debug);
       console.log("Result.message:", result?.message);
+      
+      // Additional debugging
+      if (result && typeof result === 'object') {
+        console.log("Checking for debug field...");
+        console.log("'debug' in result:", 'debug' in result);
+        console.log("result.debug:", result.debug);
+        console.log("Object.getOwnPropertyNames:", Object.getOwnPropertyNames(result));
+        console.log("Object.keys:", Object.keys(result));
+      }
 
       if (result.error) {
         console.error("=== CHECKOUT ERROR ===");
