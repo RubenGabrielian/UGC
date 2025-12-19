@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import { UpgradeButton } from "@/components/dashboard/UpgradeButton";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Dashboard | CreatorKit",
@@ -52,6 +54,9 @@ export default async function DashboardPage() {
             </p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <Suspense fallback={null}>
+              <DashboardHeader isPro={profile?.is_pro ?? false} />
+            </Suspense>
             <UpgradeButton
               isPro={profile?.is_pro ?? false}
               variantId={process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID || undefined}

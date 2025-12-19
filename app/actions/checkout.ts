@@ -34,6 +34,7 @@ export async function createCheckout(variantId?: string) {
         product_options: {
           name: "CreatorKit Pro",
           description: "Pro plan subscription for CreatorKit",
+          redirect_url: "https://creatorskit.app/dashboard?checkout=success",
         },
         checkout_options: {
           embed: true,
