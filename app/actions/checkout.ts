@@ -3,10 +3,42 @@
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 
+// Helper to create a serializable error response
+function createErrorResponse(
+  error: string,
+  message: string,
+  debug: Record<string, any>
+): { error: string; message: string; debug: Record<string, any> } {
+  // Ensure all values are primitives
+  const cleanDebug: Record<string, any> = {};
+  for (const [key, value] of Object.entries(debug)) {
+    if (value === null || value === undefined) {
+      cleanDebug[key] = null;
+    } else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+      cleanDebug[key] = value;
+    } else if (Array.isArray(value)) {
+      cleanDebug[key] = value.map(v => String(v));
+    } else {
+      cleanDebug[key] = String(value);
+    }
+  }
+
+  const response = {
+    error: String(error),
+    message: String(message),
+    debug: cleanDebug,
+  };
+
+  // Force serialization test
+  const serialized = JSON.parse(JSON.stringify(response));
+  return serialized;
+}
+
 export async function createCheckout(variantId?: string) {
   console.log("=== CHECKOUT ACTION START ===");
   console.log("Input params:", { variantId });
 
+  // Wrap everything to catch any unexpected errors
   try {
     // Debug: Check which cookies are present
     let cookieStore;
@@ -77,33 +109,31 @@ export async function createCheckout(variantId?: string) {
           toString: String(authError),
         });
 
-        // Immediately return with debug info to avoid any serialization issues
-        // Use plain object literals to ensure serialization
-        const errorMsg = authError.message || "Authentication failed. Please log in again.";
-        const immediateErrorResponse = {
-          error: "Unauthenticated",
-          message: errorMsg,
-          debug: {
+        // Use helper to create properly serialized error response
+        const errorMsg = String(authError.message || "Authentication failed. Please log in again.");
+        const immediateErrorResponse = createErrorResponse(
+          "Unauthenticated",
+          errorMsg,
+          {
             step: "getUser() - immediate return",
             errorMessage: String(authError.message || "No message"),
             errorStatus: authError.status ?? null,
             errorName: String(authError.name || "Unknown"),
             errorCode: String(authError.code || "No code"),
-            cookiesPresent: [...cookieNames], // Create new array
-            supabaseCookies: cookieNames.filter(name =>
-              name.includes("supabase") || name.includes("sb-")
-            ),
             cookieCount: allCookies.length,
-          },
-        };
+            cookiesPresent: cookieNames.map(n => String(n)),
+            supabaseCookies: cookieNames
+              .filter(name => name.includes("supabase") || name.includes("sb-"))
+              .map(n => String(n)),
+          }
+        );
+
         console.error("Returning immediate error response:", JSON.stringify(immediateErrorResponse, null, 2));
         console.error("Response keys:", Object.keys(immediateErrorResponse));
         console.error("Debug exists:", !!immediateErrorResponse.debug);
         console.error("Debug keys:", immediateErrorResponse.debug ? Object.keys(immediateErrorResponse.debug) : "none");
 
-        // Force serialization to ensure it works
-        const serialized = JSON.parse(JSON.stringify(immediateErrorResponse));
-        return serialized;
+        return immediateErrorResponse;
       }
     } catch (getUserError) {
       console.error("Exception thrown by getUser():", getUserError);
@@ -151,71 +181,53 @@ export async function createCheckout(variantId?: string) {
         errorMessage = "Authentication failed (error parsing failed)";
       }
 
-      // Create a plain, serializable error response
-      const errorResponse: {
-        error: string;
-        message: string;
-        debug: Record<string, any>;
-      } = {
-        error: "Unauthenticated",
-        message: errorMessage.includes("Refresh Token")
+      // Use helper to create properly serialized error response
+      const errorResponse = createErrorResponse(
+        "Unauthenticated",
+        errorMessage.includes("Refresh Token")
           ? "Your session has expired. Please log in again."
           : "Authentication failed. Please log in again.",
-        debug: {
+        {
           errorMessage: errorMessage,
           errorStatus: (authError as any)?.status ?? null,
           errorName: (authError as any)?.name ?? null,
           errorCode: (authError as any)?.code ?? null,
-          cookiesPresent: cookieNames,
-          supabaseCookies: cookieNames.filter(name =>
-            name.includes("supabase") || name.includes("sb-")
-          ),
+          cookiesPresent: cookieNames.map(n => String(n)),
+          supabaseCookies: cookieNames
+            .filter(name => name.includes("supabase") || name.includes("sb-"))
+            .map(n => String(n)),
           cookieCount: allCookies.length,
           step: "getUser() - authError present",
           errorType: typeof authError,
           errorString: String(authError),
-        },
-      };
-
-      // Verify the response is serializable
-      try {
-        const testSerialization = JSON.stringify(errorResponse);
-        console.error("Error response is serializable, length:", testSerialization.length);
-      } catch (serialError) {
-        console.error("ERROR: Response is NOT serializable!", serialError);
-      }
+        }
+      );
 
       console.error("Returning auth error response:", JSON.stringify(errorResponse, null, 2));
       console.error("Error response keys:", Object.keys(errorResponse));
       console.error("Error response.debug exists:", !!errorResponse.debug);
       console.error("Error response.debug keys:", errorResponse.debug ? Object.keys(errorResponse.debug) : "no debug");
 
-      // Return a fresh object to ensure serialization
-      return JSON.parse(JSON.stringify(errorResponse));
+      return errorResponse;
     }
 
     if (!user) {
       console.error("No user found - cookies may be missing or expired");
-      const errorResponse: {
-        error: string;
-        message: string;
-        debug: Record<string, any>;
-      } = {
-        error: "Unauthenticated",
-        message: "No user session found. Please log in again.",
-        debug: {
-          cookiesPresent: cookieNames,
-          supabaseCookies: cookieNames.filter(name =>
-            name.includes("supabase") || name.includes("sb-")
-          ),
+      const errorResponse = createErrorResponse(
+        "Unauthenticated",
+        "No user session found. Please log in again.",
+        {
+          cookiesPresent: cookieNames.map(n => String(n)),
+          supabaseCookies: cookieNames
+            .filter(name => name.includes("supabase") || name.includes("sb-"))
+            .map(n => String(n)),
           cookieCount: allCookies.length,
           step: "getUser() - no user returned",
           hasAuthError: false,
-        },
-      };
+        }
+      );
       console.error("Returning no user error response:", JSON.stringify(errorResponse, null, 2));
-      // Return a fresh object to ensure serialization
-      return JSON.parse(JSON.stringify(errorResponse));
+      return errorResponse;
     }
 
     console.log("User authenticated successfully:", user.id);
@@ -377,18 +389,28 @@ export async function createCheckout(variantId?: string) {
       // Ignore cookie errors in catch block
     }
 
-    const errorResponse = {
-      error: "Internal server error",
-      message: error instanceof Error ? error.message : "An unexpected error occurred.",
-      debug: {
+    // Check if this is a Supabase auth error
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const isAuthError = errorMessage.includes("Unauthenticated") ||
+      errorMessage.includes("JWT") ||
+      errorMessage.includes("session") ||
+      errorMessage.includes("token");
+
+    const errorResponse = createErrorResponse(
+      isAuthError ? "Unauthenticated" : "Internal server error",
+      isAuthError ? "Authentication failed. Please log in again." : errorMessage,
+      {
         errorType: error instanceof Error ? error.constructor.name : typeof error,
-        errorMessage: error instanceof Error ? error.message : String(error),
-        errorStack: error instanceof Error ? error.stack : undefined,
-        cookiesPresent: cookieNames,
-        step: "catch block",
-      },
-    };
+        errorMessage: errorMessage,
+        errorStack: error instanceof Error ? (error.stack || null) : null,
+        cookiesPresent: cookieNames.map(n => String(n)),
+        step: "catch block - top level",
+        isAuthError: isAuthError,
+      }
+    );
+
     console.error("Returning catch block error response:", JSON.stringify(errorResponse, null, 2));
+    console.error("Catch block response has debug:", !!errorResponse.debug);
     return errorResponse;
   }
 }
