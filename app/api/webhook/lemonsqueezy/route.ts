@@ -49,38 +49,76 @@ export async function POST(request: NextRequest) {
     }
 
     const eventName = meta.event_name;
+    const subscription = data;
+
+    // Log FULL payload for debugging - this will show us the exact structure
+    console.log("=== WEBHOOK RECEIVED ===");
+    console.log("Event:", eventName);
+    console.log("FULL PAYLOAD:", JSON.stringify(payload, null, 2));
+    console.log("Subscription ID:", subscription?.id);
+    console.log("Subscription status:", subscription?.attributes?.status);
 
     // Try multiple ways to get user_id from custom_data
+    // LemonSqueezy passes custom_data through checkout -> order -> subscription
     const customData = meta.custom_data || {};
     const metaCheckoutData = meta.checkout_data || {};
     const checkoutCustomData = metaCheckoutData.custom || {};
 
-    // Try to get user_id from different locations
-    const userId = customData.user_id || checkoutCustomData.user_id || customData.userId || checkoutCustomData.userId;
-    const subscription = data;
+    // Also check in included relationships (orders, checkouts)
+    const included = payload.included || [];
+    const order = included.find((item: any) => item.type === "orders");
+    const orderCustomData = order?.attributes?.first_order_item?.product_options?.custom || {};
+    const orderCheckoutData = order?.attributes?.checkout_data?.custom || {};
 
-    // Log webhook data for debugging
-    console.log("=== WEBHOOK RECEIVED ===");
-    console.log("Event:", eventName);
-    console.log("User ID from custom_data:", userId);
-    console.log("Subscription ID:", subscription?.id);
-    console.log("Subscription status:", subscription?.attributes?.status);
-    console.log("Full custom_data:", JSON.stringify(customData, null, 2));
-    console.log("Full meta:", JSON.stringify(meta, null, 2));
-    console.log("Subscription attributes:", JSON.stringify(subscription?.attributes, null, 2));
-    console.log("Checkout custom_data:", JSON.stringify(checkoutCustomData, null, 2));
+    // Try to get user_id from different locations
+    const userId =
+      customData.user_id ||
+      checkoutCustomData.user_id ||
+      orderCustomData.user_id ||
+      orderCheckoutData.user_id ||
+      customData.userId ||
+      checkoutCustomData.userId ||
+      orderCustomData.userId ||
+      orderCheckoutData.userId;
+
+    console.log("User ID extracted:", userId);
+    console.log("Custom data locations checked:");
+    console.log("  - meta.custom_data:", customData);
+    console.log("  - meta.checkout_data.custom:", checkoutCustomData);
+    console.log("  - order.first_order_item.product_options.custom:", orderCustomData);
+    console.log("  - order.checkout_data.custom:", orderCheckoutData);
 
     // Use admin client to bypass RLS
-    const supabase = createAdminClient();
+    let supabase;
+    try {
+      supabase = createAdminClient();
+      console.log("Admin client created successfully");
+    } catch (adminError) {
+      console.error("Failed to create admin client:", adminError);
+      return NextResponse.json(
+        { error: "Server configuration error", details: adminError instanceof Error ? adminError.message : String(adminError) },
+        { status: 500 }
+      );
+    }
 
     // Helper function to find user by subscription_id if userId is missing
     const findUserBySubscriptionId = async (subscriptionId: string) => {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("subscription_id", subscriptionId)
-        .single();
-      return profile?.id || null;
+      try {
+        const { data: profile, error: findError } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("subscription_id", subscriptionId)
+          .single();
+
+        if (findError) {
+          console.log("No profile found with subscription_id:", subscriptionId);
+          return null;
+        }
+        return profile?.id || null;
+      } catch (error) {
+        console.error("Error finding user by subscription_id:", error);
+        return null;
+      }
     };
 
     // Handle different event types with switch statement
@@ -100,6 +138,24 @@ export async function POST(request: NextRequest) {
         }
 
         console.log(`Updating profile for user ${resolvedUserId}...`);
+
+        // Verify user exists first
+        const { data: existingProfile, error: checkError } = await supabase
+          .from("profiles")
+          .select("id, is_pro")
+          .eq("id", resolvedUserId)
+          .single();
+
+        if (checkError || !existingProfile) {
+          console.error("User profile not found:", checkError);
+          return NextResponse.json(
+            { error: "User profile not found", userId: resolvedUserId },
+            { status: 404 }
+          );
+        }
+
+        console.log("Current profile state:", existingProfile);
+
         const updateData = {
           is_pro: true,
           subscription_status: subscription.attributes?.status || "active",
@@ -116,15 +172,28 @@ export async function POST(request: NextRequest) {
 
         if (updateError) {
           console.error("Error updating profile for subscription_created:", updateError);
+          console.error("Error details:", JSON.stringify(updateError, null, 2));
           return NextResponse.json(
-            { error: "Failed to update profile", details: updateError.message },
+            { error: "Failed to update profile", details: updateError.message, code: updateError.code },
+            { status: 500 }
+          );
+        }
+
+        if (!updatedProfile || updatedProfile.length === 0) {
+          console.error("Update succeeded but no profile returned");
+          return NextResponse.json(
+            { error: "Update succeeded but profile not found" },
             { status: 500 }
           );
         }
 
         console.log(`✅ Subscription created for user ${resolvedUserId}`);
-        console.log("Updated profile:", updatedProfile);
-        return NextResponse.json({ success: true, userId: resolvedUserId });
+        console.log("Updated profile:", JSON.stringify(updatedProfile, null, 2));
+        return NextResponse.json({
+          success: true,
+          userId: resolvedUserId,
+          updated: updatedProfile[0]
+        });
       }
 
       case "subscription_updated": {
