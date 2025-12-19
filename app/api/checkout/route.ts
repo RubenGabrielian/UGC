@@ -1,9 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    // Debug: Check if cookies are being received
+    const cookieHeader = request.headers.get("cookie");
+    const hasCookies = !!cookieHeader;
+
+    // Create Supabase client with explicit cookie handling
+    const cookieStore = await cookies();
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      return NextResponse.json(
+        { error: "Server configuration error" },
+        { status: 500 }
+      );
+    }
+
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          // In API routes, we can't set cookies directly
+          // But we can return them in the response
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options);
+            });
+          } catch (error) {
+            // Ignore cookie setting errors in API routes
+          }
+        },
+      },
+    });
+
+    if (process.env.NODE_ENV === "development") {
+      const allCookies = cookieStore.getAll();
+      console.log("Checkout API - Cookie info:", {
+        hasCookies,
+        cookieHeader: cookieHeader ? "present" : "missing",
+        cookieStoreCount: allCookies.length,
+        cookieNames: allCookies.map(c => c.name),
+        supabaseCookies: allCookies.filter(c => c.name.includes("supabase") || c.name.includes("sb-")).map(c => c.name),
+      });
+    }
 
     // Get authenticated user
     const {
@@ -16,20 +61,34 @@ export async function POST(request: NextRequest) {
         message: authError.message,
         status: authError.status,
         name: authError.name,
+        hasCookies,
       });
       return NextResponse.json(
         {
           error: "Unauthenticated",
-          details: process.env.NODE_ENV === "development" ? authError.message : undefined
+          details: process.env.NODE_ENV === "development" ? {
+            message: authError.message,
+            hasCookies,
+            cookieCount: cookieHeader ? cookieHeader.split(";").length : 0,
+          } : undefined
         },
         { status: 401 }
       );
     }
 
     if (!user) {
-      console.error("No user found in checkout route");
+      console.error("No user found in checkout route", {
+        hasCookies,
+        cookieHeader: cookieHeader ? "present" : "missing",
+      });
       return NextResponse.json(
-        { error: "Unauthenticated" },
+        {
+          error: "Unauthenticated",
+          details: process.env.NODE_ENV === "development" ? {
+            hasCookies,
+            cookieCount: cookieHeader ? cookieHeader.split(";").length : 0,
+          } : undefined
+        },
         { status: 401 }
       );
     }
