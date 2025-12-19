@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, Crown } from "lucide-react";
 import { toast } from "sonner";
+import { createCheckout } from "@/app/actions/checkout";
 
 interface UpgradeButtonProps {
   isPro: boolean;
@@ -17,23 +18,13 @@ export function UpgradeButton({ isPro, variantId }: UpgradeButtonProps) {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // Include cookies for authentication
-        body: JSON.stringify({ variant_id: variantId || undefined }),
-      });
+      const result = await createCheckout(variantId);
 
-      if (!response.ok) {
-        const error = await response.json();
-        const errorMessage = error.message || error.error || "Failed to create checkout";
-        
-        // If it's an authentication error with refresh token issue, redirect to login
-        if (response.status === 401 && error.details?.isRefreshTokenError) {
+      if (result.error) {
+        // If it's an authentication error, redirect to login
+        if (result.error === "Unauthenticated" || result.message?.includes("session")) {
           toast.error("Session Expired", {
-            description: "Please log in again to continue.",
+            description: result.message || "Please log in again to continue.",
             duration: 5000,
           });
           // Redirect to login after a short delay
@@ -44,13 +35,21 @@ export function UpgradeButton({ isPro, variantId }: UpgradeButtonProps) {
           return;
         }
         
-        const errorDetails = error.details ? `\n\nDebug Info:\n${JSON.stringify(error.details, null, 2)}` : "";
-        console.error("Checkout API error:", error);
-        throw new Error(`${errorMessage}${errorDetails}`);
+        toast.error("Failed to start checkout", {
+          description: result.message || result.error,
+        });
+        setIsLoading(false);
+        return;
       }
 
-      const data = await response.json();
-      window.location.href = data.checkout_url;
+      if (result.success && result.checkout_url) {
+        window.location.href = result.checkout_url;
+      } else {
+        toast.error("Failed to start checkout", {
+          description: "Invalid response from server.",
+        });
+        setIsLoading(false);
+      }
     } catch (error) {
       console.error("Checkout error:", error);
       toast.error("Failed to start checkout", {
