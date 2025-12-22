@@ -92,24 +92,24 @@ export default function BlogPage() {
                 return (
                   <Card key={post.slug} className="group overflow-hidden border-2 hover:border-primary/50 transition-colors">
                     <Link href={`/blog/${post.slug}`}>
-                      <div className="relative aspect-video overflow-hidden">
+                      <div className="relative aspect-video overflow-hidden bg-zinc-100 dark:bg-zinc-900 p-4">
                         <Image
                           src={post.image}
                           alt={post.title}
                           fill
-                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          className="object-contain transition-transform duration-300 group-hover:scale-105"
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                         {post.category && (
-                          <div className="absolute top-4 left-4">
+                          <div className="absolute top-6 left-6">
                             <span className="bg-primary text-primary-foreground px-3 py-1 text-xs font-semibold rounded-full">
                               {post.category}
                             </span>
                           </div>
                         )}
                       </div>
-                      <CardHeader>
-                        <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
+                      <CardHeader className="p-6">
+                        <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors mb-2">
                           {post.title}
                         </CardTitle>
                         <CardDescription className="line-clamp-2">
@@ -153,31 +153,31 @@ export default function BlogPage() {
               return (
                 <Card key={post.slug} className="group overflow-hidden border-2 hover:border-primary/50 transition-colors">
                   <Link href={`/blog/${post.slug}`}>
-                    <div className="relative aspect-video overflow-hidden">
+                    <div className="relative aspect-video overflow-hidden bg-zinc-100 dark:bg-zinc-900 p-4">
                       <Image
                         src={post.image}
                         alt={post.title}
                         fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="object-contain transition-transform duration-300 group-hover:scale-105"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                       {post.category && (
-                        <div className="absolute top-4 left-4">
+                        <div className="absolute top-6 left-6">
                           <span className="bg-primary text-primary-foreground px-3 py-1 text-xs font-semibold rounded-full">
                             {post.category}
                           </span>
                         </div>
                       )}
                     </div>
-                    <CardHeader>
-                      <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
+                    <CardHeader className="p-6">
+                      <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors mb-2">
                         {post.title}
                       </CardTitle>
                       <CardDescription className="line-clamp-2">
                         {post.description}
                       </CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="px-6 pb-6">
                       <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                         <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" aria-hidden="true" />
