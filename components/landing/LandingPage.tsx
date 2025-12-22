@@ -93,7 +93,7 @@ export function LandingPage({ authButton }: LandingPageProps) {
           <div className="mx-auto mt-8 max-w-5xl">
             <div className="flex flex-wrap items-center justify-center gap-4">
               {Array.from({ length: 25 }, (_, index) => {
-                const userNumber = (index % 3) + 1;
+                const userNumber = index + 1;
                 const userImage = `/img/user${userNumber}.jpeg`;
                 return (
                   <div
