@@ -271,12 +271,6 @@ export function DefaultTemplate({ values, creatorId, servicesPackages, isPro = f
               </div>
             </div>
 
-            <div className="lg:col-span-2 space-y-6">
-              {values.collaboration_headline && (
-                <div className="rounded-2xl border border-zinc-200 bg-white/80 p-6 shadow-sm backdrop-blur">
-                  <h2 className="text-xl font-bold text-zinc-900">{values.collaboration_headline}</h2>
-                </div>
-              )}
 
               <div className="rounded-2xl border border-zinc-200 bg-white/80 p-6 shadow-sm backdrop-blur">
                 <h3 className="mb-4 text-lg font-semibold text-zinc-900">About</h3>
