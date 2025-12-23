@@ -271,7 +271,7 @@ export function DefaultTemplate({ values, creatorId, servicesPackages, isPro = f
               </div>
             </div>
 
-
+            <div className="lg:col-span-2 space-y-6">
               <div className="rounded-2xl border border-zinc-200 bg-white/80 p-6 shadow-sm backdrop-blur">
                 <h3 className="mb-4 text-lg font-semibold text-zinc-900">About</h3>
                 <p className="text-zinc-700 leading-relaxed">{bio}</p>
