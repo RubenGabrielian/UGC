@@ -599,19 +599,28 @@ export function PhonePreview({
           )}
 
           {!isPro && (
-            <div className="pb-4 pt-4 border-t border-zinc-200">
-              <p className="text-center text-[11px] text-zinc-500 mb-2">
-                Created with{" "}
-                <Link href="https://creatorskit.app" className="font-semibold text-zinc-700 hover:text-primary underline">
-                  CreatorKit
+            <div className="pb-6 pt-6 border-t border-zinc-200 bg-zinc-50/50 -mx-4 px-4">
+              <div className="text-center">
+                <p className="text-[12px] sm:text-sm text-zinc-600 mb-3 leading-relaxed">
+                  Created with{" "}
+                  <Link 
+                    href="https://creatorskit.app" 
+                    className="font-semibold text-zinc-900 hover:text-primary underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    CreatorKit
+                  </Link>
+                </p>
+                <Link
+                  href="https://creatorskit.app"
+                  className="inline-block text-[11px] sm:text-xs text-zinc-500 hover:text-primary transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Create your own page →
                 </Link>
-              </p>
-              <Link
-                href="https://creatorskit.app"
-                className="block text-center text-[10px] text-zinc-400 hover:text-primary transition-colors"
-              >
-                Create your own page →
-              </Link>
+              </div>
             </div>
           )}
         </div>

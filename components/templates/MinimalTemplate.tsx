@@ -422,9 +422,9 @@ export function MinimalTemplate({ values, creatorId, servicesPackages, isPro = f
       </div>
 
       {!isPro && (
-        <div className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 py-6 px-4">
+        <div className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 py-6 px-4 sm:px-6">
           <div className="mx-auto max-w-4xl text-center">
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
+            <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 mb-3">
               Created with{" "}
               <Link href="https://creatorskit.app" className="font-semibold text-zinc-900 dark:text-zinc-50 hover:text-primary underline">
                 CreatorKit
@@ -432,7 +432,7 @@ export function MinimalTemplate({ values, creatorId, servicesPackages, isPro = f
             </p>
             <Link
               href="https://creatorskit.app"
-              className="text-xs text-zinc-500 dark:text-zinc-500 hover:text-primary transition-colors"
+              className="inline-block text-xs sm:text-sm text-zinc-500 dark:text-zinc-500 hover:text-primary transition-colors"
             >
               Create your own page →
             </Link>
