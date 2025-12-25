@@ -34,6 +34,7 @@ export function DashboardContent({
   const searchParams = useSearchParams();
   // Use useState with initialTab to avoid hydration mismatch
   const [activeTab, setActiveTab] = useState(initialTab || "editor");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const publicUrl = `/u/${username}`;
 
   // Update tab from URL params after mount to avoid hydration issues
@@ -46,24 +47,52 @@ export function DashboardContent({
     }
   }, [searchParams, activeTab]);
 
+  // Close sidebar when tab changes on mobile
+  useEffect(() => {
+    if (sidebarOpen) {
+      startTransition(() => {
+        setSidebarOpen(false);
+      });
+    }
+  }, [activeTab, sidebarOpen]);
+
   return (
     <>
       <Toaster />
       <div className="flex h-screen overflow-hidden bg-white">
+        {/* Mobile Overlay */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
         {/* Sidebar */}
-        <Sidebar publicUrl={publicUrl} isPro={profile?.is_pro ?? false} userId={userId} />
+        <Sidebar 
+          publicUrl={publicUrl} 
+          isPro={profile?.is_pro ?? false} 
+          userId={userId}
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
 
         {/* Main Content */}
-        <div className="flex flex-1 flex-col overflow-hidden ml-64">
+        <div className="flex flex-1 flex-col overflow-hidden lg:ml-64">
           {/* Action Bar */}
-          <ActionBar publicUrl={publicUrl} username={profile?.username} isPro={profile?.is_pro ?? false} />
+          <ActionBar 
+            publicUrl={publicUrl} 
+            username={profile?.username} 
+            isPro={profile?.is_pro ?? false}
+            onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+          />
 
           {/* Content Area */}
           <main className="flex-1 overflow-y-auto bg-white">
-            <div className="p-8">
+            <div className="p-4 sm:p-6 lg:p-8">
             {/* Editor Tab */}
             {activeTab === "editor" && (
-              <div>
+              <div className="w-full">
                 <Editor initialData={profile} userId={userId} />
               </div>
             )}
@@ -72,21 +101,23 @@ export function DashboardContent({
             {activeTab === "analytics" && (
               <>
                 {profile?.is_pro ? (
-                  <div className="mx-auto max-w-5xl">
+                  <div className="mx-auto w-full max-w-5xl">
                     <Analytics userId={userId} />
                   </div>
                 ) : (
-                  <ProGate
-                    featureName="Analytics"
-                    description="Track your profile performance with detailed page view analytics, weekly summaries, and lifetime statistics."
-                  />
+                  <div className="mx-auto w-full max-w-5xl">
+                    <ProGate
+                      featureName="Analytics"
+                      description="Track your profile performance with detailed page view analytics, weekly summaries, and lifetime statistics."
+                    />
+                  </div>
                 )}
               </>
             )}
 
             {/* Templates Tab */}
             {activeTab === "templates" && (
-              <div className="mx-auto max-w-5xl">
+              <div className="mx-auto w-full max-w-5xl">
                 <Card className="border-zinc-100 rounded-xl">
                   <CardHeader>
                     <CardTitle className="text-lg font-semibold">Profile Template</CardTitle>
@@ -106,21 +137,23 @@ export function DashboardContent({
             {activeTab === "leads" && (
               <>
                 {profile?.is_pro ? (
-                  <div className="mx-auto max-w-5xl">
+                  <div className="mx-auto w-full max-w-5xl">
                     <Leads userId={userId} />
                   </div>
                 ) : (
-                  <ProGate
-                    featureName="Leads"
-                    description="Track and manage all brand inquiries in one place. See who's interested in collaborating with you, view their messages, and contact them directly."
-                  />
+                  <div className="mx-auto w-full max-w-5xl">
+                    <ProGate
+                      featureName="Leads"
+                      description="Track and manage all brand inquiries in one place. See who's interested in collaborating with you, view their messages, and contact them directly."
+                    />
+                  </div>
                 )}
               </>
             )}
 
             {/* Settings Tab */}
             {activeTab === "settings" && (
-              <div className="mx-auto max-w-5xl space-y-6">
+              <div className="mx-auto w-full max-w-5xl space-y-6">
                 <Card className="border-zinc-100 rounded-xl">
                   <CardHeader>
                     <CardTitle className="text-lg font-semibold">Account Settings</CardTitle>

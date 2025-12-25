@@ -16,15 +16,18 @@ import {
   Palette,
   Crown,
   LogOut,
+  X,
 } from "lucide-react";
 
 interface SidebarProps {
   publicUrl: string;
   isPro?: boolean;
   userId?: string;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export function Sidebar({ publicUrl, isPro = false, userId }: SidebarProps) {
+export function Sidebar({ publicUrl, isPro = false, userId, isOpen = false, onClose }: SidebarProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [currentTab, setCurrentTab] = useState("editor");
@@ -136,24 +139,40 @@ export function Sidebar({ publicUrl, isPro = false, userId }: SidebarProps) {
   };
 
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-zinc-200 bg-white">
-      <div className="flex h-full flex-col">
-        {/* Logo/Brand */}
-        <div className="flex h-16 items-center justify-between border-b border-zinc-200 px-6">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded bg-zinc-900"></div>
-            <span className="text-sm font-semibold text-zinc-900">CreatorKit</span>
-          </Link>
-          {isPro && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 px-2 py-0.5 text-[10px] font-semibold text-white shadow-sm">
-              <Crown className="h-2.5 w-2.5" />
-              PRO
-            </span>
-          )}
-        </div>
+    <>
+      <aside
+        className={cn(
+          "fixed left-0 top-0 z-50 h-screen w-64 border-r border-zinc-200 bg-white transition-transform duration-300 ease-in-out lg:translate-x-0",
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        )}
+      >
+        <div className="flex h-full flex-col">
+          {/* Logo/Brand */}
+          <div className="flex h-16 items-center justify-between border-b border-zinc-200 px-4 sm:px-6">
+            <Link href="/" className="flex items-center gap-2" onClick={onClose}>
+              <div className="h-8 w-8 rounded bg-zinc-900"></div>
+              <span className="text-sm font-semibold text-zinc-900">CreatorKit</span>
+            </Link>
+            <div className="flex items-center gap-2">
+              {isPro && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 px-2 py-0.5 text-[10px] font-semibold text-white shadow-sm">
+                  <Crown className="h-2.5 w-2.5" />
+                  PRO
+                </span>
+              )}
+              {/* Mobile Close Button */}
+              <button
+                onClick={onClose}
+                className="lg:hidden rounded-lg p-1.5 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+                aria-label="Close menu"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-1 px-3 py-4">
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.tab);
@@ -165,6 +184,7 @@ export function Sidebar({ publicUrl, isPro = false, userId }: SidebarProps) {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={onClose}
                 className={cn(
                   "flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                   active
@@ -199,6 +219,7 @@ export function Sidebar({ publicUrl, isPro = false, userId }: SidebarProps) {
             href={publicUrl}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={onClose}
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
           >
             <ExternalLink className="h-4 w-4" />
@@ -215,6 +236,7 @@ export function Sidebar({ publicUrl, isPro = false, userId }: SidebarProps) {
         </div>
       </div>
     </aside>
+    </>
   );
 }
 
