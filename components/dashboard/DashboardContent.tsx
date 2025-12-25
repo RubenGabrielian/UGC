@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, startTransition } from "react";
+import { useSearchParams } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 import { ActionBar } from "./ActionBar";
 import { Editor } from "./Editor";
@@ -9,10 +9,17 @@ import { Analytics } from "./Analytics";
 import { Leads } from "./Leads";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UpgradeButton } from "./UpgradeButton";
+import { TemplateSelector } from "./TemplateSelector";
+import { ProGate } from "./ProGate";
 import { Toaster } from "@/components/ui/sonner";
 
 interface DashboardContentProps {
-  profile: any;
+  profile: {
+    template_id?: string | null;
+    username?: string | null;
+    is_pro?: boolean | null;
+    [key: string]: unknown;
+  } | null;
   userId: string;
   initialTab: string;
   username: string;
@@ -24,17 +31,27 @@ export function DashboardContent({
   initialTab,
   username,
 }: DashboardContentProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const activeTab = searchParams?.get("tab") || initialTab || "editor";
+  // Use useState with initialTab to avoid hydration mismatch
+  const [activeTab, setActiveTab] = useState(initialTab || "editor");
   const publicUrl = `/u/${username}`;
+
+  // Update tab from URL params after mount to avoid hydration issues
+  useEffect(() => {
+    const tabFromUrl = searchParams?.get("tab") || "editor";
+    if (tabFromUrl !== activeTab) {
+      startTransition(() => {
+        setActiveTab(tabFromUrl);
+      });
+    }
+  }, [searchParams, activeTab]);
 
   return (
     <>
       <Toaster />
       <div className="flex h-screen overflow-hidden bg-white">
         {/* Sidebar */}
-        <Sidebar publicUrl={publicUrl} />
+        <Sidebar publicUrl={publicUrl} isPro={profile?.is_pro ?? false} />
 
         {/* Main Content */}
         <div className="flex flex-1 flex-col overflow-hidden ml-64">
@@ -53,8 +70,35 @@ export function DashboardContent({
 
             {/* Analytics Tab */}
             {activeTab === "analytics" && (
+              <>
+                {profile?.is_pro ? (
+                  <div className="mx-auto max-w-5xl">
+                    <Analytics userId={userId} />
+                  </div>
+                ) : (
+                  <ProGate
+                    featureName="Analytics"
+                    description="Track your profile performance with detailed page view analytics, weekly summaries, and lifetime statistics."
+                  />
+                )}
+              </>
+            )}
+
+            {/* Templates Tab */}
+            {activeTab === "templates" && (
               <div className="mx-auto max-w-5xl">
-                <Analytics userId={userId} />
+                <Card className="border-zinc-100 rounded-xl">
+                  <CardHeader>
+                    <CardTitle className="text-lg font-semibold">Profile Template</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <TemplateSelector 
+                      userId={userId} 
+                      currentTemplate={profile?.template_id || "default"}
+                      isPro={profile?.is_pro ?? false}
+                    />
+                  </CardContent>
+                </Card>
               </div>
             )}
 

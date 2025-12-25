@@ -23,7 +23,7 @@ export function VideosModule<T extends FieldValues>({
           <h3 className="text-sm font-semibold text-zinc-900 mb-0.5">Video Portfolio</h3>
           <p className="text-xs text-zinc-500">Showcase your best content</p>
         </div>
-        <Button
+        <Button 
           type="button"
           variant="outline"
           size="sm"

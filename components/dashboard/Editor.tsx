@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -180,6 +180,13 @@ interface EditorProps {
 
 export function Editor({ initialData, userId }: EditorProps) {
   const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState("profile");
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Prevent hydration mismatch by only rendering tabs after mount
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -309,10 +316,24 @@ export function Editor({ initialData, userId }: EditorProps) {
     }
   );
 
+  // Prevent hydration mismatch - only render tabs after mount
+  if (!isMounted) {
+    return (
+      <div className="mx-auto max-w-5xl">
+        <form onSubmit={onSubmit} className="space-y-8">
+          <div className="h-9 w-full rounded-lg border border-zinc-200 bg-zinc-50 p-1" />
+          <div className="mt-6 space-y-4">
+            <div className="h-64 animate-pulse rounded-xl bg-zinc-100" />
+          </div>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-5xl">
       <form onSubmit={onSubmit} className="space-y-8">
-        <Tabs defaultValue="profile" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="inline-flex h-9 items-center justify-start rounded-lg border border-zinc-200 bg-zinc-50 p-1">
             <TabsTrigger
               value="profile"

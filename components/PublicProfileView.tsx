@@ -3,6 +3,8 @@
 import type { ServicePackage } from "@/components/ContactModal";
 import { DefaultTemplate } from "./templates/DefaultTemplate";
 import { MinimalTemplate } from "./templates/MinimalTemplate";
+import { MidnightBentoTemplate } from "./templates/MidnightBentoTemplate";
+import { NeonGradientTemplate } from "./templates/NeonGradientTemplate";
 
 export type PublicProfileValues = {
   avatar_url?: string | null;
@@ -65,6 +67,28 @@ export function PublicProfileView({
   if (template === "minimal") {
     return (
       <MinimalTemplate
+        values={values}
+        creatorId={creatorId}
+        servicesPackages={servicesPackages}
+        isPro={isPro}
+      />
+    );
+  }
+  
+  if (template === "midnight") {
+    return (
+      <MidnightBentoTemplate
+        values={values}
+        creatorId={creatorId}
+        servicesPackages={servicesPackages}
+        isPro={isPro}
+      />
+    );
+  }
+  
+  if (template === "neon") {
+    return (
+      <NeonGradientTemplate
         values={values}
         creatorId={creatorId}
         servicesPackages={servicesPackages}

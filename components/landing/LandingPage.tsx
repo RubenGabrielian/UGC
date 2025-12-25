@@ -10,19 +10,12 @@ import {
   Share2,
   Palette,
   TrendingUp,
-  Eye,
   Check,
   CheckCircle2,
-  Instagram,
-  Music,
-  Youtube,
   ArrowRight,
-  Zap,
-  Users,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
-import type { ReactNode } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -30,11 +23,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-interface LandingPageProps {
-  authButton: ReactNode;
-}
-
-export function LandingPage({ authButton }: LandingPageProps) {
+export function LandingPage() {
   return (
     <>
       {/* Hero Section */}
@@ -42,15 +31,13 @@ export function LandingPage({ authButton }: LandingPageProps) {
         <div className="container relative mx-auto px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
           <div className="mx-auto max-w-4xl text-center">
             <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-5xl lg:text-6xl">
-              Your Professional Media Kit &{" "}
+              Professional Landing Pages for{" "}
               <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 bg-clip-text text-transparent">
-                Link in Bio
-              </span>{" "}
-              – All in One Link
+                UGC Creators
+              </span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-400 sm:text-xl">
-              Stop sending messy screenshots to brands. Share live, verified analytics instead. 
-              Create your digital portfolio for influencers in 60 seconds.
+              Showcase your content, display live engagement stats, and land more brand collaborations with a high-end digital portfolio.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button
@@ -59,7 +46,7 @@ export function LandingPage({ authButton }: LandingPageProps) {
                 className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white"
               >
                 <Link href="/login">
-                  Get Your Free Media Kit
+                  Build Your UGC Landing Page
                   <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
                 </Link>
               </Button>
@@ -76,7 +63,7 @@ export function LandingPage({ authButton }: LandingPageProps) {
               </Button>
             </div>
             <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
-              Free to start • No credit card required • 17,000+ creators already using CreatorKit
+              Free to start • No credit card required • Built for Creators who mean business
             </p>
           </div>
         </div>
@@ -87,7 +74,10 @@ export function LandingPage({ authButton }: LandingPageProps) {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-              Trusted by 500+ Influencers
+              Built for Creators who mean business
+            </p>
+            <p className="mt-2 text-base font-medium text-zinc-700 dark:text-zinc-300">
+              Trusted by 500+ UGC Creators
             </p>
           </div>
           <div className="mx-auto mt-8 max-w-5xl">
@@ -135,11 +125,11 @@ export function LandingPage({ authButton }: LandingPageProps) {
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="mt-1 text-red-500">✗</span>
-                    <span>No way to track who's viewing your profile</span>
+                    <span>No way to track who&apos;s viewing your profile</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="mt-1 text-red-500">✗</span>
-                    <span>Generic link-in-bio tools that don't showcase your work</span>
+                    <span>Generic link-in-bio tools that don&apos;t showcase your work</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="mt-1 text-red-500">✗</span>
@@ -175,7 +165,7 @@ export function LandingPage({ authButton }: LandingPageProps) {
         </div>
       </section>
 
-      {/* Product Examples Section */}
+      {/* Product Examples Section - Bento Grid */}
       <section id="demo" className="bg-zinc-50 dark:bg-zinc-900 py-16 sm:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center mb-12">
@@ -183,71 +173,135 @@ export function LandingPage({ authButton }: LandingPageProps) {
               See It In Action
             </h2>
             <p className="text-lg text-zinc-600 dark:text-zinc-400">
-              Real examples from creators using CreatorKit to showcase their work and connect with brands.
+              Real examples from UGC creators using CreatorKit to showcase their work and connect with brands.
             </p>
           </div>
 
           <div className="mx-auto max-w-7xl">
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {/* Mobile Frame 1: Profile Page */}
-              <div className="group relative flex justify-center">
-                <div className="relative w-[280px]">
-                  <div className="relative bg-zinc-900 dark:bg-zinc-800 rounded-[3rem] p-3 shadow-2xl">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-zinc-900 dark:bg-zinc-800 rounded-b-2xl z-10"></div>
-                    <div className="relative aspect-[9/19.5] rounded-[2.5rem] overflow-hidden bg-zinc-950">
-                      <Image
-                        src="/img/profile3.png"
-                        alt="CreatorKit profile page example showing professional media kit layout"
-                        fill
-                        className="object-cover"
-                        sizes="280px"
-                        priority={false}
-                      />
+            {/* Bento Grid Layout */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-[auto_auto]">
+              {/* Large Hero Card - Spans 2 columns */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="group relative sm:col-span-2 lg:col-span-2 lg:row-span-2 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xl overflow-hidden hover:shadow-2xl transition"
+              >
+                <div className="relative h-full min-h-[400px] flex items-center justify-center">
+                  <div className="relative w-[240px]">
+                    <div className="relative bg-zinc-900 dark:bg-zinc-800 rounded-[3rem] p-3 shadow-2xl">
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-zinc-900 dark:bg-zinc-800 rounded-b-2xl z-10"></div>
+                      <div className="relative aspect-[9/19.5] rounded-[2.5rem] overflow-hidden bg-zinc-950">
+                        <Image
+                          src="/img/profile3.png"
+                          alt="UGC creator landing page example"
+                          fill
+                          className="object-cover"
+                          sizes="240px"
+                          priority={false}
+                        />
+                      </div>
+                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-zinc-700 dark:bg-zinc-600 rounded-full"></div>
                     </div>
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-zinc-700 dark:bg-zinc-600 rounded-full"></div>
                   </div>
                 </div>
-              </div>
+                <div className="absolute bottom-4 left-4 right-4">
+                  <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Hero Profile Section</p>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400">Professional landing page layout</p>
+                </div>
+              </motion.div>
 
-              {/* Mobile Frame 2: Services Section */}
-              <div className="group relative flex justify-center">
-                <div className="relative w-[280px]">
-                  <div className="relative bg-zinc-900 dark:bg-zinc-800 rounded-[3rem] p-3 shadow-2xl">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-zinc-900 dark:bg-zinc-800 rounded-b-2xl z-10"></div>
-                    <div className="relative aspect-[9/19.5] rounded-[2.5rem] overflow-hidden bg-zinc-950">
-                      <Image
-                        src="/img/profile.png"
-                        alt="CreatorKit services section showing brand collaboration packages"
-                        fill
-                        className="object-cover"
-                        sizes="280px"
-                        priority={false}
-                      />
+              {/* Medium Card 1 */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="group relative rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xl overflow-hidden hover:shadow-2xl transition"
+              >
+                <div className="relative h-[280px] flex items-center justify-center">
+                  <div className="relative w-[180px]">
+                    <div className="relative bg-zinc-900 dark:bg-zinc-800 rounded-[3rem] p-2.5 shadow-2xl">
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-5 bg-zinc-900 dark:bg-zinc-800 rounded-b-xl z-10"></div>
+                      <div className="relative aspect-[9/19.5] rounded-[2rem] overflow-hidden bg-zinc-950">
+                        <Image
+                          src="/img/profile.png"
+                          alt="UGC services showcase"
+                          fill
+                          className="object-cover"
+                          sizes="180px"
+                          priority={false}
+                        />
+                      </div>
+                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-24 h-1 bg-zinc-700 dark:bg-zinc-600 rounded-full"></div>
                     </div>
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-zinc-700 dark:bg-zinc-600 rounded-full"></div>
                   </div>
                 </div>
-              </div>
+                <div className="mt-4">
+                  <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Video Portfolio</p>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400">UGC content showcase</p>
+                </div>
+              </motion.div>
 
-              {/* Mobile Frame 3: Analytics Dashboard */}
-              <div className="group relative flex justify-center">
-                <div className="relative w-[280px]">
-                  <div className="relative bg-zinc-900 dark:bg-zinc-800 rounded-[3rem] p-3 shadow-2xl">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-zinc-900 dark:bg-zinc-800 rounded-b-2xl z-10"></div>
-                    <div className="relative aspect-[9/19.5] rounded-[2.5rem] overflow-hidden bg-zinc-950">
-                      <Image
-                        src="/img/profile2.png"
-                        alt="CreatorKit analytics dashboard showing real-time page view statistics"
-                        fill
-                        className="object-cover"
-                        sizes="280px"
-                        priority={false}
-                      />
+              {/* Medium Card 2 */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="group relative rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xl overflow-hidden hover:shadow-2xl transition"
+              >
+                <div className="relative h-[280px] flex items-center justify-center">
+                  <div className="relative w-[180px]">
+                    <div className="relative bg-zinc-900 dark:bg-zinc-800 rounded-[3rem] p-2.5 shadow-2xl">
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-5 bg-zinc-900 dark:bg-zinc-800 rounded-b-xl z-10"></div>
+                      <div className="relative aspect-[9/19.5] rounded-[2rem] overflow-hidden bg-zinc-950">
+                        <Image
+                          src="/img/profile2.png"
+                          alt="Live analytics dashboard"
+                          fill
+                          className="object-cover"
+                          sizes="180px"
+                          priority={false}
+                        />
+                      </div>
+                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-24 h-1 bg-zinc-700 dark:bg-zinc-600 rounded-full"></div>
                     </div>
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-zinc-700 dark:bg-zinc-600 rounded-full"></div>
                   </div>
                 </div>
-              </div>
+                <div className="mt-4">
+                  <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Live Analytics</p>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400">Real-time stats</p>
+                </div>
+              </motion.div>
+
+              {/* Wide Card - Stats Showcase */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="group relative sm:col-span-2 lg:col-span-2 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 p-8 shadow-xl hover:shadow-2xl transition"
+              >
+                <div className="grid grid-cols-3 gap-6">
+                  <div className="text-center">
+                    <div className="text-3xl font-black text-indigo-600 dark:text-indigo-400 mb-2">2.5M</div>
+                    <div className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Total Reach</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-black text-purple-600 dark:text-purple-400 mb-2">4.2%</div>
+                    <div className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Engagement</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-black text-pink-600 dark:text-pink-400 mb-2">150+</div>
+                    <div className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Brands</div>
+                  </div>
+                </div>
+                <p className="mt-6 text-sm text-center text-zinc-600 dark:text-zinc-400">
+                  Live verified audience stats displayed prominently
+                </p>
+              </motion.div>
             </div>
           </div>
         </div>
@@ -261,42 +315,43 @@ export function LandingPage({ authButton }: LandingPageProps) {
               Everything You Need to Succeed
             </h2>
             <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">
-              Powerful features designed to help you close more brand partnerships.
+              Powerful features designed to help UGC creators close more brand partnerships.
             </p>
           </div>
 
-          <div className="mx-auto mt-12 grid max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <Card className="border-2">
+          <div className="mx-auto mt-12 grid max-w-7xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Bento-style large card */}
+            <Card className="border-2 sm:col-span-2 lg:col-span-1 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20">
               <CardHeader>
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-900/30">
                   <BarChart3 className="h-6 w-6 text-indigo-600 dark:text-indigo-400" aria-hidden="true" />
                 </div>
-                <CardTitle className="text-xl">Real-time Instagram & TikTok Analytics</CardTitle>
+                <CardTitle className="text-xl">Live Verified Audience Stats</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                  Track your reach with built-in daily page view charts. See which brands are visiting and optimize your content accordingly.
+                  Display real-time follower counts and engagement rates. Show brands your verified audience metrics that update automatically.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-2">
+            <Card className="border-2 bg-gradient-to-br from-violet-50 to-pink-50 dark:from-violet-950/20 dark:to-pink-950/20">
               <CardHeader>
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-900/30">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-900/30">
                   <Palette className="h-6 w-6 text-violet-600 dark:text-violet-400" aria-hidden="true" />
                 </div>
-                <CardTitle className="text-xl">Customizable Portfolio Templates</CardTitle>
+                <CardTitle className="text-xl">High-Definition UGC Video Showcases</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                  Switch designs instantly with professional presets. From minimal to vibrant, find the perfect look for your brand.
+                  Embed your best UGC content directly on your landing page. Inline video playback for YouTube, TikTok, and Instagram Reels.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-2">
+            <Card className="border-2 bg-gradient-to-br from-purple-50 to-cyan-50 dark:from-purple-950/20 dark:to-cyan-950/20">
               <CardHeader>
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/30">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900/30">
                   <MessageSquare className="h-6 w-6 text-purple-600 dark:text-purple-400" aria-hidden="true" />
                 </div>
                 <CardTitle className="text-xl">Direct Brand Inquiry Form</CardTitle>
@@ -308,16 +363,38 @@ export function LandingPage({ authButton }: LandingPageProps) {
               </CardContent>
             </Card>
 
-            <Card className="border-2">
+            <Card className="border-2 bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/20 dark:to-blue-950/20">
               <CardHeader>
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-900/30">
                   <Share2 className="h-6 w-6 text-indigo-600 dark:text-indigo-400" aria-hidden="true" />
                 </div>
-                <CardTitle className="text-xl">Social Media Integration</CardTitle>
+                <CardTitle className="text-xl">Unified Social Presence</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                  Auto-calculate total followers across Instagram, TikTok, and YouTube. Show your combined reach in one impressive number.
+                  Connect all your social platforms in one place. Auto-calculate total followers across Instagram, TikTok, and YouTube.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-indigo-500/50 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 relative overflow-hidden">
+              <div className="absolute top-3 right-3">
+                <span className="inline-flex items-center rounded-full bg-indigo-600 px-2.5 py-0.5 text-xs font-semibold text-white">
+                  Pro
+                </span>
+              </div>
+              <CardHeader>
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30">
+                  <Palette className="h-6 w-6 text-indigo-600 dark:text-indigo-400" aria-hidden="true" />
+                </div>
+                <CardTitle className="text-xl">Multiple Premium Templates</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-3">
+                  Choose from multiple professional template designs including Default, Minimal, Midnight Bento, and Neon Gradient. Switch templates anytime to match your brand.
+                </p>
+                <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+                  Available on Pro plan
                 </p>
               </CardContent>
             </Card>
@@ -331,7 +408,7 @@ export function LandingPage({ authButton }: LandingPageProps) {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                  Get a blue verified checkmark next to your name. Show brands you're a verified Pro creator and stand out from the crowd.
+                  Get a blue verified checkmark next to your name. Show brands you&apos;re a verified Pro creator and stand out from the crowd.
                 </p>
               </CardContent>
             </Card>
@@ -399,7 +476,7 @@ export function LandingPage({ authButton }: LandingPageProps) {
                     </li>
                   </ul>
                   <Button variant="outline" className="w-full" asChild>
-                    <Link href="/login">Get Your Free Media Kit</Link>
+                    <Link href="/login">Create Your Portfolio</Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -514,7 +591,7 @@ export function LandingPage({ authButton }: LandingPageProps) {
                   <p>
                     CreatorKit is specifically designed for brand collaborations. Unlike generic link-in-bio tools, 
                     CreatorKit focuses on showcasing your work as a creator with professional portfolio templates, 
-                    real-time analytics, and a direct brand inquiry form. It's built to help you close more 
+                    real-time analytics, and a direct brand inquiry form. It&apos;s built to help you close more 
                     partnerships, not just share links.
                   </p>
                 </AccordionContent>
@@ -541,10 +618,10 @@ export function LandingPage({ authButton }: LandingPageProps) {
       <section className="bg-gradient-to-b from-indigo-50 via-violet-50 to-purple-50 dark:from-zinc-900 dark:via-zinc-950 dark:to-zinc-900 py-16 sm:py-24">
         <div className="container mx-auto px-4 text-center sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-4xl">
-            Ready to Get Started?
+            Ready to Build Your Landing Page?
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
-            Create your professional media kit and link in bio in 60 seconds. No credit card required.
+            Create your professional UGC landing page in 60 seconds. Showcase your content and land more brand collaborations.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button
@@ -553,7 +630,7 @@ export function LandingPage({ authButton }: LandingPageProps) {
               className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white"
             >
               <Link href="/login">
-                Get Your Free Media Kit
+                Build Your UGC Landing Page
                 <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
               </Link>
             </Button>

@@ -5,32 +5,32 @@ import { AuthButton } from "@/components/auth/AuthButton";
 import { LandingPage } from "@/components/landing/LandingPage";
 
 export const metadata: Metadata = {
-  title: "Media Kit for Creators | Link in Bio Tool | CreatorKit",
+  title: "The Ultimate Landing Page Builder for UGC Creators | CreatorKit",
   description:
-    "Professional media kit & link in bio tool for influencers. Real-time Instagram & TikTok analytics, customizable templates, and brand collaboration tools. Free to start.",
+    "Professional landing pages for UGC creators. Showcase your content, display live engagement stats, and land more brand collaborations with high-end digital portfolios. Free to start.",
   keywords: [
-    "media kit for creators",
-    "link in bio tool",
-    "influencer analytics",
-    "brand collaboration tool",
-    "digital portfolio for influencers",
-    "instagram analytics",
-    "tiktok analytics",
-    "creator media kit",
-    "influencer link in bio",
-    "social media portfolio",
+    "UGC landing page builder",
+    "creator landing page",
+    "UGC portfolio",
+    "brand collaboration platform",
+    "UGC creator tools",
+    "digital portfolio for creators",
+    "UGC showcase",
+    "creator landing page builder",
+    "UGC media kit",
+    "professional creator portfolio",
   ],
   openGraph: {
-    title: "Media Kit for Creators | Link in Bio Tool | CreatorKit",
+    title: "The Ultimate Landing Page Builder for UGC Creators | CreatorKit",
     description:
-      "Professional media kit & link in bio tool for influencers. Real-time analytics, customizable templates, and brand collaboration tools.",
+      "Professional landing pages for UGC creators. Showcase your content, display live engagement stats, and land more brand collaborations.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Media Kit for Creators | Link in Bio Tool | CreatorKit",
+    title: "The Ultimate Landing Page Builder for UGC Creators | CreatorKit",
     description:
-      "Professional media kit & link in bio tool for influencers. Real-time analytics, customizable templates, and brand collaboration tools.",
+      "Professional landing pages for UGC creators. Showcase your content, display live engagement stats, and land more brand collaborations.",
   },
 };
 
@@ -139,7 +139,7 @@ export default function Home() {
           </nav>
         </header>
 
-        <LandingPage authButton={<AuthButton size="lg" variant="default" className="w-full sm:w-auto" />} />
+        <LandingPage />
       </div>
     </>
   );
