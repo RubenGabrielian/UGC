@@ -40,7 +40,7 @@ export function DashboardContent({
   const toggleSidebar = () => {
     setSidebarOpen((prev) => {
       const newValue = !prev;
-      console.log("Sidebar toggle:", newValue); // Debug log
+      console.log("Sidebar toggle:", newValue, "isOpen will be:", newValue); // Debug log
       return newValue;
     });
   };
