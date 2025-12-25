@@ -14,25 +14,49 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent(error)}`);
     }
 
-    if (code) {
-        const supabase = await createClient();
-        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-        if (!exchangeError) {
-            const forwardedHost = request.headers.get("x-forwarded-host"); // original origin before load balancer
-            const isLocalEnv = process.env.NODE_ENV === "development";
-            if (isLocalEnv) {
-                return NextResponse.redirect(`${origin}${next}`);
-            } else if (forwardedHost) {
-                return NextResponse.redirect(`https://${forwardedHost}${next}`);
-            } else {
-                return NextResponse.redirect(`${origin}${next}`);
-            }
-        } else {
-            console.error("Error exchanging code for session:", exchangeError);
-        }
+    if (!code) {
+        console.error("No code parameter in callback URL");
+        return NextResponse.redirect(`${origin}/auth/auth-code-error?error=no_code`);
     }
 
-    // return the user to an error page with instructions
-    return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+    try {
+        const supabase = await createClient();
+        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+
+        if (exchangeError) {
+            console.error("Error exchanging code for session:", exchangeError);
+            return NextResponse.redirect(
+                `${origin}/auth/auth-code-error?error=${encodeURIComponent(exchangeError.message)}`
+            );
+        }
+
+        if (!data.session) {
+            console.error("No session returned from code exchange");
+            return NextResponse.redirect(`${origin}/auth/auth-code-error?error=no_session`);
+        }
+
+        // Successfully authenticated - redirect to dashboard
+        const forwardedHost = request.headers.get("x-forwarded-host");
+        const isLocalEnv = process.env.NODE_ENV === "development";
+
+        let redirectUrl: string;
+        if (isLocalEnv) {
+            redirectUrl = `${origin}${next}`;
+        } else if (forwardedHost) {
+            redirectUrl = `https://${forwardedHost}${next}`;
+        } else {
+            redirectUrl = `${origin}${next}`;
+        }
+
+        // Use 307 redirect to preserve POST data if any, and ensure cookies are set
+        return NextResponse.redirect(redirectUrl, { status: 307 });
+    } catch (err) {
+        console.error("Unexpected error in callback:", err);
+        return NextResponse.redirect(
+            `${origin}/auth/auth-code-error?error=${encodeURIComponent(
+                err instanceof Error ? err.message : "unknown_error"
+            )}`
+        );
+    }
 }
 
