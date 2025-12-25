@@ -504,7 +504,7 @@ export function LandingPage() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="h-5 w-5 text-indigo-600 flex-shrink-0" aria-hidden="true" />
-                      <span className="text-sm">Real-time Instagram & TikTok analytics</span>
+                      <span className="text-sm">Live Verified Audience Stats</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="h-5 w-5 text-indigo-600 flex-shrink-0" aria-hidden="true" />
@@ -512,7 +512,15 @@ export function LandingPage() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="h-5 w-5 text-indigo-600 flex-shrink-0" aria-hidden="true" />
-                      <span className="text-sm">Verified badge</span>
+                      <span className="text-sm">Verified badge on your profile</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="h-5 w-5 text-indigo-600 flex-shrink-0" aria-hidden="true" />
+                      <span className="text-sm">Remove branding (no footer)</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="h-5 w-5 text-indigo-600 flex-shrink-0" aria-hidden="true" />
+                      <span className="text-sm">Leads functionality</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="h-5 w-5 text-indigo-600 flex-shrink-0" aria-hidden="true" />

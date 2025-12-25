@@ -104,9 +104,18 @@ export function DashboardContent({
 
             {/* Leads Tab */}
             {activeTab === "leads" && (
-              <div className="mx-auto max-w-5xl">
-                <Leads userId={userId} />
-              </div>
+              <>
+                {profile?.is_pro ? (
+                  <div className="mx-auto max-w-5xl">
+                    <Leads userId={userId} />
+                  </div>
+                ) : (
+                  <ProGate
+                    featureName="Leads"
+                    description="Track and manage all brand inquiries in one place. See who's interested in collaborating with you, view their messages, and contact them directly."
+                  />
+                )}
+              </>
             )}
 
             {/* Settings Tab */}

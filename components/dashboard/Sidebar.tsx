@@ -67,7 +67,7 @@ export function Sidebar({ publicUrl, isPro = false }: SidebarProps) {
       href: `${basePath}?tab=leads`,
       icon: Mail,
       tab: "leads",
-      isPro: false,
+      isPro: true,
     },
     {
       name: "Settings",
