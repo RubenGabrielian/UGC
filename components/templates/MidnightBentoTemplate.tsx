@@ -133,7 +133,6 @@ export function MidnightBentoTemplate({ values, creatorId, servicesPackages, isP
       y: 0,
       transition: {
         duration: 0.5,
-        ease: "easeOut",
       },
     },
   };
