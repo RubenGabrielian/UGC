@@ -2,7 +2,10 @@
 
 import { useEffect, useState, startTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -12,6 +15,7 @@ import {
   ExternalLink,
   Palette,
   Crown,
+  LogOut,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -21,7 +25,9 @@ interface SidebarProps {
 
 export function Sidebar({ publicUrl, isPro = false }: SidebarProps) {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [currentTab, setCurrentTab] = useState("editor");
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const basePath = "/dashboard";
 
   // Update tab from URL params after mount to avoid hydration issues
@@ -76,6 +82,28 @@ export function Sidebar({ publicUrl, isPro = false }: SidebarProps) {
     return currentTab === tab;
   };
 
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        toast.error("Failed to log out", { description: error.message });
+        setIsLoggingOut(false);
+        return;
+      }
+
+      toast.success("Logged out successfully");
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("An error occurred while logging out");
+      setIsLoggingOut(false);
+    }
+  };
+
   return (
     <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-zinc-200 bg-white">
       <div className="flex h-full flex-col">
@@ -124,8 +152,8 @@ export function Sidebar({ publicUrl, isPro = false }: SidebarProps) {
           })}
         </nav>
 
-        {/* Public Page Link */}
-        <div className="border-t border-zinc-200 p-4">
+        {/* Public Page Link & Logout */}
+        <div className="border-t border-zinc-200 p-4 space-y-2">
           <Link
             href={publicUrl}
             target="_blank"
@@ -135,6 +163,14 @@ export function Sidebar({ publicUrl, isPro = false }: SidebarProps) {
             <ExternalLink className="h-4 w-4" />
             <span>View Live Page</span>
           </Link>
+          <button
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <LogOut className="h-4 w-4" />
+            <span>{isLoggingOut ? "Logging out..." : "Log out"}</span>
+          </button>
         </div>
       </div>
     </aside>
