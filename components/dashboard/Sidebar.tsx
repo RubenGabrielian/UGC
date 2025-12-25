@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, startTransition } from "react";
+import type React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
@@ -149,12 +150,11 @@ export function Sidebar({ publicUrl, isPro = false, userId, isOpen = false, onCl
         className={cn(
           "fixed left-0 top-0 z-50 h-screen w-64 border-r border-zinc-200 bg-white shadow-lg",
           "transition-transform duration-300 ease-in-out",
-          // On desktop (lg+), always visible - override inline style
-          "lg:!translate-x-0"
+          // On desktop (lg+), always visible - use static positioning
+          "lg:translate-x-0 lg:static lg:shadow-none",
+          // On mobile, control visibility with transform
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
-        style={{
-          transform: isOpen ? "translateX(0)" : "translateX(-100%)",
-        }}
       >
         <div className="flex h-full flex-col">
           {/* Logo/Brand */}

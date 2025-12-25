@@ -418,7 +418,7 @@ export function Editor({ initialData, userId }: EditorProps) {
                     </div>
                   </div>
                 </div>
-              </Card>
+              </Card>   
 
               {/* About You Card */}
               <Card className="border-zinc-100 bg-white p-4 sm:p-6 rounded-xl">
