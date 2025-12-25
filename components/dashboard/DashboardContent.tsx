@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, startTransition } from "react";
+import { useEffect, useState, startTransition, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 import { ActionBar } from "./ActionBar";
@@ -45,6 +45,10 @@ export function DashboardContent({
     });
   };
 
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
   // Update tab from URL params after mount to avoid hydration issues
   useEffect(() => {
     const tabFromUrl = searchParams?.get("tab") || "editor";
@@ -56,13 +60,17 @@ export function DashboardContent({
   }, [searchParams, activeTab]);
 
   // Close sidebar when tab changes on mobile
+  const prevTabRef = useRef(activeTab);
   useEffect(() => {
-    if (sidebarOpen) {
+    // Only close if tab actually changed (not on initial mount)
+    if (prevTabRef.current !== activeTab && sidebarOpen) {
       startTransition(() => {
         setSidebarOpen(false);
       });
     }
-  }, [activeTab, sidebarOpen]);
+    prevTabRef.current = activeTab;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]); // Only depend on activeTab, not sidebarOpen
 
   return (
     <>
@@ -72,7 +80,7 @@ export function DashboardContent({
         {sidebarOpen && (
           <div
             className="fixed inset-0 z-40 bg-black/50 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
+            onClick={closeSidebar}
           />
         )}
 
@@ -82,7 +90,7 @@ export function DashboardContent({
           isPro={profile?.is_pro ?? false} 
           userId={userId}
           isOpen={sidebarOpen}
-          onClose={toggleSidebar}
+          onClose={closeSidebar}
         />
 
         {/* Main Content */}
