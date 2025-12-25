@@ -80,36 +80,14 @@ export default async function ProfilePage({ params }: { params: { username: stri
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 py-5 px-4 dark:bg-zinc-950">
-      <div className="mx-auto flex max-w-10xl flex-col items-center gap-8">
-        <div className="w-full max-w-10xl">
-          {/* <Card className="mb-4 border-none bg-transparent shadow-none">
-            <div className="text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-zinc-400">
-                creatorkit
-              </p>
-              <h1 className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-                {profile.full_name || profile.username}
-              </h1>
-              <p className="mt-1 text-sm text-zinc-500">
-                Live media kit powered by CreatorKit.
-              </p>
-            </div>
-          </Card> */}
-
-          <div className="flex justify-center">
-            <PublicProfileView
-              values={values}
-              mode="desktop"
-              username={profile.username || undefined}
-              creatorId={profile.id}
-              servicesPackages={profile.services_packages ?? []}
-              templateId={profile.template_id}
-              isPro={profile.is_pro ?? false}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+    <PublicProfileView
+      values={values}
+      mode="desktop"
+      username={profile.username || undefined}
+      creatorId={profile.id}
+      servicesPackages={profile.services_packages ?? []}
+      templateId={profile.template_id}
+      isPro={profile.is_pro ?? false}
+    />
   );
 }

@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CheckCircle2, Info } from "lucide-react";
+import { CheckCircle2, ArrowRight, Mail, Phone, Calendar, TrendingUp, Users } from "lucide-react";
 import { ContactModal, type ServicePackage } from "@/components/ContactModal";
+import { VideoPlayer } from "@/components/VideoPlayer";
 import { countryByCode } from "@/lib/countries";
 import { calculateTotalFollowers } from "@/lib/followers";
 import type { PublicProfileValues } from "../PublicProfileView";
@@ -19,6 +20,17 @@ interface DefaultTemplateProps {
 
 export function DefaultTemplate({ values, creatorId, servicesPackages, isPro = false }: DefaultTemplateProps) {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [showFloatingCTA, setShowFloatingCTA] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setShowFloatingCTA(scrollY > 300);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const name = values.full_name || values.username || "Creator Name";
   const handle = values.instagram_handle || values.tiktok_handle || "@username";
@@ -53,12 +65,6 @@ export function DefaultTemplate({ values, creatorId, servicesPackages, isPro = f
       ? values.youtube_handle
       : values.youtube_handle
         ? `https://youtube.com/@${values.youtube_handle.replace("@", "")}`
-        : "#";
-  const fbHref =
-    values.facebook_handle && values.facebook_handle.startsWith("http")
-      ? values.facebook_handle
-      : values.facebook_handle
-        ? `https://facebook.com/${values.facebook_handle.replace("@", "")}`
         : "#";
 
   const brandLogos =
@@ -124,306 +130,425 @@ export function DefaultTemplate({ values, creatorId, servicesPackages, isPro = f
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white px-4 py-12 lg:px-8">
-        <div className="relative mx-auto w-full max-w-6xl">
-          <div
-            className="absolute inset-0 rounded-[48px] bg-[radial-gradient(circle_at_top,_#eef2ff,_#f8fafc)] blur-3xl opacity-70"
-            aria-hidden
-          />
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-white via-zinc-50 to-white py-20 px-4 sm:py-28 lg:px-8">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,_rgba(99,102,241,0.05),_transparent_50%)]" aria-hidden />
+        <div className="relative mx-auto max-w-6xl">
+          <div className="flex flex-col items-center text-center">
+            {/* Avatar - Enhanced Circular Profile Image */}
+            <div className="mb-8 relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full blur-2xl opacity-20 animate-pulse" />
+              <Avatar className="relative h-36 w-36 border-4 border-white shadow-2xl ring-4 ring-zinc-100 sm:h-44 sm:w-44">
+                <AvatarImage alt={name} src={values.avatar_url || undefined} className="object-cover" />
+                <AvatarFallback className="bg-gradient-to-br from-indigo-100 to-purple-100 text-zinc-800 text-4xl font-bold">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+            </div>
 
-          <div className="relative space-y-6 lg:grid lg:grid-cols-3 lg:items-start lg:gap-8 lg:space-y-0">
-            <div className="space-y-6 lg:sticky lg:top-10">
-              <div className="rounded-[32px] border border-white/60 bg-white/90 p-6 shadow-2xl shadow-black/10 backdrop-blur lg:p-8">
-                <div className="flex flex-col items-center gap-4 text-center">
-                  <Avatar className="h-32 w-32 border-4 border-white shadow-xl ring-4 ring-white/70">
-                    <AvatarImage alt={name} src={values.avatar_url || undefined} />
-                    <AvatarFallback className="bg-zinc-100 text-zinc-800 text-2xl font-semibold">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="flex items-center gap-2 text-2xl font-semibold text-zinc-900">
-                      <span>{name}</span>
-                      {isPro && (
-                        <CheckCircle2 className="h-5 w-5 text-blue-500" aria-label="verified" />
-                      )}
-                    </div>
-                    <p className="text-sm text-zinc-500">{handle}</p>
-                    {countryName && (
-                      <p className="flex items-center justify-center gap-2 text-sm text-zinc-600">
-                        <span className="leading-none text-lg">{countryFlag}</span>
-                        <span>{countryName}</span>
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="flex flex-wrap items-center justify-center gap-3">
-                    {values.instagram_handle && (
-                      <Link
-                        href={igHref}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex flex-col items-center gap-1"
-                      >
-                        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 shadow-sm hover:bg-zinc-200 transition">
-                          <Image src={"/img/instagram.webp"} alt="Instagram" width={22} height={22} />
-                        </span>
-                        <span className="text-[11px] font-semibold text-zinc-700">{formatCount(values.instagram_followers)}</span>
-                      </Link>
-                    )}
-                    {values.tiktok_handle && (
-                      <Link
-                        href={ttHref}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex flex-col items-center gap-1"
-                      >
-                        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 shadow-sm hover:bg-zinc-200 transition">
-                          <Image src={"/img/tiktok.webp"} alt="TikTok" width={22} height={22} />
-                        </span>
-                        <span className="text-[11px] font-semibold text-zinc-700">{formatCount(values.tiktok_followers)}</span>
-                      </Link>
-                    )}
-                    {values.youtube_handle && (
-                      <Link
-                        href={ytHref}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex flex-col items-center gap-1"
-                      >
-                        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 shadow-sm hover:bg-zinc-200 transition">
-                          <Image src={"/img/youtube.webp"} alt="YouTube" width={22} height={22} />
-                        </span>
-                        <span className="text-[11px] font-semibold text-zinc-700">{formatCount(values.youtube_subscribers)}</span>
-                      </Link>
-                    )}
-                    {values.facebook_handle && (
-                      <Link
-                        href={fbHref}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex flex-col items-center gap-1"
-                      >
-                        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 text-lg font-bold text-blue-600 shadow-sm hover:bg-zinc-200 transition">
-                          f
-                        </span>
-                        <span className="text-[11px] font-semibold text-zinc-700">{formatCount(values.facebook_followers)}</span>
-                      </Link>
-                    )}
-                  </div>
-
-                  <div className="w-full rounded-2xl border border-zinc-200 bg-zinc-50/80 px-5 py-4 text-center shadow-sm">
-                    <p className="flex items-center justify-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
-                      <span>Total Followers</span>
-                      <Info className="h-3.5 w-3.5 text-zinc-400" />
-                    </p>
-                    <p className="mt-1 text-3xl font-bold text-primary">{totalFollowers}</p>
-                    <p className="text-[11px] text-zinc-500">Across all social platforms</p>
-                  </div>
-
-              {categories.length > 0 && (
-                <div className="flex w-full flex-col gap-2">
-                  <p className="text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
-                    Categories
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {categories.map((cat) => (
-                      <span
-                        key={cat}
-                        className="inline-flex items-center rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700"
-                      >
-                        {cat}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+            {/* Name and Badge */}
+            <div className="mb-6">
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <h1 className="text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
+                  {name}
+                </h1>
+                {isPro && (
+                  <CheckCircle2 className="h-7 w-7 text-blue-500 sm:h-8 sm:w-8" aria-label="verified" />
+                )}
+              </div>
+              {values.collaboration_headline && (
+                <p className="text-xl font-medium text-zinc-700 sm:text-2xl mb-2">
+                  {values.collaboration_headline}
+                </p>
               )}
+              <p className="text-lg text-zinc-500 sm:text-xl">{handle}</p>
+              {countryName && (
+                <p className="mt-3 flex items-center justify-center gap-2 text-zinc-500">
+                  <span className="text-2xl leading-none">{countryFlag}</span>
+                  <span className="text-lg">{countryName}</span>
+                </p>
+              )}
+            </div>
 
-                  <div className="flex w-full flex-col gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setIsContactModalOpen(true)}
-                      className="w-full rounded-xl bg-[#FDE68A] px-5 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition hover:shadow-md"
+            {/* Bio */}
+            {bio && (
+              <div className="mb-8 max-w-2xl">
+                <p className="text-lg text-zinc-600 leading-relaxed sm:text-xl">
+                  {bio}
+                </p>
+              </div>
+            )}
+
+            {/* Social Media Icons */}
+            <div className="mb-8 flex flex-wrap items-center justify-center gap-4">
+              {values.instagram_handle && (
+                <Link
+                  href={igHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-2.5 shadow-sm transition hover:border-zinc-300 hover:shadow-md"
+                >
+                  <Image src={"/img/instagram.webp"} alt="Instagram" width={20} height={20} />
+                  <span className="text-sm font-medium text-zinc-700">Instagram</span>
+                </Link>
+              )}
+              {values.tiktok_handle && (
+                <Link
+                  href={ttHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-2.5 shadow-sm transition hover:border-zinc-300 hover:shadow-md"
+                >
+                  <Image src={"/img/tiktok.webp"} alt="TikTok" width={20} height={20} />
+                  <span className="text-sm font-medium text-zinc-700">TikTok</span>
+                </Link>
+              )}
+              {values.youtube_handle && (
+                <Link
+                  href={ytHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-2.5 shadow-sm transition hover:border-zinc-300 hover:shadow-md"
+                >
+                  <Image src={"/img/youtube.webp"} alt="YouTube" width={20} height={20} />
+                  <span className="text-sm font-medium text-zinc-700">YouTube</span>
+                </Link>
+              )}
+            </div>
+
+            {/* Categories / Niche Section */}
+            {categories.length > 0 && (
+              <div className="mb-8">
+                <p className="text-sm font-semibold uppercase tracking-wider text-zinc-500 mb-3">Content Niche</p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {categories.map((cat) => (
+                    <span
+                      key={cat}
+                      className="inline-flex items-center rounded-full bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 px-5 py-2.5 text-sm font-medium text-indigo-700"
                     >
-                      Contact for collabs
-                    </button>
-                    {values.booking_link && (
-                      <Link
-                        href={values.booking_link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full rounded-xl border border-zinc-200 px-5 py-3 text-center text-sm font-semibold text-zinc-800 hover:border-primary/60 hover:text-primary"
-                      >
-                        Book a call
-                      </Link>
-                    )}
-                    {phoneHref && (
-                      <Link
-                        href={phoneHref}
-                        className="w-full rounded-xl border border-zinc-200 px-5 py-3 text-center text-sm font-semibold text-zinc-800 hover:border-primary/60 hover:text-primary"
-                      >
-                        Call / WhatsApp
-                      </Link>
-                    )}
-                  </div>
+                      {cat}
+                    </span>
+                  ))}
                 </div>
+              </div>
+            )}
+
+            {/* Live Metrics Section */}
+            <div className="mb-10 w-full max-w-4xl">
+              <div className="mb-6 text-center">
+                <h2 className="text-2xl font-bold text-zinc-900 sm:text-3xl mb-2">Live Metrics</h2>
+                <p className="text-sm text-zinc-500">Real-time audience insights</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-6">
+                <div className="rounded-xl border border-zinc-200 bg-white px-6 py-5 shadow-sm hover:shadow-md transition">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Users className="h-4 w-4 text-zinc-400" />
+                    <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Total Reach</p>
+                  </div>
+                  <p className="text-2xl font-bold text-zinc-900 sm:text-3xl font-mono">{totalFollowers}</p>
+                </div>
+                {values.instagram_followers && (
+                  <Link
+                    href={igHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group rounded-xl border border-zinc-200 bg-white px-6 py-5 shadow-sm hover:shadow-md transition"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <Image src={"/img/instagram.webp"} alt="Instagram" width={18} height={18} />
+                      <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Instagram</p>
+                    </div>
+                    <p className="text-2xl font-bold text-zinc-900 sm:text-3xl font-mono">{formatCount(values.instagram_followers)}</p>
+                  </Link>
+                )}
+                {values.tiktok_followers && (
+                  <Link
+                    href={ttHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group rounded-xl border border-zinc-200 bg-white px-6 py-5 shadow-sm hover:shadow-md transition"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <Image src={"/img/tiktok.webp"} alt="TikTok" width={18} height={18} />
+                      <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">TikTok</p>
+                    </div>
+                    <p className="text-2xl font-bold text-zinc-900 sm:text-3xl font-mono">{formatCount(values.tiktok_followers)}</p>
+                  </Link>
+                )}
+                {values.youtube_subscribers && (
+                  <Link
+                    href={ytHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group rounded-xl border border-zinc-200 bg-white px-6 py-5 shadow-sm hover:shadow-md transition"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <Image src={"/img/youtube.webp"} alt="YouTube" width={18} height={18} />
+                      <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">YouTube</p>
+                    </div>
+                    <p className="text-2xl font-bold text-zinc-900 sm:text-3xl font-mono">{formatCount(values.youtube_subscribers)}</p>
+                  </Link>
+                )}
+                {values.engagement_rate && (
+                  <div className="rounded-xl border border-zinc-200 bg-white px-6 py-5 shadow-sm">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="h-4 w-4 text-zinc-400" />
+                      <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Engagement</p>
+                    </div>
+                    <p className="text-2xl font-bold text-zinc-900 sm:text-3xl font-mono">{values.engagement_rate.toFixed(1)}%</p>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="lg:col-span-2 space-y-6">
-              <div className="rounded-2xl border border-zinc-200 bg-white/80 p-6 shadow-sm backdrop-blur">
-                <h3 className="mb-4 text-lg font-semibold text-zinc-900">About</h3>
-                <p className="text-zinc-700 leading-relaxed">{bio}</p>
-              </div>
-
-              {brandLogos.length > 0 && (
-                <div className="rounded-2xl border border-zinc-200 bg-white/80 p-6 shadow-sm backdrop-blur">
-                  <h3 className="mb-4 text-lg font-semibold text-zinc-900">Brands I&apos;ve Worked With</h3>
-                  <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 lg:grid-cols-5">
-                    {brandLogos.map((logo, idx) => (
-                      <div
-                        key={idx}
-                        className="relative aspect-square overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50"
-                      >
-                        <Image
-                          src={logo.url}
-                          alt={`Brand ${idx + 1}`}
-                          fill
-                          className="object-contain p-2"
-                          unoptimized
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {videoUrls.length > 0 && (
-                <div className="rounded-2xl border border-zinc-200 bg-white/80 p-6 shadow-sm backdrop-blur">
-                  <h3 className="mb-4 text-lg font-semibold text-zinc-900">Featured Content</h3>
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {videoUrls.map((video, idx) => {
-                      const url = typeof video === "string" ? video : video.url || "";
-                      const views = typeof video === "string" ? null : video.views;
-                      return (
-                        <div key={idx} className="group relative overflow-hidden rounded-xl border border-zinc-200">
-                          <div className="relative aspect-video bg-zinc-100">
-                            <Image
-                              src={getVideoThumb(url)}
-                              alt={`Video ${idx + 1}`}
-                              fill
-                              className="object-cover"
-                              unoptimized
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition group-hover:opacity-100">
-                              <Link
-                                href={url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-zinc-900 shadow-lg"
-                              >
-                                Watch
-                              </Link>
-                            </div>
-                          </div>
-                          {views && (
-                            <div className="absolute top-2 right-2 rounded-full bg-black/70 px-2 py-1 text-xs font-semibold text-white">
-                              {views}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {services.length > 0 && (
-                <div className="rounded-2xl border border-zinc-200 bg-white/80 p-6 shadow-sm backdrop-blur">
-                  <h3 className="mb-4 text-lg font-semibold text-zinc-900">Services & Packages</h3>
-                  <div className="space-y-3">
-                    {services.map((service, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50/50 p-4"
-                      >
-                        <div className="flex-1">
-                          <p className="font-semibold text-zinc-900">{service.title || "Service"}</p>
-                          <p className="text-sm text-zinc-600 capitalize">{service.platform}</p>
-                        </div>
-                        <div className="text-right">
-                          {service.is_contact_only ? (
-                            <span className="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-semibold text-emerald-700">
-                              Contact for Quote
-                            </span>
-                          ) : (
-                            <p className="font-bold text-zinc-900">{service.price || "—"}</p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {demographics && (
-                <div className="rounded-2xl border border-zinc-200 bg-white/80 p-6 shadow-sm backdrop-blur">
-                  <h3 className="mb-4 text-lg font-semibold text-zinc-900">Audience Insights</h3>
-                  <div className="space-y-4">
-                    {topGeo.length > 0 && (
-                      <div>
-                        <p className="mb-2 text-sm font-semibold text-zinc-700">Top Locations</p>
-                        <div className="flex flex-wrap gap-2">
-                          {topGeo.map((geo, idx) => (
-                            <span
-                              key={idx}
-                              className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700"
-                            >
-                              {geo.location} {geo.percentage ? `(${geo.percentage})` : ""}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {demographics.age && (
-                      <div>
-                        <p className="mb-1 text-sm font-semibold text-zinc-700">Age Range</p>
-                        <p className="text-sm text-zinc-600">{demographics.age}</p>
-                      </div>
-                    )}
-                    {demographics.gender && (
-                      <div>
-                        <p className="mb-1 text-sm font-semibold text-zinc-700">Gender Distribution</p>
-                        <p className="text-sm text-zinc-600">{demographics.gender}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {!isPro && (
-                <div className="border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 py-6 px-4 sm:px-6 rounded-2xl">
-                  <div className="text-center">
-                    <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 mb-3">
-                      Created with{" "}
-                      <Link href="https://creatorskit.app" className="font-semibold text-zinc-900 dark:text-zinc-50 hover:text-primary underline">
-                        CreatorKit
-                      </Link>
-                    </p>
-                    <Link
-                      href="https://creatorskit.app"
-                      className="inline-block text-xs sm:text-sm text-zinc-500 dark:text-zinc-500 hover:text-primary transition-colors"
-                    >
-                      Create your own page →
-                    </Link>
-                  </div>
-                </div>
+            {/* CTA Buttons */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+              <button
+                type="button"
+                onClick={() => setIsContactModalOpen(true)}
+                className="group flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-4 text-base font-semibold text-white shadow-lg transition hover:shadow-xl hover:from-indigo-700 hover:to-purple-700 hover:scale-105"
+              >
+                <Mail className="h-5 w-5" />
+                Collaborate with Me
+                <ArrowRight className="h-5 w-5 transition group-hover:translate-x-1" />
+              </button>
+              {values.booking_link && (
+                <Link
+                  href={values.booking_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 rounded-xl border-2 border-zinc-300 bg-white px-8 py-4 text-base font-semibold text-zinc-900 transition hover:border-zinc-400 hover:bg-zinc-50 hover:scale-105"
+                >
+                  <Calendar className="h-5 w-5" />
+                  Book a Call
+                </Link>
               )}
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+   
+      {/* Brand Logos Section */}
+      {brandLogos.length > 0 && (
+        <section className="border-y border-zinc-200 bg-zinc-50 py-16 px-4 sm:py-20 lg:px-8">
+          <div className="mx-auto max-w-6xl">
+            <div className="mb-12 text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">
+                Brands I&apos;ve Worked With
+              </h2>
+              <p className="mt-4 text-lg text-zinc-600">
+                Trusted by leading brands to deliver exceptional results
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-6 sm:grid-cols-4 lg:grid-cols-6 justify-center items-center">
+              {brandLogos.map((logo, idx) => (
+                <div
+                  key={idx}
+                  className="group relative aspect-square overflow-hidden rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition hover:shadow-md"
+                >
+                  <Image
+                    src={logo.url}
+                    alt={`Brand ${idx + 1}`}
+                    fill
+                    className="object-contain p-2"
+                    unoptimized
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Interactive Video Portfolio Section */}
+      {videoUrls.length > 0 && (
+        <section className="bg-white py-16 px-4 sm:py-20 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-12 text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl mb-3">
+                Video Portfolio
+              </h2>
+              <p className="text-lg text-zinc-600 max-w-2xl mx-auto">
+                Watch my best UGC content and brand collaborations. Click any video to play inline.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {videoUrls.map((video, idx) => {
+                const url = typeof video === "string" ? video : video.url || "";
+                const views = typeof video === "string" ? null : video.views;
+                const thumbnail = getVideoThumb(url);
+                return (
+                  <VideoPlayer
+                    key={idx}
+                    url={url}
+                    thumbnail={thumbnail}
+                    views={views || undefined}
+                    className="w-full"
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Services Section */}
+      {services.length > 0 && (
+        <section className="border-y border-zinc-200 bg-zinc-50 py-16 px-4 sm:py-20 lg:px-8">
+          <div className="mx-auto max-w-4xl">
+            <div className="mb-12 text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">Services & Packages</h2>
+              <p className="mt-4 text-lg text-zinc-600">
+                Tailored collaboration packages designed for your brand
+              </p>
+            </div>
+            <div className="space-y-4">
+              {services.map((service, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:shadow-md"
+                >
+                  <div className="flex-1">
+                    <p className="text-xl font-semibold text-zinc-900">{service.title || "Service"}</p>
+                    <p className="mt-1 text-sm font-medium capitalize text-zinc-600">{service.platform}</p>
+                  </div>
+                  <div className="ml-6 text-right">
+                    {service.is_contact_only ? (
+                      <span className="inline-flex items-center rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700">
+                        Contact for Quote
+                      </span>
+                    ) : (
+                      <p className="text-2xl font-bold text-zinc-900">{service.price || "—"}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Audience Insights Section */}
+      {demographics && (
+        <section className="bg-white py-16 px-4 sm:py-20 lg:px-8">
+          <div className="mx-auto max-w-4xl">
+            <div className="mb-12 text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">Audience Insights</h2>
+              <p className="mt-4 text-lg text-zinc-600">
+                Understanding my audience to maximize campaign effectiveness
+              </p>
+            </div>
+            <div className="grid gap-8 sm:grid-cols-3">
+              {topGeo.length > 0 && (
+                <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-6">
+                  <p className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500">Top Locations</p>
+                  <div className="space-y-2">
+                    {topGeo.map((geo, idx) => (
+                      <div key={idx} className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-zinc-900">{geo.location}</span>
+                        {geo.percentage && (
+                          <span className="text-sm text-zinc-600">{geo.percentage}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {demographics.age && (
+                <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-6">
+                  <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-zinc-500">Age Range</p>
+                  <p className="text-2xl font-bold text-zinc-900">{demographics.age}</p>
+                </div>
+              )}
+              {demographics.gender && (
+                <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-6">
+                  <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-zinc-500">Gender</p>
+                  <p className="text-lg font-semibold text-zinc-900">{demographics.gender}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Final CTA Section */}
+      <section className="bg-gradient-to-b from-indigo-50 via-purple-50 to-pink-50 py-16 px-4 sm:py-20 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">
+            Ready to Collaborate?
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-zinc-600">
+            Let&apos;s create something amazing together. Get in touch to discuss your next campaign.
+          </p>
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <button
+              type="button"
+              onClick={() => setIsContactModalOpen(true)}
+              className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-4 text-base font-semibold text-white shadow-lg transition hover:shadow-xl hover:from-indigo-700 hover:to-purple-700"
+            >
+              <Mail className="h-5 w-5" />
+              Send Message
+            </button>
+            {values.booking_link && (
+              <Link
+                href={values.booking_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 rounded-xl border-2 border-zinc-300 bg-white px-8 py-4 text-base font-semibold text-zinc-900 transition hover:border-zinc-400 hover:bg-zinc-50"
+              >
+                <Calendar className="h-5 w-5" />
+                Schedule a Call
+              </Link>
+            )}
+            {phoneHref && (
+              <Link
+                href={phoneHref}
+                className="flex items-center justify-center gap-2 rounded-xl border-2 border-zinc-300 bg-white px-8 py-4 text-base font-semibold text-zinc-900 transition hover:border-zinc-400 hover:bg-zinc-50"
+              >
+                <Phone className="h-5 w-5" />
+                Call / WhatsApp
+              </Link>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      {!isPro && (
+        <footer className="border-t border-zinc-200 bg-zinc-50 py-8 px-4 sm:px-6">
+          <div className="mx-auto max-w-6xl text-center">
+            <p className="text-sm text-zinc-600 sm:text-base">
+              Created with{" "}
+              <Link
+                href="https://creatorskit.app"
+                className="font-semibold text-zinc-900 underline transition hover:text-indigo-600"
+              >
+                CreatorKit
+              </Link>
+            </p>
+            <Link
+              href="https://creatorskit.app"
+              className="mt-2 inline-block text-xs text-zinc-500 transition hover:text-indigo-600 sm:text-sm"
+            >
+              Create your own page →
+            </Link>
+          </div>
+        </footer>
+      )}
+
+      {/* Floating CTA Button for Mobile */}
+      {showFloatingCTA && (
+        <button
+          type="button"
+          onClick={() => setIsContactModalOpen(true)}
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-4 text-base font-semibold text-white shadow-2xl transition hover:shadow-3xl hover:scale-105 sm:hidden"
+          aria-label="Collaborate with me"
+        >
+          <Mail className="h-5 w-5" />
+          <span>Collaborate</span>
+        </button>
+      )}
 
       <ContactModal
         open={isContactModalOpen}

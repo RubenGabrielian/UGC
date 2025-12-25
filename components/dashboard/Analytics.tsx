@@ -142,7 +142,7 @@ export function Analytics({ userId }: { userId: string }) {
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center h-64">
-            <div className="text-sm text-muted-foreground">Loading...</div>
+            <div className="text-sm text-zinc-500">Loading...</div>
           </div>
         </CardContent>
       </Card>
@@ -159,7 +159,7 @@ export function Analytics({ userId }: { userId: string }) {
 
   return (
     <div className="space-y-6">
-      <Card className="border-border/80 shadow-sm">
+      <Card className="border-zinc-100 rounded-xl">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -172,9 +172,9 @@ export function Analytics({ userId }: { userId: string }) {
         <CardContent className="space-y-6">
           {/* Error Message */}
           {error && (
-            <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
-              <p className="text-sm font-medium text-destructive">{error}</p>
-              <p className="text-xs text-muted-foreground mt-2">
+            <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+              <p className="text-sm font-medium text-red-700">{error}</p>
+              <p className="text-xs text-red-600 mt-2">
                 Make sure the <code className="px-1 py-0.5 bg-background rounded text-xs">page_views</code> table exists and the <code className="px-1 py-0.5 bg-background rounded text-xs">increment_page_view</code> RPC function is set up.
               </p>
             </div>
@@ -182,13 +182,13 @@ export function Analytics({ userId }: { userId: string }) {
           
           {/* Summary Cards */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Card className="border-border/60">
+            <Card className="border-zinc-100 rounded-xl">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Total Views</p>
-                    <p className="text-2xl font-bold mt-1">{data?.totalViews.toLocaleString() || 0}</p>
-                    <p className="text-xs text-muted-foreground mt-1">Lifetime</p>
+                    <p className="text-xs font-medium text-zinc-500">Total Views</p>
+                    <p className="text-2xl font-bold mt-1 font-mono text-zinc-900">{data?.totalViews.toLocaleString() || 0}</p>
+                    <p className="text-[10px] text-zinc-400 mt-1">Lifetime</p>
                   </div>
                   <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
                     <Eye className="h-6 w-6 text-primary" />
@@ -197,13 +197,13 @@ export function Analytics({ userId }: { userId: string }) {
               </CardContent>
             </Card>
 
-            <Card className="border-border/60">
+            <Card className="border-zinc-100 rounded-xl">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Views This Week</p>
-                    <p className="text-2xl font-bold mt-1">{data?.viewsThisWeek.toLocaleString() || 0}</p>
-                    <p className="text-xs text-muted-foreground mt-1">Last 7 days</p>
+                    <p className="text-xs font-medium text-zinc-500">Views This Week</p>
+                    <p className="text-2xl font-bold mt-1 font-mono text-zinc-900">{data?.viewsThisWeek.toLocaleString() || 0}</p>
+                    <p className="text-[10px] text-zinc-400 mt-1">Last 7 days</p>
                   </div>
                   <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
                     <TrendingUp className="h-6 w-6 text-primary" />
@@ -214,9 +214,9 @@ export function Analytics({ userId }: { userId: string }) {
           </div>
 
           {/* Chart */}
-          <Card className="border-border/60">
+          <Card className="border-zinc-100 rounded-xl">
             <CardHeader>
-              <CardTitle className="text-lg">Page Views (Last 7 Days)</CardTitle>
+              <CardTitle className="text-sm font-semibold">Page Views (Last 7 Days)</CardTitle>
             </CardHeader>
             <CardContent>
               {hasData ? (
@@ -225,28 +225,30 @@ export function Analytics({ userId }: { userId: string }) {
                     <AreaChart data={data?.last7Days || []} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                          <stop offset="5%" stopColor="#18181b" stopOpacity={0.2} />
+                          <stop offset="95%" stopColor="#18181b" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <XAxis
                         dataKey="date"
                         tickFormatter={formatDate}
-                        tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
+                        tick={{ fontSize: 11, fill: "#71717a", fontFamily: "monospace" }}
                         axisLine={false}
                         tickLine={false}
                       />
                       <YAxis
-                        tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
+                        tick={{ fontSize: 11, fill: "#71717a", fontFamily: "monospace" }}
                         axisLine={false}
                         tickLine={false}
                       />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: "hsl(var(--background))",
-                          border: "1px solid hsl(var(--border))",
-                          borderRadius: "8px",
+                          backgroundColor: "#ffffff",
+                          border: "1px solid #e4e4e7",
+                          borderRadius: "6px",
                           padding: "8px 12px",
+                          fontFamily: "monospace",
+                          fontSize: "12px",
                         }}
                         labelFormatter={(value) => formatDate(value)}
                         formatter={(value: number | undefined) => [value ?? 0, "Views"]}
@@ -254,18 +256,18 @@ export function Analytics({ userId }: { userId: string }) {
                       <Area
                         type="monotone"
                         dataKey="views"
-                        stroke="hsl(var(--primary))"
-                        strokeWidth={2}
+                        stroke="#18181b"
+                        strokeWidth={1.5}
                         fill="url(#colorViews)"
                       />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="h-64 w-full flex flex-col items-center justify-center border-2 border-dashed border-border rounded-lg">
-                  <BarChart3 className="h-12 w-12 text-muted-foreground/50 mb-3" />
-                  <p className="text-sm font-medium text-muted-foreground">No data yet</p>
-                  <p className="text-xs text-muted-foreground mt-1">Your page views will appear here</p>
+                <div className="h-64 w-full flex flex-col items-center justify-center border border-dashed border-zinc-100 rounded-xl rounded-lg">
+                  <BarChart3 className="h-12 w-12 text-zinc-300 mb-3" />
+                  <p className="text-sm font-medium text-zinc-500">No data yet</p>
+                  <p className="text-xs text-zinc-400 mt-1">Your page views will appear here</p>
                 </div>
               )}
             </CardContent>
