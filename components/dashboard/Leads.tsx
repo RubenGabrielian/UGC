@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, Building2, Calendar } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface Lead {
   id: string;
@@ -12,6 +13,7 @@ interface Lead {
   requested_service: string; // Updated to match database column name (NOT NULL)
   message: string | null;
   created_at: string;
+  is_read: boolean;
 }
 
 export function Leads({ userId }: { userId: string }) {
@@ -33,7 +35,26 @@ export function Leads({ userId }: { userId: string }) {
         return;
       }
 
-      setLeads(data || []);
+      const fetchedLeads = (data || []) as Lead[];
+      setLeads(fetchedLeads);
+
+      // Mark all unread leads as read when the page is viewed
+      const unreadLeads = fetchedLeads.filter(lead => !lead.is_read);
+      if (unreadLeads.length > 0) {
+        const leadIds = unreadLeads.map(lead => lead.id);
+        await supabase
+          .from("leads")
+          .update({ is_read: true })
+          .in("id", leadIds);
+        
+        // Update local state to reflect read status
+        setLeads(prevLeads => 
+          prevLeads.map(lead => 
+            leadIds.includes(lead.id) ? { ...lead, is_read: true } : lead
+          )
+        );
+      }
+
       setIsLoading(false);
     }
 
@@ -80,8 +101,15 @@ export function Leads({ userId }: { userId: string }) {
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-semibold text-zinc-900">Leads</CardTitle>
-            <div className="text-xs text-zinc-500">
-              {leads.length} {leads.length === 1 ? "lead" : "leads"}
+            <div className="flex items-center gap-3">
+              {leads.filter(lead => !lead.is_read).length > 0 && (
+                <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-semibold text-white">
+                  {leads.filter(lead => !lead.is_read).length}
+                </span>
+              )}
+              <div className="text-xs text-zinc-500">
+                {leads.length} {leads.length === 1 ? "lead" : "leads"}
+              </div>
             </div>
           </div>
         </CardHeader>
@@ -90,7 +118,12 @@ export function Leads({ userId }: { userId: string }) {
             {leads.map((lead) => (
               <div
                 key={lead.id}
-                className="rounded-lg border border-zinc-200 bg-white p-4 hover:border-zinc-300 hover:shadow-md transition-all"
+                className={cn(
+                  "rounded-lg border p-4 hover:shadow-md transition-all",
+                  lead.is_read
+                    ? "border-zinc-200 bg-white hover:border-zinc-300"
+                    : "border-indigo-300 bg-indigo-50/50 hover:border-indigo-400"
+                )}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-start gap-3 flex-1">

@@ -51,7 +51,7 @@ export function DashboardContent({
       <Toaster />
       <div className="flex h-screen overflow-hidden bg-white">
         {/* Sidebar */}
-        <Sidebar publicUrl={publicUrl} isPro={profile?.is_pro ?? false} />
+        <Sidebar publicUrl={publicUrl} isPro={profile?.is_pro ?? false} userId={userId} />
 
         {/* Main Content */}
         <div className="flex flex-1 flex-col overflow-hidden ml-64">

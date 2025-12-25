@@ -21,13 +21,15 @@ import {
 interface SidebarProps {
   publicUrl: string;
   isPro?: boolean;
+  userId?: string;
 }
 
-export function Sidebar({ publicUrl, isPro = false }: SidebarProps) {
+export function Sidebar({ publicUrl, isPro = false, userId }: SidebarProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [currentTab, setCurrentTab] = useState("editor");
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [unreadLeadsCount, setUnreadLeadsCount] = useState(0);
   const basePath = "/dashboard";
 
   // Update tab from URL params after mount to avoid hydration issues
@@ -39,6 +41,35 @@ export function Sidebar({ publicUrl, isPro = false }: SidebarProps) {
       });
     }
   }, [searchParams, currentTab]);
+
+  // Fetch unread leads count (only for Pro users)
+  useEffect(() => {
+    if (!isPro || !userId) {
+      return;
+    }
+
+    async function fetchUnreadCount() {
+      const supabase = createClient();
+      const { count, error } = await supabase
+        .from("leads")
+        .select("*", { count: "exact", head: true })
+        .eq("creator_id", userId)
+        .eq("is_read", false);
+
+      if (error) {
+        console.error("Error fetching unread leads count:", error);
+        return;
+      }
+
+      setUnreadLeadsCount(count || 0);
+    }
+
+    fetchUnreadCount();
+
+    // Refresh count every 30 seconds
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, [isPro, userId]);
 
   const navItems = [
     {
@@ -127,6 +158,9 @@ export function Sidebar({ publicUrl, isPro = false }: SidebarProps) {
             const Icon = item.icon;
             const active = isActive(item.tab);
             const showProBadge = item.isPro && !isPro;
+            const isLeadsTab = item.tab === "leads";
+            const showUnreadBadge = isLeadsTab && isPro && unreadLeadsCount > 0;
+            
             return (
               <Link
                 key={item.href}
@@ -142,11 +176,18 @@ export function Sidebar({ publicUrl, isPro = false }: SidebarProps) {
                   <Icon className="h-4 w-4" />
                   <span>{item.name}</span>
                 </div>
-                {showProBadge && (
-                  <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-[10px] font-semibold text-white">
-                    Pro
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                  {showUnreadBadge && (
+                    <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-semibold text-white">
+                      {unreadLeadsCount > 99 ? "99+" : unreadLeadsCount}
+                    </span>
+                  )}
+                  {showProBadge && (
+                    <span className="rounded-full bg-indigo-600 px-2 py-0.5 text-[10px] font-semibold text-white">
+                      Pro
+                    </span>
+                  )}
+                </div>
               </Link>
             );
           })}
