@@ -179,128 +179,125 @@ export function LandingPage() {
 
           <div className="mx-auto max-w-7xl">
             {/* Bento Grid Layout */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-[auto_auto]">
-              {/* Large Hero Card - Spans 2 columns */}
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {/* Template 1 - Midnight Bento */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
-                className="group relative sm:col-span-2 lg:col-span-2 lg:row-span-2 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xl overflow-hidden hover:shadow-2xl transition"
+                className="group relative rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden hover:shadow-2xl transition-all hover:scale-[1.02]"
               >
-                <div className="relative h-full min-h-[400px] flex items-center justify-center">
-                  <div className="relative w-[240px]">
-                    <div className="relative bg-zinc-900 dark:bg-zinc-800 rounded-[3rem] p-3 shadow-2xl">
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-zinc-900 dark:bg-zinc-800 rounded-b-2xl z-10"></div>
-                      <div className="relative aspect-[9/19.5] rounded-[2.5rem] overflow-hidden bg-zinc-950">
-                        <Image
-                          src="/img/profile3.png"
-                          alt="UGC creator landing page example"
-                          fill
-                          className="object-cover"
-                          sizes="240px"
-                          priority={false}
-                        />
+                <div className="relative w-full">
+                  {/* Desktop Browser Frame */}
+                  <div className="relative bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-300 dark:border-zinc-700 px-4 py-2.5">
+                    <div className="flex items-center gap-2">
+                      <div className="flex gap-1.5">
+                        <div className="h-2.5 w-2.5 rounded-full bg-red-400"></div>
+                        <div className="h-2.5 w-2.5 rounded-full bg-yellow-400"></div>
+                        <div className="h-2.5 w-2.5 rounded-full bg-green-400"></div>
                       </div>
-                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-zinc-700 dark:bg-zinc-600 rounded-full"></div>
+                      <div className="flex-1 h-5 bg-white dark:bg-zinc-900 rounded text-[10px] text-zinc-500 flex items-center px-2.5">
+                        creatorkit.app/u/creator
+                      </div>
                     </div>
                   </div>
+                  {/* Desktop Screen */}
+                  <div className="relative aspect-[16/10] overflow-hidden bg-white dark:bg-zinc-950">
+                    <Image
+                      src="/img/template-midnight.png"
+                      alt="Midnight Bento template"
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      priority={false}
+                    />
+                  </div>
                 </div>
-                <div className="absolute bottom-4 left-4 right-4">
-                  <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Hero Profile Section</p>
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400">Professional landing page layout</p>
+                <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
+                  <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Midnight Bento</p>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">Dark mode with glassmorphism</p>
                 </div>
               </motion.div>
 
-              {/* Medium Card 1 */}
+              {/* Template 2 - Neon Gradient */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="group relative rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xl overflow-hidden hover:shadow-2xl transition"
+                className="group relative rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden hover:shadow-2xl transition-all hover:scale-[1.02]"
               >
-                <div className="relative h-[280px] flex items-center justify-center">
-                  <div className="relative w-[180px]">
-                    <div className="relative bg-zinc-900 dark:bg-zinc-800 rounded-[3rem] p-2.5 shadow-2xl">
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-5 bg-zinc-900 dark:bg-zinc-800 rounded-b-xl z-10"></div>
-                      <div className="relative aspect-[9/19.5] rounded-[2rem] overflow-hidden bg-zinc-950">
-                        <Image
-                          src="/img/profile.png"
-                          alt="UGC services showcase"
-                          fill
-                          className="object-cover"
-                          sizes="180px"
-                          priority={false}
-                        />
+                <div className="relative w-full">
+                  {/* Desktop Browser Frame */}
+                  <div className="relative bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-300 dark:border-zinc-700 px-4 py-2.5">
+                    <div className="flex items-center gap-2">
+                      <div className="flex gap-1.5">
+                        <div className="h-2.5 w-2.5 rounded-full bg-red-400"></div>
+                        <div className="h-2.5 w-2.5 rounded-full bg-yellow-400"></div>
+                        <div className="h-2.5 w-2.5 rounded-full bg-green-400"></div>
                       </div>
-                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-24 h-1 bg-zinc-700 dark:bg-zinc-600 rounded-full"></div>
+                      <div className="flex-1 h-5 bg-white dark:bg-zinc-900 rounded text-[10px] text-zinc-500 flex items-center px-2.5">
+                        creatorkit.app/u/creator
+                      </div>
                     </div>
                   </div>
+                  {/* Desktop Screen */}
+                  <div className="relative aspect-[16/10] overflow-hidden bg-white dark:bg-zinc-950">
+                    <Image
+                      src="/img/template-gradient.png"
+                      alt="Neon Gradient template"
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      priority={false}
+                    />
+                  </div>
                 </div>
-                <div className="mt-4">
-                  <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Video Portfolio</p>
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400">UGC content showcase</p>
+                <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
+                  <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Neon Gradient</p>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">Vibrant gradients & bold typography</p>
                 </div>
               </motion.div>
 
-              {/* Medium Card 2 */}
+              {/* Template 3 - Default */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="group relative rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xl overflow-hidden hover:shadow-2xl transition"
+                className="group relative rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden hover:shadow-2xl transition-all hover:scale-[1.02]"
               >
-                <div className="relative h-[280px] flex items-center justify-center">
-                  <div className="relative w-[180px]">
-                    <div className="relative bg-zinc-900 dark:bg-zinc-800 rounded-[3rem] p-2.5 shadow-2xl">
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-5 bg-zinc-900 dark:bg-zinc-800 rounded-b-xl z-10"></div>
-                      <div className="relative aspect-[9/19.5] rounded-[2rem] overflow-hidden bg-zinc-950">
-                        <Image
-                          src="/img/profile2.png"
-                          alt="Live analytics dashboard"
-                          fill
-                          className="object-cover"
-                          sizes="180px"
-                          priority={false}
-                        />
+                <div className="relative w-full">
+                  {/* Desktop Browser Frame */}
+                  <div className="relative bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-300 dark:border-zinc-700 px-4 py-2.5">
+                    <div className="flex items-center gap-2">
+                      <div className="flex gap-1.5">
+                        <div className="h-2.5 w-2.5 rounded-full bg-red-400"></div>
+                        <div className="h-2.5 w-2.5 rounded-full bg-yellow-400"></div>
+                        <div className="h-2.5 w-2.5 rounded-full bg-green-400"></div>
                       </div>
-                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-24 h-1 bg-zinc-700 dark:bg-zinc-600 rounded-full"></div>
+                      <div className="flex-1 h-5 bg-white dark:bg-zinc-900 rounded text-[10px] text-zinc-500 flex items-center px-2.5">
+                        creatorkit.app/u/creator
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="mt-4">
-                  <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Live Analytics</p>
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400">Real-time stats</p>
-                </div>
-              </motion.div>
-
-              {/* Wide Card - Stats Showcase */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="group relative sm:col-span-2 lg:col-span-2 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 p-8 shadow-xl hover:shadow-2xl transition"
-              >
-                <div className="grid grid-cols-3 gap-6">
-                  <div className="text-center">
-                    <div className="text-3xl font-black text-indigo-600 dark:text-indigo-400 mb-2">2.5M</div>
-                    <div className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Total Reach</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-black text-purple-600 dark:text-purple-400 mb-2">4.2%</div>
-                    <div className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Engagement</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-black text-pink-600 dark:text-pink-400 mb-2">150+</div>
-                    <div className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Brands</div>
+                  {/* Desktop Screen */}
+                  <div className="relative aspect-[16/10] overflow-hidden bg-white dark:bg-zinc-950">
+                    <Image
+                      src="/img/template-default.png"
+                      alt="Default template"
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      priority={false}
+                    />
                   </div>
                 </div>
-                <p className="mt-6 text-sm text-center text-zinc-600 dark:text-zinc-400">
-                  Live verified audience stats displayed prominently
-                </p>
+                <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
+                  <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Default</p>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">Clean, modern landing page</p>
+                </div>
               </motion.div>
             </div>
           </div>
