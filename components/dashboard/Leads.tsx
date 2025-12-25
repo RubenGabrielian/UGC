@@ -8,8 +8,8 @@ import { Mail, Building2, Calendar } from "lucide-react";
 interface Lead {
   id: string;
   brand_name: string;
-  email: string;
-  service: string | null;
+  brand_email: string; // Updated to match database column name
+  requested_service: string; // Updated to match database column name (NOT NULL)
   message: string | null;
   created_at: string;
 }
@@ -76,35 +76,41 @@ export function Leads({ userId }: { userId: string }) {
 
   return (
     <div className="space-y-4">
-      <Card className="border-zinc-200">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold">Leads</CardTitle>
+      <Card className="border-zinc-200 rounded-xl">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg font-semibold text-zinc-900">Leads</CardTitle>
+            <div className="text-xs text-zinc-500">
+              {leads.length} {leads.length === 1 ? "lead" : "leads"}
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {leads.map((lead) => (
               <div
                 key={lead.id}
-                className="rounded-lg border border-zinc-100 bg-white p-4 hover:border-zinc-200 hover:shadow-sm transition-all"
+                className="rounded-lg border border-zinc-200 bg-white p-4 hover:border-zinc-300 hover:shadow-md transition-all"
               >
                 <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-100">
-                      <Building2 className="h-5 w-5 text-zinc-600" />
+                  <div className="flex items-start gap-3 flex-1">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-100 to-purple-100">
+                      <Building2 className="h-5 w-5 text-indigo-600" />
                     </div>
-                    <div>
-                      <p className="text-sm font-semibold text-zinc-900">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-zinc-900 mb-1">
                         {lead.brand_name}
                       </p>
                       <a
-                        href={`mailto:${lead.email}`}
-                        className="text-xs text-zinc-500 hover:text-zinc-900 transition-colors"
+                        href={`mailto:${lead.brand_email}`}
+                        className="text-xs text-zinc-600 hover:text-indigo-600 transition-colors inline-flex items-center gap-1"
                       >
-                        {lead.email}
+                        <Mail className="h-3 w-3" />
+                        {lead.brand_email}
                       </a>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-zinc-500">
+                  <div className="flex items-center gap-2 text-xs text-zinc-500 ml-4">
                     <Calendar className="h-3.5 w-3.5" />
                     {new Date(lead.created_at).toLocaleDateString("en-US", {
                       month: "short",
@@ -113,18 +119,18 @@ export function Leads({ userId }: { userId: string }) {
                     })}
                   </div>
                 </div>
-                {lead.service && (
-                  <div className="mb-2">
+                {lead.requested_service && (
+                  <div className="mb-3">
                     <span className="text-xs font-medium text-zinc-500">
-                      Service:
+                      Requested Service:
                     </span>
-                    <span className="ml-2 text-xs text-zinc-900">
-                      {lead.service}
+                    <span className="ml-2 text-xs font-semibold text-zinc-900">
+                      {lead.requested_service}
                     </span>
                   </div>
                 )}
                 {lead.message && (
-                  <div className="mt-3 rounded-md bg-zinc-50 p-3">
+                  <div className="mt-3 rounded-md bg-zinc-50 border border-zinc-100 p-3">
                     <p className="text-xs leading-relaxed text-zinc-700 whitespace-pre-wrap">
                       {lead.message}
                     </p>

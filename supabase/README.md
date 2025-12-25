@@ -115,3 +115,32 @@ NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_ID=your_variant_id_here
 3. Add a new webhook with URL: `https://yourdomain.com/api/webhook/lemonsqueezy`
 4. Select events: `subscription_created`, `subscription_updated`, `subscription_cancelled`, `subscription_expired`
 5. Set your webhook secret and add it to `LEMONSQUEEZY_WEBHOOK_SECRET` in your `.env.local`
+
+## Leads Table Migration
+
+To fix the contact form submission error, you need to add the missing columns to the `leads` table:
+
+1. Go to your Supabase Dashboard: https://supabase.com/dashboard
+2. Select your project
+3. Navigate to **SQL Editor** in the left sidebar
+4. Click **New Query**
+5. Copy and paste the contents of `migrations/add_email_to_leads.sql`
+6. Click **Run** to execute the migration
+
+This migration adds:
+- `email`: TEXT column for storing the brand's email address
+- `service`: TEXT column for storing the requested service package
+- **Row Level Security (RLS) policies**:
+  - Allows anyone to insert leads (for contact form submissions)
+  - Allows creators to only view their own leads
+
+**Note:** If the `leads` table doesn't exist yet, you may need to create it first. The migration file includes commented SQL for creating the full table structure with all required columns:
+- `id` (UUID, primary key)
+- `creator_id` (UUID, foreign key to profiles)
+- `brand_name` (TEXT)
+- `email` (TEXT)
+- `service` (TEXT, nullable)
+- `message` (TEXT, nullable)
+- `created_at` (TIMESTAMP)
+
+**Important:** The migration will automatically set up RLS policies to allow contact form submissions from anonymous users while protecting creator data.

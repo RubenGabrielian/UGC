@@ -105,8 +105,8 @@ export function ContactModal({
       const { error } = await supabase.from("leads").insert({
         creator_id: creatorId,
         brand_name: data.brand_name,
-        email: data.email,
-        service: `${serviceTitle} - ${servicePlatform}${servicePrice !== "Custom" ? ` - $${servicePrice}` : ""}`,
+        brand_email: data.email, // Use brand_email to match database schema
+        requested_service: `${serviceTitle} - ${servicePlatform}${servicePrice !== "Custom" ? ` - $${servicePrice}` : ""}`, // Use requested_service to match database schema
         message: data.message || null,
       })
 
