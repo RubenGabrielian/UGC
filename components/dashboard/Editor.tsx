@@ -331,52 +331,54 @@ export function Editor({ initialData, userId }: EditorProps) {
   }
 
   return (
-    <div className="mx-auto max-w-5xl">
-      <form onSubmit={onSubmit} className="space-y-8">
+    <div className="mx-auto w-full max-w-5xl">
+      <form onSubmit={onSubmit} className="space-y-6 sm:space-y-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="inline-flex h-9 items-center justify-start rounded-lg border border-zinc-200 bg-zinc-50 p-1">
-            <TabsTrigger
-              value="profile"
-              className="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-xs font-medium text-zinc-600 transition-all data-[state=active]:bg-white data-[state=active]:text-zinc-900 data-[state=active]:shadow-sm"
-            >
-              <User className="mr-1.5 h-3.5 w-3.5" />
-              Profile
-            </TabsTrigger>
-            <TabsTrigger
-              value="stats"
-              className="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-xs font-medium text-zinc-600 transition-all data-[state=active]:bg-white data-[state=active]:text-zinc-900 data-[state=active]:shadow-sm"
-            >
-              <BarChart3 className="mr-1.5 h-3.5 w-3.5" />
-              Social Stats
-            </TabsTrigger>
-            <TabsTrigger
-              value="portfolio"
-              className="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-xs font-medium text-zinc-600 transition-all data-[state=active]:bg-white data-[state=active]:text-zinc-900 data-[state=active]:shadow-sm"
-            >
-              <Film className="mr-1.5 h-3.5 w-3.5" />
-              Portfolio
-            </TabsTrigger>
-            <TabsTrigger
-              value="services"
-              className="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-xs font-medium text-zinc-600 transition-all data-[state=active]:bg-white data-[state=active]:text-zinc-900 data-[state=active]:shadow-sm"
-            >
-              <Package className="mr-1.5 h-3.5 w-3.5" />
-              Services
-            </TabsTrigger>
-            <TabsTrigger
-              value="contact"
-              className="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-xs font-medium text-zinc-600 transition-all data-[state=active]:bg-white data-[state=active]:text-zinc-900 data-[state=active]:shadow-sm"
-            >
-              <Mail className="mr-1.5 h-3.5 w-3.5" />
-              Contact
-            </TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+            <TabsList className="inline-flex h-9 min-w-full sm:min-w-0 items-center justify-start rounded-lg border border-zinc-200 bg-zinc-50 p-1 w-full sm:w-auto gap-1">
+              <TabsTrigger
+                value="profile"
+                className="inline-flex items-center justify-center rounded-md px-2.5 sm:px-3 py-1.5 text-xs font-medium text-zinc-600 transition-all data-[state=active]:bg-white data-[state=active]:text-zinc-900 data-[state=active]:shadow-sm whitespace-nowrap flex-shrink-0"
+              >
+                <User className="mr-1.5 h-3.5 w-3.5 flex-shrink-0" />
+                <span className="hidden sm:inline">Profile</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="stats"
+                className="inline-flex items-center justify-center rounded-md px-2.5 sm:px-3 py-1.5 text-xs font-medium text-zinc-600 transition-all data-[state=active]:bg-white data-[state=active]:text-zinc-900 data-[state=active]:shadow-sm whitespace-nowrap flex-shrink-0"
+              >
+                <BarChart3 className="mr-1.5 h-3.5 w-3.5 flex-shrink-0" />
+                <span className="hidden sm:inline">Social Stats</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="portfolio"
+                className="inline-flex items-center justify-center rounded-md px-2.5 sm:px-3 py-1.5 text-xs font-medium text-zinc-600 transition-all data-[state=active]:bg-white data-[state=active]:text-zinc-900 data-[state=active]:shadow-sm whitespace-nowrap flex-shrink-0"
+              >
+                <Film className="mr-1.5 h-3.5 w-3.5 flex-shrink-0" />
+                <span className="hidden sm:inline">Portfolio</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="services"
+                className="inline-flex items-center justify-center rounded-md px-2.5 sm:px-3 py-1.5 text-xs font-medium text-zinc-600 transition-all data-[state=active]:bg-white data-[state=active]:text-zinc-900 data-[state=active]:shadow-sm whitespace-nowrap flex-shrink-0"
+              >
+                <Package className="mr-1.5 h-3.5 w-3.5 flex-shrink-0" />
+                <span className="hidden sm:inline">Services</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="contact"
+                className="inline-flex items-center justify-center rounded-md px-2.5 sm:px-3 py-1.5 text-xs font-medium text-zinc-600 transition-all data-[state=active]:bg-white data-[state=active]:text-zinc-900 data-[state=active]:shadow-sm whitespace-nowrap flex-shrink-0"
+              >
+                <Mail className="mr-1.5 h-3.5 w-3.5 flex-shrink-0" />
+                <span className="hidden sm:inline">Contact</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Profile Tab */}
-          <TabsContent value="profile" className="mt-6 space-y-4">
+          <TabsContent value="profile" className="mt-4 sm:mt-6 space-y-4">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               {/* Identity Card */}
-              <Card className="border-zinc-100 bg-white p-6 rounded-xl">
+              <Card className="border-zinc-100 bg-white p-4 sm:p-6 rounded-xl">
                 <div className="mb-4">
                   <h3 className="text-sm font-semibold text-zinc-900 mb-0.5">Identity</h3>
                   <p className="text-xs text-zinc-500">Photo, name, and username</p>
@@ -419,7 +421,7 @@ export function Editor({ initialData, userId }: EditorProps) {
               </Card>
 
               {/* About You Card */}
-              <Card className="border-zinc-100 bg-white p-6 rounded-xl">
+              <Card className="border-zinc-100 bg-white p-4 sm:p-6 rounded-xl">
                 <div className="mb-4">
                   <h3 className="text-sm font-semibold text-zinc-900 mb-0.5">About You</h3>
                   <p className="text-xs text-zinc-500">Headline and bio</p>
@@ -455,7 +457,7 @@ export function Editor({ initialData, userId }: EditorProps) {
               </Card>
 
               {/* Content Niche Card */}
-              <Card className="border-zinc-100 bg-white p-6 rounded-xl lg:col-span-2">
+              <Card className="border-zinc-100 bg-white p-4 sm:p-6 rounded-xl lg:col-span-2">
                 <CategoriesModule
                   control={form.control}
                   categories={form.watch("categories") || []}
@@ -466,7 +468,7 @@ export function Editor({ initialData, userId }: EditorProps) {
           </TabsContent>
 
         {/* Social Stats Tab */}
-        <TabsContent value="stats" className="mt-6">
+        <TabsContent value="stats" className="mt-4 sm:mt-6">
           <StatsModule
             register={form.register}
             instagram_handle={form.watch("instagram_handle")}
@@ -481,13 +483,13 @@ export function Editor({ initialData, userId }: EditorProps) {
         </TabsContent>
 
         {/* Portfolio Tab */}
-        <TabsContent value="portfolio" className="mt-6 space-y-4">
+        <TabsContent value="portfolio" className="mt-4 sm:mt-6 space-y-4">
           <VideosModule register={form.register} fields={videoUrlsFieldArray} />
           <BrandsModule register={form.register} fields={brandLogosFieldArray} />
         </TabsContent>
 
         {/* Services Tab */}
-        <TabsContent value="services" className="mt-6">
+        <TabsContent value="services" className="mt-4 sm:mt-6">
           <ServicesModule
             register={form.register}
             control={form.control}
@@ -496,7 +498,7 @@ export function Editor({ initialData, userId }: EditorProps) {
         </TabsContent>
 
         {/* Contact Tab */}
-        <TabsContent value="contact" className="mt-6">
+        <TabsContent value="contact" className="mt-4 sm:mt-6">
           <ContactModule
             register={form.register}
             primary_email={form.watch("primary_email")}
@@ -507,11 +509,11 @@ export function Editor({ initialData, userId }: EditorProps) {
       </Tabs>
 
       {/* Save Button */}
-      <div className="flex justify-end pt-6 border-t border-zinc-100">
+      <div className="flex justify-end pt-4 sm:pt-6 border-t border-zinc-100">
         <Button
           type="submit"
           disabled={isSaving}
-          className="h-9 bg-black text-sm text-white hover:bg-zinc-900 focus:ring-2 focus:ring-black focus:ring-offset-2"
+          className="h-9 w-full sm:w-auto bg-black text-sm text-white hover:bg-zinc-900 focus:ring-2 focus:ring-black focus:ring-offset-2"
         >
           {isSaving ? (
             <>
