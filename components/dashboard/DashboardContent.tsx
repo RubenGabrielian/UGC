@@ -37,6 +37,10 @@ export function DashboardContent({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const publicUrl = `/u/${username}`;
 
+  const toggleSidebar = () => {
+    setSidebarOpen((prev) => !prev);
+  };
+
   // Update tab from URL params after mount to avoid hydration issues
   useEffect(() => {
     const tabFromUrl = searchParams?.get("tab") || "editor";
@@ -84,7 +88,7 @@ export function DashboardContent({
             publicUrl={publicUrl} 
             username={profile?.username} 
             isPro={profile?.is_pro ?? false}
-            onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+            onMenuClick={toggleSidebar}
           />
 
           {/* Content Area */}

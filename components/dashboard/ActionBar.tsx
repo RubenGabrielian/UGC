@@ -52,9 +52,14 @@ export function ActionBar({ publicUrl, username, isPro = false, onMenuClick }: A
           <Button
             variant="ghost"
             size="sm"
-            onClick={onMenuClick}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onMenuClick?.();
+            }}
             className="lg:hidden h-8 w-8 p-0 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100"
             aria-label="Toggle menu"
+            type="button"
           >
             <Menu className="h-5 w-5" />
           </Button>
