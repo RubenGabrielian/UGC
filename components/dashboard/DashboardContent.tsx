@@ -38,7 +38,11 @@ export function DashboardContent({
   const publicUrl = `/u/${username}`;
 
   const toggleSidebar = () => {
-    setSidebarOpen((prev) => !prev);
+    setSidebarOpen((prev) => {
+      const newValue = !prev;
+      console.log("Sidebar toggle:", newValue); // Debug log
+      return newValue;
+    });
   };
 
   // Update tab from URL params after mount to avoid hydration issues
@@ -78,7 +82,7 @@ export function DashboardContent({
           isPro={profile?.is_pro ?? false} 
           userId={userId}
           isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
+          onClose={toggleSidebar}
         />
 
         {/* Main Content */}

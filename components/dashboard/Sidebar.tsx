@@ -142,9 +142,17 @@ export function Sidebar({ publicUrl, isPro = false, userId, isOpen = false, onCl
     <>
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 h-screen w-64 border-r border-zinc-200 bg-white transition-transform duration-300 ease-in-out lg:translate-x-0",
-          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          "fixed left-0 top-0 z-50 h-screen w-64 border-r border-zinc-200 bg-white shadow-lg",
+          "transition-transform duration-300 ease-in-out",
+          // On desktop (lg+), always visible
+          "lg:translate-x-0 lg:static",
+          // On mobile, show/hide based on isOpen
+          isOpen ? "translate-x-0" : "-translate-x-full"
         )}
+        style={{ 
+          willChange: "transform",
+          transform: isOpen ? "translateX(0)" : "translateX(-100%)"
+        }}
       >
         <div className="flex h-full flex-col">
           {/* Logo/Brand */}
