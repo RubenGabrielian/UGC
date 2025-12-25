@@ -192,9 +192,18 @@ export function renderMarkdown(content: string): React.ReactNode {
     if (trimmedLine.startsWith("## ")) {
       flushParagraph();
       flushList();
+      const headingText = trimmedLine.substring(3);
+      const headingId = headingText
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
       elements.push(
-        <h2 key={elements.length} className="mb-4 mt-8 text-3xl font-bold text-zinc-900 dark:text-zinc-50">
-          {trimmedLine.substring(3)}
+        <h2 
+          key={elements.length} 
+          id={headingId}
+          className="mb-4 mt-8 text-3xl font-bold text-zinc-900 dark:text-zinc-50 scroll-mt-24"
+        >
+          {headingText}
         </h2>
       );
       return;
@@ -202,9 +211,18 @@ export function renderMarkdown(content: string): React.ReactNode {
     if (trimmedLine.startsWith("### ")) {
       flushParagraph();
       flushList();
+      const headingText = trimmedLine.substring(4);
+      const headingId = headingText
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
       elements.push(
-        <h3 key={elements.length} className="mb-3 mt-6 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-          {trimmedLine.substring(4)}
+        <h3 
+          key={elements.length} 
+          id={headingId}
+          className="mb-3 mt-6 text-2xl font-semibold text-zinc-900 dark:text-zinc-50 scroll-mt-24"
+        >
+          {headingText}
         </h3>
       );
       return;

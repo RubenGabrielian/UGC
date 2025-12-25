@@ -7,9 +7,11 @@ import {
   getPostBySlug,
   getRelatedPosts,
   calculateReadingTime,
-  type BlogPost,
 } from "@/lib/blog-data";
 import { renderMarkdown } from "@/lib/markdown-renderer";
+import { extractHeadings } from "@/lib/extract-headings";
+import { TableOfContents } from "@/components/blog/TableOfContents";
+import { SocialShare } from "@/components/blog/SocialShare";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -41,7 +43,7 @@ export async function generateMetadata({
   return {
     title: `${post.title} | CreatorKit Blog`,
     description: post.description,
-    keywords: post.tags || [],
+    keywords: post.keywords || post.tags || [],
     openGraph: {
       title: post.title,
       description: post.description,
@@ -82,6 +84,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   const readingTime = calculateReadingTime(post.content);
   const relatedPosts = getRelatedPosts(slug, 3);
+  const headings = extractHeadings(post.content);
 
   // Article Schema for SEO
   const articleSchema = {
@@ -178,7 +181,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             </BreadcrumbList>
           </Breadcrumb>
 
-          <article className="mx-auto max-w-3xl">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_280px]">
+              <article className="mx-auto max-w-3xl">
             {/* Article Header */}
             <header className="mb-8">
               {post.category && (
@@ -235,14 +240,39 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               />
             </div>
 
+            {/* Table of Contents - Mobile */}
+            {headings.length > 0 && (
+              <div className="mb-8 lg:hidden">
+                <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4">
+                  <h3 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+                    Table of Contents
+                  </h3>
+                  <nav className="space-y-1">
+                    {headings.map((heading) => (
+                      <a
+                        key={heading.id}
+                        href={`#${heading.id}`}
+                        className="block text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+                      >
+                        {heading.text}
+                      </a>
+                    ))}
+                  </nav>
+                </div>
+              </div>
+            )}
+
             {/* Article Content */}
             <div className="prose prose-zinc dark:prose-invert max-w-none prose-headings:font-bold prose-headings:text-zinc-900 dark:prose-headings:text-zinc-50 prose-p:text-zinc-700 dark:prose-p:text-zinc-300 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-zinc-900 dark:prose-strong:text-zinc-50 prose-code:text-zinc-900 dark:prose-code:text-zinc-50 prose-pre:bg-zinc-900 prose-pre:text-zinc-100">
               {renderMarkdown(post.content)}
             </div>
 
+            {/* Social Sharing */}
+            <SocialShare title={post.title} url={`/blog/${post.slug}`} />
+
             {/* Tags */}
             {post.tags && post.tags.length > 0 && (
-              <div className="mt-12 flex flex-wrap gap-2 border-t border-zinc-200 dark:border-zinc-800 pt-8">
+              <div className="mt-8 flex flex-wrap gap-2">
                 <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
                   Tags:
                 </span>
@@ -258,7 +288,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             )}
 
             {/* Back to Blog Button */}
-            <div className="mt-12">
+            <div className="mt-8">
               <Button variant="outline" asChild>
                 <Link href="/blog">
                   <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -267,6 +297,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               </Button>
             </div>
           </article>
+
+          {/* Table of Contents - Desktop Sidebar */}
+          {headings.length > 0 && (
+            <aside className="hidden lg:block">
+              <TableOfContents headings={headings} />
+            </aside>
+          )}
+            </div>
+          </div>
 
           {/* Related Posts */}
           {relatedPosts.length > 0 && (
