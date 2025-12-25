@@ -5,11 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, Film } from "lucide-react";
-import { UseFieldArrayReturn, UseFormRegister, FieldValues, Path } from "react-hook-form";
+import { UseFieldArrayReturn, UseFormRegister, FieldValues, Path, ArrayPath } from "react-hook-form";
 
 interface VideosModuleProps<T extends FieldValues> {
   register: UseFormRegister<T>;
-  fields: UseFieldArrayReturn<T, "video_urls">;
+  fields: UseFieldArrayReturn<T, ArrayPath<T> & "video_urls">;
 }
 
 export function VideosModule<T extends FieldValues>({
@@ -27,7 +27,7 @@ export function VideosModule<T extends FieldValues>({
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => fields.append({ url: "", views: "" })}
+          onClick={() => fields.append({ url: "", views: "" } as Parameters<typeof fields.append>[0])}
           className="h-7 text-xs border-zinc-200"
         >
           <Plus className="h-3 w-3 mr-1" />

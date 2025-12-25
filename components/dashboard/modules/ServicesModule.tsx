@@ -13,12 +13,13 @@ import {
   Path,
   Control,
   Controller,
+  ArrayPath,
 } from "react-hook-form";
 
 interface ServicesModuleProps<T extends FieldValues> {
   register: UseFormRegister<T>;
   control: Control<T>;
-  fields: UseFieldArrayReturn<T, "services_packages">;
+  fields: UseFieldArrayReturn<T, ArrayPath<T> & "services_packages">;
 }
 
 interface ServiceItemProps<T extends FieldValues> {
@@ -139,7 +140,7 @@ export function ServicesModule<T extends FieldValues>({
               platform: "instagram",
               price: "",
               is_contact_only: false,
-            })
+            } as Parameters<typeof fields.append>[0])
           }
           className="h-7 text-xs border-zinc-200"
         >

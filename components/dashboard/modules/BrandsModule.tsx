@@ -5,11 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, Building2 } from "lucide-react";
-import { UseFieldArrayReturn, UseFormRegister, FieldValues, Path } from "react-hook-form";
+import { UseFieldArrayReturn, UseFormRegister, FieldValues, Path, ArrayPath } from "react-hook-form";
 
 interface BrandsModuleProps<T extends FieldValues> {
   register: UseFormRegister<T>;
-  fields: UseFieldArrayReturn<T, "brand_logos">;
+  fields: UseFieldArrayReturn<T, ArrayPath<T> & "brand_logos">;
 }
 
 export function BrandsModule<T extends FieldValues>({
@@ -27,7 +27,7 @@ export function BrandsModule<T extends FieldValues>({
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => fields.append({ url: "" })}
+          onClick={() => fields.append({ url: "" } as Parameters<typeof fields.append>[0])}
           className="h-7 text-xs border-zinc-200"
         >
           <Plus className="h-3 w-3 mr-1" />
@@ -44,7 +44,7 @@ export function BrandsModule<T extends FieldValues>({
           fields.fields.map((field, index) => (
             <div key={field.id} className="flex gap-2 p-3 border border-zinc-100 rounded-lg bg-zinc-50/50">
               <div className="flex-1 space-y-1">
-                <Label className="text-[10px] font-medium text-zinc-600">
+                 <Label className="text-[10px] font-medium text-zinc-600">
                   Logo URL
                 </Label>
                 <Input
