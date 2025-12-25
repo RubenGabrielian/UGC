@@ -11,6 +11,7 @@ import {
   Mail,
   ExternalLink,
   Palette,
+  Crown,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -79,11 +80,17 @@ export function Sidebar({ publicUrl, isPro = false }: SidebarProps) {
     <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-zinc-200 bg-white">
       <div className="flex h-full flex-col">
         {/* Logo/Brand */}
-        <div className="flex h-16 items-center border-b border-zinc-200 px-6">
+        <div className="flex h-16 items-center justify-between border-b border-zinc-200 px-6">
           <Link href="/" className="flex items-center gap-2">
             <div className="h-8 w-8 rounded bg-zinc-900"></div>
             <span className="text-sm font-semibold text-zinc-900">CreatorKit</span>
           </Link>
+          {isPro && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 px-2 py-0.5 text-[10px] font-semibold text-white shadow-sm">
+              <Crown className="h-2.5 w-2.5" />
+              PRO
+            </span>
+          )}
         </div>
 
         {/* Navigation */}

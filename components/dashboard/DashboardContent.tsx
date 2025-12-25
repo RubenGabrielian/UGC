@@ -56,7 +56,7 @@ export function DashboardContent({
         {/* Main Content */}
         <div className="flex flex-1 flex-col overflow-hidden ml-64">
           {/* Action Bar */}
-          <ActionBar publicUrl={publicUrl} username={profile?.username} />
+          <ActionBar publicUrl={publicUrl} username={profile?.username} isPro={profile?.is_pro ?? false} />
 
           {/* Content Area */}
           <main className="flex-1 overflow-y-auto bg-white">
